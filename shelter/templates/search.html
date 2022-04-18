@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load class_name %}
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1 class="text-info display-4 text-center">חיפוש</h1>
+      <p class="text-muted text-center mb-2">הזן חיה, שם או מין</p>
+      <form class="mr-5 ml-5">
+        <div class="input-group mb-3">
+          <input
+            type="search"
+            class="form-control"
+            placeholder="מצא את החבר החדש שלך..."
+            name="q"
+          />
+          <div class="input-group-prepend">
+            <button type="submit" class="btn btn-secondary">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% if search_query %}
+  <div class="row">
+    <div class="col-md-12">
+      <div class="swiper-container">
+        <!-- Additional required wrapper -->
+        <div class="swiper-wrapper">
+      {% for animal in shelter %}
+          {% with animal|class_name as klass %}
+          {% if klass == 'Dog' %}
+        <div class="swiper-slide">
+            <a href="../dog/{{animal.id}}">
+              <div class="card">
+                <img
+                  src="{{ animal.image.url }}"
+                  class="card-img-top"
+                  alt="..."
+                  style="height: 25rem;"
+                />
+                <div class="card-body bg-info">
+                  <h5 class="card-title text-light text-center">
+                    {{ animal.name }}
+                  </h5>
+                  <p class="card-text text-center">
+                    <small class="text-light"
+                      >Sheltered on: {{ animal.acceptance_date }}
+                    </small>
+                  </p>
+                </div>
+              </div>
+            </a>
+          </div>
+
+        {% elif klass == 'Cat' %}
+              <div class="swiper-slide">
+                <a href="../cat/{{animal.id}}">
+                 <div class="card">
+                 <img
+                  src="{{ animal.image.url }}"
+                  class="card-img-top"
+                  alt="..."
+                  style="height: 25rem;"
+                    />
+                <div class="card-body bg-info">
+                  <h5 class="card-title text-light text-center">
+                  <h5 class="card-title text-light text-center">
+                    {{ animal.name }}
+                  </h5>
+                  <p class="card-text text-center">
+                    <small class="text-light"
+                      >Sheltered on: {{ animal.acceptance_date }}
+                    </small>
+                  </p>
+                </div>
+              </div>
+            </a>
+          </div>
+
+        {% endif %}
+
+
+              {% endwith %}
+
+ <!-- Slides -->
+
+          {% endfor %}
+        </div>
+        <!-- If we need pagination -->
+        <div class="swiper-pagination"></div>
+
+        <!-- If we need navigation buttons -->
+        <div class="swiper-button-prev text-success"></div>
+        <div class="swiper-button-next text-success"></div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock content %}

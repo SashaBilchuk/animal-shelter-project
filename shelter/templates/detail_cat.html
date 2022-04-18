@@ -1,0 +1,35 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="container" dir="rtl">
+  <div class="row">
+    <div class="col-md-7 mt-5">
+      <img
+        src="{{ cat.image.url }}"
+        class="mx-auto d-block"
+        style="height: 40rem; width: 35rem;"
+        alt="{{ cat.image.url }}"
+      />
+    </div>
+    <div class="col-md-3 mt-5 ml-2">
+      <section class="row">
+        <h5 class="mt-5 display-4" style="color: #1b9891;">
+        {{ cat.name }} {% if cat.gender == 'Male' %}
+        <i class="fas fa-mars" style="color: #0275d8;"></i>
+        {% elif cat.gender == 'Female' %}
+        <i class="fas fa-venus" style="color: #d9534f;"></i>
+        {% endif %}
+        </h5>
+      </section>
+      <section class="row">
+      <div> {{ cat.description }} </div>
+      </section>
+      <section class="row">
+      <div> <span style="color: #1b9891; font-weight: bold;"> גיל:</span> {{ cat.age_years }} שנים ו-{{ cat.age_months }} חודשים </div>
+      </section>
+      <section class="row">
+      <div> <span style="color: #1b9891; font-weight: bold;">תאריך כניסה לעמותה:</span> {{ cat.acceptance_date }} </div>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock content %}

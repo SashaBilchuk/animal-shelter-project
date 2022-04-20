@@ -29,6 +29,16 @@
       <section class="row">
       <div> <span style="color: #1b9891; font-weight: bold;">תאריך כניסה לעמותה:</span> {{ cat.acceptance_date }} </div>
       </section>
+      <section class="row">
+      <div> <span style="color: #1b9891;font-weight: bold;"> סיפור: </span> {{ cat.story }} </div>
+      </section>
+       <section class="row">
+      <div> <span style="color: #1b9891;font-weight: bold;"> עיקור/ סירוס: </span> {{ cat.sterilization }} </div>
+      </section>
+        <section class="row">
+      <div> <span style="color: #1b9891;font-weight: bold;">עריכה/ מחיקה </span> <a href="/admin/shelter/cat/{{cat.id}}/change/"><div style="color: cadetblue; height:100%;width:100%"> קישור </div></a></div>
+      </section>
+
     </div>
   </div>
 </div>

@@ -29,6 +29,15 @@
       <section class="row">
       <div> <span style="color: #1b9891;font-weight: bold;">תאריך כניסה לעמותה:</span> {{ dog.acceptance_date }} </div>
       </section>
+     <section class="row">
+      <div> <span style="color: #1b9891;font-weight: bold;"> מספר שבב: </span> {{ dog.chip_number }} </div>
+      </section>
+       <section class="row">
+      <div> <span style="color: #1b9891;font-weight: bold;"> עיקור/ סירוס: </span> {{ dog.sterilization }} </div>
+      </section>
+        <section class="row">
+      <div> <span style="color: #1b9891;font-weight: bold;">עריכה/ מחיקה </span> <a href="/admin/shelter/dog/{{dog.id}}/change/"><div style="color: cadetblue; height:100%;width:100%"> קישור </div></a></div>
+      </section>
     </div>
   </div>
 </div>

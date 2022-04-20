@@ -8,7 +8,6 @@ from itertools import chain
 from django.views.generic import ListView
 
 
-
 def home(request):
 
     cats = Cat.objects.all()
@@ -39,6 +38,7 @@ def detail_cat(request, cat_id):
     cats = Cat.objects.all()
     return render(request, 'detail_cat.html', {'cat': cat, 'cats': cats})
 
+
 def detail_dog(request, dog_id):
     dog = get_object_or_404(Dog, pk=dog_id)
     dogs = Dog.objects.all()
@@ -54,10 +54,9 @@ def search(request):
     if search_query:
         dogs = dogs.filter(
             Q(name__icontains=search_query) |
-            Q(gender__iexact=search_query)
+            Q(gender__iexact=search_query) |
+            Q(chip_number__iexact=search_query)
         )
-
-    if search_query:
         cats = cats.filter(
             Q(name__icontains=search_query) |
             Q(gender__iexact=search_query)
@@ -77,3 +76,7 @@ def add_cat(request):
 
 def add_dog(request):
     return redirect('admin/shelter/dog/add/')
+
+
+def logout(request):
+    return redirect('admin/logout/')

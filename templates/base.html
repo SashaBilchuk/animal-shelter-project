@@ -37,9 +37,9 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-info" >
       <a class="navbar-brand" href="{% url 'home' %}"
-        ><i class="fas fa-dove"></i> "נהריה אוהבת חיות" </a
-      >
-      <button
+        ><i class="fas fa-dove"></i> "נהריה אוהבת חיות" </a>
+
+       <button
         class="navbar-toggler"
         type="button"
         data-toggle="collapse"
@@ -52,7 +52,7 @@
       </button>
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
+        <ul class="navbar-nav ml-auto">
           <li class="nav-item active">
             <a class="nav-link" href="{% url 'home' %}">בית</a>
           </li>
@@ -71,7 +71,11 @@
                 <a class="dropdown-item" href="{% url 'add_dog' %}">הוסף כלב</a>
               </div>
             </div>
-
+        </ul>
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'logout' %}">יציאה</a>
+          </li>
         </ul>
       </div>
     </nav>

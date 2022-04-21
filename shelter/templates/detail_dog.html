@@ -1,6 +1,7 @@
 {% extends 'base.html' %} {% block content %}
 
-
+<style>a {color: black;}</style>
+<style>span {color: #1b9891;font-weight: bold;}</style>
 <div class="container" dir="rtl">
   <div class="row">
     <div class="col-md-7 mt-5">
@@ -11,7 +12,7 @@
         alt="{{ dog.image.url }}"
       />
     </div>
-    <div class="col-md-3 mt-5 ml-2">
+    <div class="col-md-4 mt-5 ml-2">
       <section class="row">
       <div><a href="/admin/shelter/dog/{{dog.id}}/change/"><i class="fas fa-edit fa-lg" style="color: #1b9891;"></i></a></div>
       </section>
@@ -24,24 +25,33 @@
         {% endif %}
         </h5>
       </section>
+      <section class="row"><div> {{ dog.story }} </div></section>
+      <section class="row"><div> <span> מספר שבב: </span> {{ dog.chip_number }} </div></section>
+      <section class="row"><div> <span> גיל:</span> {{ dog.age_years }} שנים ו-{{ dog.age_months }} חודשים </div></section>
+      <section class="row"><div> <span> גודל: </span> {{ dog.get_size_display }} </div></section>
+      <section class="row"><div> <span> צבע: </span> {{ dog.color }} </div></section>
+      <section class="row"><div> <span> מיקום: </span> {{ dog.get_location_display }} </div></section>
       <section class="row">
-      <div> {{ dog.description }} </div>
-      </section>
+        {% if dog.location == 'Association' %}
+      <div> <span>תאריך כניסה לעמותה:</span> {{ dog.acceptance_date }} </div>
+      <div> <span> ימים בעמותה: </span> {{ dog.days_in_the_association }} </div>
+        {% elif dog.location != 'Association' %}
+      <div> <span>תאריך יציאה מעמותה:</span> {{ dog.exit_date }} </div>
+        {% endif %}</section>
       <section class="row">
-      <div> <span style="color: #1b9891;font-weight: bold;"> מספר שבב: </span> {{ dog.chip_number }} </div>
-      </section>
+      <div> <span> מרפאה וטרינרית: </span> {% if dog.clinic  %} {{ dog.clinic }} {% else %} טרם טופל {% endif %}</div></section>
       <section class="row">
-      <div> <span style="color: #1b9891; font-weight: bold;"> גיל:</span> {{ dog.age_years }} שנים ו-{{ dog.age_months }} חודשים </div>
-      </section>
+      <div><span> עיקור/סירוס: </span>{% if dog.sterilization is None %} טרם טופל
+      {% else %}<a href='{{dog.sterilization_approval.url}}'> {{ dog.sterilization }} </a></div>
+      {% endif %}</section>
       <section class="row">
-      <div> <span style="color: #1b9891;font-weight: bold;">תאריך כניסה לעמותה:</span> {{ dog.acceptance_date }} </div>
-      </section>
-       <section class="row">
-      <div> <span style="color: #1b9891;font-weight: bold;"> ימים בעמותה: </span> {{ dog.days_in_the_association }} </div>
-      </section>
-      <section class="row">
-      <div> <span style="color: #1b9891;font-weight: bold;"> עיקור/סירוס: </span> {{ dog.sterilization }} </div>
-      </section>
+      <div><span> חיסון כלבת: </span> {% if dog.rabies_vaccine is None %} טרם טופל
+      {% else %}<a href='{{dog.rabies_vaccine_approval.url}}'> {{ dog.rabies_vaccine }} </a>
+      <span> הבא: </span> {{ dog.next_treatment_rabies }} </div>
+      {% endif %}</section>
+
+
+
     </div>
   </div>
 </div>

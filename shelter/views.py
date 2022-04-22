@@ -6,6 +6,9 @@ from django.db.models import Q
 from django.shortcuts import render
 from itertools import chain
 from django.views.generic import ListView
+import csv
+from django.http import HttpResponse
+
 
 
 def home(request):
@@ -80,3 +83,23 @@ def add_dog(request):
 
 def logout(request):
     return redirect('admin/logout/')
+
+
+def Reports(request):
+    response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
+
+    writer = csv.writer(response)
+    writer.writerow(['מין', 'מספר שבב', 'שם', ',תאריך לידה'])
+
+    for dog in Dog.objects.all().values_list('gender', 'chip_number', 'name', 'birth_date'):
+        dog_lst = list(dog)
+        for i, val in enumerate(dog_lst):
+            if val == "Male":
+                dog_lst[i] = 'זכר'
+            elif val == 'Female':
+                dog_lst[i] = 'נקבה'
+        dog = tuple(dog_lst)
+        writer.writerow(dog)
+
+    response['Content-Disposition'] = 'attachment; filename="dogs.csv"'
+    return response

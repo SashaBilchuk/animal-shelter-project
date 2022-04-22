@@ -44,11 +44,7 @@
       <div><span> עיקור/סירוס: </span>{% if dog.sterilization is None %} טרם טופל
       {% else %}<a href='{{dog.sterilization_approval.url}}'> {{ dog.sterilization }} </a></div>
       {% endif %}</section>
-      <section class="row">
-      <div><span> חיסון כלבת: </span> {% if dog.rabies_vaccine is None %} טרם טופל
-      {% else %}<a href='{{dog.rabies_vaccine_approval.url}}'> {{ dog.rabies_vaccine }} </a>
-      <span> הבא: </span> {{ dog.next_treatment_rabies }} </div>
-      {% endif %}</section>
+
 
 
 

@@ -28,7 +28,7 @@ SECRET_KEY = 'm)ve)53w4aqqdsq-+t*6ni#dk25eoo0gesef9-j-qo!4jo5y2c'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['animal-shelter-proj1.herokuapp.com', 'localhost', '127.0.0.1']
 
 
 # Application definition

@@ -10,5 +10,7 @@ urlpatterns = [
     path('admin/logout/', views.logout, name='logout'),
     path('admin/', views.admin, name='add_animal'),
     path('admin/shelter/cat/add/', views.add_cat, name='add_cat'),
-    path('admin/shelter/dog/add/', views.add_dog, name='add_dog')
+    path('admin/shelter/dog/add/', views.add_dog, name='add_dog'),
+    path('Reports/', views.Reports, name='Reports')
+
 ]

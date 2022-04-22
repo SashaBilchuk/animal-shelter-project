@@ -40,7 +40,7 @@ class Dog(models.Model):
     sterilization_approval = models.ImageField(upload_to='mediaDogs/', blank=True, default=None, verbose_name=_('אישור סירוס/עיקור'))
     notebook = models.BooleanField(default=False, verbose_name=_('יש פנקס חיסונים?'))
     vaccine_book_url = models.TextField(max_length=255, blank=True, default=None, null=True,verbose_name=_('קישור לפנקס חיסונים'))
-    rabies_vaccine = models.DateField(blank=True, null = True, verbose_name=_('חיסון כלבת'))
+    rabbies_vaccine = models.DateField(blank=True, null = True, verbose_name=_('חיסון כלבת'))
     next_treatment_rabies = models.DateField(blank=True, null=True, verbose_name=_('כלבת - תאריך הטיפול הבא'))
     rabies_vaccine_approval = models.ImageField(upload_to='mediaDogs/', null=False, default=None, verbose_name=_('אישור חיסון כלבת'))
     hexagonal_vaccine = models.DateField(blank=True, null = True, verbose_name=_('חיסון משושה'))

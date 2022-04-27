@@ -1,4 +1,8 @@
 django
 gunicorn
 django-heroku
-whitenoise
+gspread
+google-api-python-client
+oauth2client
+pandas
+Pillow

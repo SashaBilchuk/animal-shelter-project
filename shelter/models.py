@@ -19,28 +19,25 @@ PLACES = (
     ('Association', 'עמותה'), ('Foster', 'אומנה'), ('Adoption', 'אימוץ'), ('Pension', 'פנסיון')
 )
 
+STATUS_ADOPTER = (
+    ('ACTIVE ADOPTION', 'אימץ',), ('RETURNED', 'החזיר')
+     )
 
-# class Adopter(models.Model):
-#     adopter_ID = models.IntegerField(unique=True, primary_key=True, default=None)
-#     full_name = models.CharField(max_length=255, default=None, verbose_name=_('שם המאמצ/ת'))
-#
-#     def __str__(self):
-#         return self.name
-#
-#
-# class Adoptions(models.Model):
-#     dog = models.ForeignKey(Dog, blank=True, null=True, on_delete=models.CASCADE)
-#     adopter_ID = models.ForeignKey(Adopter,  unique=True, default=None, on_delete=models.CASCADE)
-#     adoption_date = models.DateField(blank=True, null=True, verbose_name=_('תאריך אימוץ'))
-#     adoption_form = models.FileField(upload_to='mediaDogs/', default=None, verbose_name=_('מסמך אימוץ'))
-#     waiver_forms = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('מסמך העברה'))
-#     returner_id = models.IntegerField(default=0, blank=True, null=True, verbose_name=_('ת.ז. של מחזיר הכלב/ה'))
-#     return_date = models.DateField(blank=True, null = True, verbose_name=_('תאריך החזרה'))
-#     reason_of_return = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיבת ההחזרה'))
-#     giveaway_forms = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('מסמך החזרה'))
-#
-#     def __str__(self):
-#         return self.name
+
+class Adopter(models.Model):
+    adopter_ID = models.IntegerField(unique=True, default=None)
+    name = models.CharField(max_length=255, default=None)
+    ID_link = models.TextField(max_length=255, blank=True, default=None, null = True, verbose_name=_('קישור לת"ז'))
+    adopter_city = models.TextField(max_length=255, blank=True, default=None, null = True, verbose_name=_('עיר מגורים'))
+    adopter_street = models.TextField(max_length=255, blank=True, default=None, null = True, verbose_name=_('רחוב'))
+    phone_number = models.CharField(max_length=12,default=None, blank=True, null=True, verbose_name=_('מספר טלפון'))
+    email_address = models.EmailField(max_length=254, blank=True, default=None, null = True, verbose_name=_('כתובת מייל'))
+    activity_status = models.CharField(choices=STATUS_ADOPTER,default='אימץ', max_length=20, verbose_name=_('סטטוס פעילות'))
+    black_listed = models.BooleanField(default=False, verbose_name=_('רשימה שחורה'))
+
+
+    def __str__(self):
+        return self.name
 
 
 class Dog(models.Model):
@@ -81,6 +78,7 @@ class Dog(models.Model):
     died = models.BooleanField(default=False, verbose_name=_('נפטר/ה'))
     death_date = models.DateField(blank=True, null=True, verbose_name=_('תאריך הפטירה'))
     death_reason = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיבת הפטירה'))
+    adopter_relation_dog = models.ManyToManyField(Adopter, through='DogAdoption', related_name="adoptions_dog")
 
 
 
@@ -104,6 +102,12 @@ class Dog(models.Model):
             return datetime.date.today().day - self.acceptance_date.day
         else:
             return 0
+
+    @property
+    def get_adopters(self):
+        adopters = self.adopter_relation_dog.all()
+        print(type(adopters))
+        return adopters
 
     def __str__(self):
         return self.name
@@ -130,6 +134,7 @@ class Cat(models.Model):
     died = models.BooleanField(default=False, verbose_name=_('נפטר/ה'))
     death_reason = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיבת הפטירה'))
     death_date = models.DateField(default=None, blank=True, null=True, verbose_name=_('תאריך הפטירה'))
+    adopter_relation_cat = models.ManyToManyField(Adopter, through='CatAdoption', related_name="adoptions_cat")
 
 
     @property
@@ -152,10 +157,34 @@ class Cat(models.Model):
         else:
             return 0
 
+    @property
+    def get_adopters(self):
+        adopters = self.adopter_relation_cat.all()
+        print(type(adopters))
+        return adopters
+
     def __str__(self):
         return self.name
 
 
+class DogAdoption(models.Model):
+    dog = models.ForeignKey(Dog, on_delete=models.CASCADE, verbose_name=_('כלב'))
+    adopter = models.ForeignKey(Adopter, on_delete=models.CASCADE, verbose_name=_('מאמץ'))
+    adoption_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך אימוץ'))
+
+    def __str__(self):
+        return "{}_{}".format(self.adopter.__str__(), self.dog.__str__())
+
+
+class CatAdoption(models.Model):
+    cat = models.ForeignKey(Cat, on_delete=models.CASCADE, verbose_name=_('חתול'))
+    adopter = models.ForeignKey(Adopter, on_delete=models.CASCADE, verbose_name=_('מאמץ'))
+    adoption_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך אימוץ'))
+
+    def __str__(self):
+        return "{}_{}".format(self.adopter.__str__(), self.cat.__str__())
+    
+    
 # class Foster(models.Model):
 #     id = models.AutoField(primary_key=True)
 #     foster_ID = models.IntegerField(unique=True, default=None, verbose_name=_('ת.ז'))

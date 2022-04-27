@@ -31,10 +31,10 @@
         <!-- Additional required wrapper -->
         <div class="swiper-wrapper">
       {% for animal in shelter %}
-          {% with animal|class_name as klass %}
+         {% with animal|class_name as klass %}
           {% if klass == 'Dog' %}
         <div class="swiper-slide">
-            <a href="../dog/{{animal.id}}">
+            <a href="../animal/{{animal.id}}">
               <div class="card" >
                 <img
                   src="{{ animal.image.url }}"
@@ -54,7 +54,7 @@
                 </div>
               </div>
             </a>
-          </div>
+        </div>
 
         {% elif klass == 'Cat' %}
               <div class="swiper-slide">
@@ -79,11 +79,8 @@
               </div>
             </a>
           </div>
-
         {% endif %}
-
-
-              {% endwith %}
+        {% endwith %}
 
  <!-- Slides -->
 

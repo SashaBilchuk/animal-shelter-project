@@ -1,28 +1,34 @@
 from django.shortcuts import render
 from .models import Dog, Cat
 from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
-from django.shortcuts import render
 from itertools import chain
 from django.views.generic import ListView
 import csv
 from django.http import HttpResponse
-
+import datetime
 
 
 def home(request):
 
     cats = Cat.objects.all()
-    no_of_cats = len(cats)
+    cat_count = 0
+    for cat in cats:
+        if cat.location == 'Association':
+            cat_count += 1
+    no_of_cats = cat_count
 
     paginator1 = Paginator(cats, 3)
     page = request.GET.get('catpage')
     cats = paginator1.get_page(page)
 
     dogs = Dog.objects.all()
-    #Animal.objects.filter(animal='Dog')
-    no_of_dogs = len(dogs)
+    dog_count = 0
+    for dog in dogs:
+        if dog.location == 'Association':
+            dog_count += 1
+    no_of_dogs = dog_count
 
     paginator2 = Paginator(dogs, 3)
     page = request.GET.get('dogpage')
@@ -55,15 +61,16 @@ def search(request):
     search_query = request.GET.get('q')
 
     if search_query:
+        cats = cats.filter(
+            Q(name__icontains=search_query) |
+            Q(gender__iexact=search_query)
+        )
         dogs = dogs.filter(
             Q(name__icontains=search_query) |
             Q(gender__iexact=search_query) |
             Q(chip_number__iexact=search_query)
         )
-        cats = cats.filter(
-            Q(name__icontains=search_query) |
-            Q(gender__iexact=search_query)
-        )
+
     results = chain(dogs, cats)
 
     return render(request, 'search.html', {'shelter': results, 'search_query': search_query})

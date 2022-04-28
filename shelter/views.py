@@ -194,8 +194,15 @@ def fetch_from_sheet(request):
     sheet_instance = get_sheet()
     records_data = sheet_instance.get_all_records()
     records_df = pd.DataFrame.from_dict(records_data)  # this is Panda dataframe if you need you can use it.
-    records_df = records_df.fillna(-5)
-    records_df = records_df[records_df['Timestamp'] != -5]
+    # records_df = records_df.fillna(-5)
+    # records_df = records_df[records_df['Timestamp'] != -5]
+    records_df.dropna(
+        axis=0,
+        how='any',
+        thresh=20,
+        subset=None,
+        inplace=True
+    )
     # records_df = records_df[[
     #     'מי מטפלת?', 'סטטוס', 'הערות ', 'שם מלא', 'עיר מגורים', 'מייל', 'טלפון ליצירת קשר',
         # 'במידה ואתם מתעניינים בכלב מסויים אצלנו, נא ציינו את שמו']]  # If you want all columns then remove this line.
@@ -203,6 +210,69 @@ def fetch_from_sheet(request):
         'df': records_df
     }
     return render(request, 'google-sheet-date.html', context)
+
+
+def prepare_data(df):
+    df = df.fillna(-5)
+    rslt_df = df[df['Timestamp'] != -5]
+    subset = rslt_df[['סטטוס', 'Timestamp', 'האם לאחד מבני המשפחה יש אלרגיה לכלבים ? ', 'ניסיון קודם בגידול כלבים: '
+        , 'גיל', 'עיר מגורים', 'האם אתם מעוניינים בגודל מסוים של כלב?'
+        , 'סוג מקום מגורים ', 'היכן הכלב ישהה? ', 'מצב משפחתי'
+        , 'מספר ילדים', 'האם אתם מגדלים בע"ח נוסף כיום?']]
+
+    subset = subset.rename(columns={"סטטוס": 'status',
+                                    'עיר מגורים': 'City',
+                                    'האם לאחד מבני המשפחה יש אלרגיה לכלבים ? ': 'Allergies',
+                                    'ניסיון קודם בגידול כלבים: ': 'Experience',
+                                    'גיל': 'Age',
+                                    'עיר מגורים': 'City',
+                                    'האם אתם מעוניינים בגודל מסוים של כלב?': 'DogSize',
+                                    'סוג מקום מגורים ': 'ResidenceType',
+                                    'היכן הכלב ישהה? ': 'DogPlace',
+                                    'מצב משפחתי': 'MaritalStatus',
+                                    'מספר ילדים': 'NumChildren',
+                                    'האם אתם מגדלים בע"ח נוסף כיום?': 'OtherPets'})  # correct colum's names
+
+    subset = subset.astype({'Age': int, 'NumChildren': int})
+    subset['Small'] = np.where(subset['DogSize'].str.contains("קטן", case=False), 1, 0)
+    subset['Medium'] = np.where(subset['DogSize'].str.contains("בינוני", case=False), 1, 0)
+    subset['Large'] = np.where(subset['DogSize'].str.contains("גדול", case=False), 1, 0)
+    subset['HasCat'] = np.where(subset['OtherPets'].str.contains("חתול", case=False), 1, 0)
+    subset['HasDog'] = np.where(subset['OtherPets'].str.contains("כלב", case=False), 1, 0)
+    subset['Single'] = np.where(subset['MaritalStatus'].str.contains("רווק/ה", case=False), 1, 0)
+    subset['Widow'] = np.where(subset['MaritalStatus'].str.contains("אלמן/ה", case=False), 1, 0)
+    subset['Married'] = np.where(subset['MaritalStatus'].str.contains("נשוי/ה", case=False), 1, 0)
+    subset['Divorced'] = np.where(subset['MaritalStatus'].str.contains("גרוש/ה", case=False), 1, 0)
+    subset['HomeYard'] = np.where(subset['ResidenceType'].str.contains("בית", case=False), 1, 0)
+    subset['Apartment'] = np.where(subset['ResidenceType'].str.contains("דירה", case=False), 1, 0)
+    subset['Dog_inside'] = np.where(subset['DogPlace'].str.contains("בית בלבד", case=False), 1, 0)
+    subset['Dog_outside'] = np.where(subset['DogPlace'].str.contains("מחוץ לבית בלבד", case=False), 1, 0)
+    subset['Dog_inside_outside'] = np.where(subset['DogPlace'].str.contains("בית ומחוץ לבית", case=False), 1, 0)
+    subset['HasExperience'] = np.where(subset['Experience'].str.contains("יש", case=False), 1, 0)
+    subset['HasAllergies'] = np.where(subset['Allergies'].str.contains("כן", case=False), 1, 0)
+    subset['CityNumber'] = subset['City'].apply(lambda row: convert_ascii_sum(row))
+
+    conditions = [
+        (subset['status'] == 'אימץ מהעמותה'),
+        (subset['status'] == 'מאושר לאימוץ'),
+        (subset['status'] == 'בוצעה שיחה ראשונית'),
+        (subset['status'] == 'ממתינים לוידאו'),
+        (subset['status'] == 'טרם טופל'),
+        (subset['status'] == 'לא מתאים לאימוץ'),
+        (subset['status'] == 'רשימה שחורה'),
+    ]
+
+    values = [1, 1, -1, -1, -1, 0, 0]
+    subset['y'] = np.select(conditions, values, default=-1)
+    data = subset[['Small', 'Medium', 'Large', 'HasCat', 'HasDog', 'Single', 'Widow', 'Married', 'Divorced', 'HomeYard',
+                   'Apartment',
+                   'Dog_inside', 'Dog_outside', 'Dog_inside_outside', 'HasExperience', 'HasAllergies', 'CityNumber',
+                   'y']]
+    Nlabeled = data[data['y'] < 0]
+    labeled = data[data['y'] >= 0]
+
+    return Nlabeled, labeled, data
+
 
 def fetch_black_list_from_sheet(request):
     sheet_instance = get_sheet()

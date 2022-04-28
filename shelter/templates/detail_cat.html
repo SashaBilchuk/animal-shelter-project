@@ -38,6 +38,25 @@
        <section class="row">
       <div> <span style="color: #1b9891;font-weight: bold;"> עיקור/ סירוס: </span> {{ cat.sterilization }} </div>
       </section>
+      <section class="row">
+        {% if cat.get_adopters is not None %}
+        <div> <span> שם המאמץ</span> </div>
+          {% for adopter in cat.get_adopters%}
+            {%if forloop.last%}
+            <div> {{ adopter }} </div>
+            <div> <span> תעודת זהות</span> </div>
+            <div> {{ " , " }} </div>
+            <div> {{ adopter.adopter_ID }} </div>
+            {%else%}
+              <div> {{ adopter }} </div>
+              <div> {{ " , " }} </div>
+              <div> <span> תעודת זהות</span> </div>
+              <div> {{ adopter.adopter_ID }} </div>
+              <div> {{ " , " }} </div>
+
+            {% endif %}
+          {% endfor %}
+        {% endif %}</section>
 
     </div>
   </div>

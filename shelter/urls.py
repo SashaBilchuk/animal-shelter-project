@@ -11,6 +11,9 @@ urlpatterns = [
     path('admin/', views.admin, name='add_animal'),
     path('admin/shelter/cat/add/', views.add_cat, name='add_cat'),
     path('admin/shelter/dog/add/', views.add_dog, name='add_dog'),
-    path('Reports/', views.Reports, name='Reports')
+    path('reports/', views.reportURL, name='reports'),
+    path('download_report/', views.download_report, name='download_report'),
+    path('fetch-from-google-sheet/', views.fetch_from_sheet, name='google-sheet'),
+    path('fetch_black_list_from_sheet/', views.fetch_black_list_from_sheet, name='black_list')
 
 ]

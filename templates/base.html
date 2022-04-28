@@ -63,10 +63,20 @@
           <a class="nav-link" href="{% url 'add_animal' %}">אדמין</a>
           </li>
           <li class="nav-item active">
-          <a class="nav-link" href="{% url 'Reports' %}">דו"חות מערכת</a>
+          <a class="nav-link" href="{% url 'reports' %}">דו"חות מערכת</a>
           </li>
+
           <div class="dropdown show">
               <a class="btn btn-info dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                שאלונים
+              </a>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item" href="{% url 'google-sheet' %}">שאלון מאמצים</a>
+                <a class="dropdown-item" href="{% url 'black_list' %}">רשימה שחורה</a>
+              </div>
+          </div>
+          <div class="dropdown show">
+              <a class="btn btn-info dropdown-toggle" href="#" role="button" id="dropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 הוסף חיה
               </a>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">

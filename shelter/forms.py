@@ -1,5 +1,5 @@
 from django import forms
-from .models import Dog, Cat, ShelterHistory
+from .models import Dog, Cat, DogAdoption, CatAdoption #, ShelterHistory
 
 #
 # class ShelterCreateForm(forms.ModelForm):
@@ -23,11 +23,25 @@ from .models import Dog, Cat, ShelterHistory
 #         return item_name
 
 
-class ShelterHistorySearchForm(forms.ModelForm):
-    export_to_CSV = forms.BooleanField(required=False)
-    start_date = forms.DateTimeField(required=False)
-    end_date = forms.DateTimeField(required=False)
+# class ShelterHistorySearchForm(forms.ModelForm):
+#     export_to_CSV = forms.BooleanField(required=False)
+#     start_date = forms.DateTimeField(required=False)
+#     end_date = forms.DateTimeField(required=False)
+#     class Meta:
+#         model = Dog
+#         fields = ['id', 'name', 'days_in_the_association', 'start_date', 'end_date']
+
+
+# class DogForm(forms.ModelForm):
+#     class Meta:
+#         model = DogAdoption
+#         fields = ['id', 'name', 'days_in_the_association']
+
+
+class DogAdoptionsForm(forms.ModelForm):
     class Meta:
-        model = Dog
-        fields = ['id', 'name', 'days_in_the_association', 'start_date', 'end_date']
+        model = DogAdoption
+        fields = ['dog', 'adopter', 'adoption_date']
+        #labels = {'dog': _('שם הכלב'), }
+        #help_texts = {'due_back': _('Enter a date between now and 4 weeks (default 3).'), }
 

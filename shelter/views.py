@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from .models import Dog, Cat
+from .models import Dog, Cat, Adopter, DogAdoption
+from .forms import DogAdoptionsForm
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
@@ -94,6 +95,19 @@ def add_dog(request):
 def logout(request):
     return redirect('admin/logout/')
 
+
+def add_dog_adoption(request):
+    dogs = Dog.objects.all()
+    adopters = Adopter.objects.all()
+    if request.method == 'POST':
+        form = DogAdoptionsForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return render(request, 'home.html')
+    else:
+        form_class = DogAdoptionsForm
+
+    return render(request, 'add_dog_adoption.html', {'dogs': dogs, 'adopters': adopters, 'form': form_class})
 
 
 def download_report(request):
@@ -298,3 +312,5 @@ def add_to_sheet(request):
         return redirect('google-sheet')  # redirect anywhere as you want.
 
     return redirect('google-sheet')  # else request is not POST request
+
+

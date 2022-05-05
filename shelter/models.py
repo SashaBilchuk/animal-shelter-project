@@ -78,6 +78,7 @@ class Dog(models.Model):
     death_date = models.DateField(blank=True, null=True, verbose_name=_('תאריך הפטירה'))
     death_reason = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיבת הפטירה'))
     adopter_relation_dog = models.ManyToManyField(Adopter, through='DogAdoption', related_name="adoptions_dog")
+    animal_type = models.CharField(max_length=32, default="כלב",  editable=False)
 
 
     @property
@@ -111,6 +112,17 @@ class Dog(models.Model):
         return self.name
 
 
+
+
+    def get_city_from_adopters(self):
+        adopters = self.adopter_relation_dog.all()
+        city_lst = []
+        for adopter in adopters:
+            city_lst.append(adopter.adopter_city)
+        return city_lst
+
+
+
 class Cat(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, verbose_name=_('שם'))
@@ -136,6 +148,8 @@ class Cat(models.Model):
     death_reason = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיבת הפטירה'))
     death_date = models.DateField(default=None, blank=True, null=True, verbose_name=_('תאריך הפטירה'))
     adopter_relation_cat = models.ManyToManyField(Adopter, through='CatAdoption', related_name="adoptions_cat")
+    animal_type = models.CharField(max_length=32, default="חתול",  editable=False)
+
 
     @property
     def age_years(self):
@@ -160,8 +174,16 @@ class Cat(models.Model):
     @property
     def get_adopters(self):
         adopters = self.adopter_relation_cat.all()
-        print(type(adopters))
         return adopters
+
+
+    def get_city_from_adopters(self):
+        adopters = self.adopter_relation_cat.all()
+        city_lst = []
+        for adopter in adopters:
+            city_lst.append(adopter.adopter_city)
+        return city_lst
+
 
     def __str__(self):
         return self.name

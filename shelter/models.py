@@ -216,6 +216,29 @@ class CatAdoption(models.Model):
 #         return self.name
 
 
+class Response(models.Model):
+    response_owner= models.CharField(max_length=255, verbose_name=_('שם מטפלת '))
+    status = models.CharField(max_length=255, verbose_name=_(''))
+    comments = models.CharField(max_length=255, verbose_name=_(' '))
+    full_name = models.CharField(max_length=255, verbose_name=_(' '), editable=False)
+    age = models.IntegerField(verbose_name=_(' '), editable=False)
+    city = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
+    phone_num = models.CharField(max_length=255, verbose_name=_(''),editable=False)
+    mail = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
+    maritalStatus =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
+    numChildren = models.IntegerField( verbose_name=_(' '),editable=False)
+    otherPets =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
+    experience = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
+    dog_name = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
+    allergies = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
+    own_apartment = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
+    rent_agreed = models.CharField(max_length=255, verbose_name=_(''),editable=False)
+    residenceType =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
+    fence =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
+    dogPlace = models.CharField(max_length=255, verbose_name=_(''),editable=False)
+    dogSize =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
+    response_comments =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
+    QID = models.IntegerField(unique=True, max_length=9, verbose_name=_(''),editable=False)
 
-
-
+    def __str__(self):
+        return self.QID

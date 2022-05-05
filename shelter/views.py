@@ -12,6 +12,11 @@ from django.http import HttpResponse
 import gspread
 import pandas as pd
 from oauth2client.service_account import ServiceAccountCredentials
+import numpy as np
+import sklearn
+from sklearn.neighbors import KNeighborsClassifier
+from django.http import HttpResponseRedirect
+# from .forms import AddToSheet
 
 
 def home(request):
@@ -65,19 +70,22 @@ def search(request):
     search_query = request.GET.get('q')
 
     if search_query:
+
         cats = cats.filter(
             Q(name__icontains=search_query) |
-            Q(gender__iexact=search_query)
+            Q(animal_type__icontains=search_query)|
+            Q(adopter_relation_cat__adopter_city__icontains=search_query)
         )
         dogs = dogs.filter(
             Q(name__icontains=search_query) |
-            Q(gender__iexact=search_query) |
-            Q(chip_number__iexact=search_query)
+            Q(chip_number__iexact=search_query)|
+            Q(animal_type__icontains=search_query)|
+            Q(adopter_relation_dog__adopter_city__icontains=search_query)
         )
 
     results = chain(dogs, cats)
+    return render(request, 'search.html', {'shelter': list(results), 'search_query': search_query})
 
-    return render(request, 'search.html', {'shelter': results, 'search_query': search_query})
 
 
 def admin(request):
@@ -203,27 +211,28 @@ def get_black_list(df):
 
     return subset[['שם מלא','טלפון ליצירת קשר','הערות ']]
 
-
-def fetch_from_sheet(request):
-    sheet_instance = get_sheet()
-    records_data = sheet_instance.get_all_records()
-    records_df = pd.DataFrame.from_dict(records_data)  # this is Panda dataframe if you need you can use it.
-    # records_df = records_df.fillna(-5)
-    # records_df = records_df[records_df['Timestamp'] != -5]
-    records_df.dropna(
-        axis=0,
-        how='any',
-        thresh=20,
-        subset=None,
-        inplace=True
-    )
-    # records_df = records_df[[
-    #     'מי מטפלת?', 'סטטוס', 'הערות ', 'שם מלא', 'עיר מגורים', 'מייל', 'טלפון ליצירת קשר',
-        # 'במידה ואתם מתעניינים בכלב מסויים אצלנו, נא ציינו את שמו']]  # If you want all columns then remove this line.
-    context = {
-        'df': records_df
-    }
-    return render(request, 'google-sheet-date.html', context)
+##  old~~~~~!!!!!!!!
+# def fetch_from_sheet(request):
+#     sheet_instance = get_sheet()
+#     records_data = sheet_instance.get_all_records()
+#     records_df = pd.DataFrame.from_dict(records_data)  # this is Panda dataframe if you need you can use it.
+#     # records_df = records_df.fillna(-5)
+#     # records_df = records_df[records_df['Timestamp'] != -5]
+#     records_df.dropna(
+#         axis=0,
+#         how='any',
+#         thresh=20,
+#         subset=None,
+#         inplace=True
+#     )
+#     # records_df = records_df[[
+#     #     'מי מטפלת?', 'סטטוס', 'הערות ', 'שם מלא', 'עיר מגורים', 'מייל', 'טלפון ליצירת קשר',
+#         # 'במידה ואתם מתעניינים בכלב מסויים אצלנו, נא ציינו את שמו']]  # If you want all columns then remove this line.
+#     context = {
+#         'df': records_df
+#     }
+#     return render(request, 'google-sheet-date.html', context)
+##  old~~~~~!!!!!!!!
 
 
 def prepare_data(df):
@@ -298,19 +307,71 @@ def fetch_black_list_from_sheet(request):
     }
     return render(request, 'black_list.html', context)
 
+# old AAddTo Sheet
+# def add_to_sheet(request):
+#     if request.POST:
+#         '''
+#         validate posted data. then create a dataframe I give you a example below.
+#         '''
+#
+#         new_df = pd.DataFrame(data={'column_name1': ['value'], 'column_name2': ['value'],
+#                                     '....so on..': ''})  # example dataframe to insert in google sheet.
+#         sheet_instance = get_sheet()
+#         sheet_instance.append_rows(new_df.values.tolist())  # it will save the data to your sheet.
+#         return redirect('google-sheet')  # redirect anywhere as you want.
+#
+#     return redirect('google-sheet')  # else request is not POST request
+
+
+def get_test_sheet():
+    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+    creds = ServiceAccountCredentials.from_json_keyfile_name('./pbpython-345313-70ce25d6b97c.json', scope)
+    client = gspread.authorize(creds)
+    sheet = client.open('test sheet')
+    sheet_instance = sheet.get_worksheet(0)
+    return sheet_instance
+
+
+def fetch_from_sheet(request):
+    sheet_instance = get_sheet()
+    records_data = sheet_instance.get_all_records()
+    records_df = pd.DataFrame.from_dict(records_data)  # this is Panda dataframe if you need you can use it.
+    records_df['IDX'] = pd.to_datetime(records_df['Timestamp']).astype(np.int64)
+    records_df = records_df[records_df['IDX'] >0 ]
+    # records_df = prepare_data(records_df)
+
+
+    context = {
+        'df': records_df
+    }
+    return render(request, 'google-sheet-date.html', context)
+
+def add_to_adopter(row):
+    name = row['שם מלא']
+    city = row['עיר מגורים']
+    phone_number = row['טלפון ליצירת קשר']
+    mail = row['מייל']
+    Adopter.objects.create(adopter_ID=12345, name=name, adopter_city=city, email_address=mail, phone_number=phone_number)
+
+
+def convert_ascii_sum(word):#Convert city names to ascii value
+    ascii_values = [ord(character) for character in word]
+    number = 0
+    for val in ascii_values:
+        number+=val
+    return number
 
 def add_to_sheet(request):
     if request.POST:
         '''
         validate posted data. then create a dataframe I give you a example below.
         '''
-
-        new_df = pd.DataFrame(data={'column_name1': ['value'], 'column_name2': ['value'],
-                                    '....so on..': ''})  # example dataframe to insert in google sheet.
-        sheet_instance = get_sheet()
-        sheet_instance.append_rows(new_df.values.tolist())  # it will save the data to your sheet.
-        return redirect('google-sheet')  # redirect anywhere as you want.
+        form = AddToSheet(request.POST)
+        if form.is_valid():
+            print("Hi")
+            new_df = pd.DataFrame(data={'מי מטפלת?': ['אנה']})
+            sheet_instance = get_test_sheet()
+            sheet_instance.append_rows(new_df.values.tolist())  # it will save the data to your sheet.
+            return redirect('google-sheet')  # redirect anywhere as you want.
 
     return redirect('google-sheet')  # else request is not POST request
-
-

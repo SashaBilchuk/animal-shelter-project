@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Dog, Cat, Adopter, DogAdoption
+from .models import Dog, Cat, Adopter, Response
 from .forms import DogAdoptionsForm
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
@@ -297,6 +297,48 @@ def prepare_data(df):
     return Nlabeled, labeled, data
 
 
+def convert_headers(df):
+    subset = df[['מי מטפלת?', 'סטטוס','הערות', 'Timestamp',  'שם מלא',  'גיל','עיר מגורים', 'טלפון ליצירת קשר',
+                      'מייל',  'מצב משפחתי', 'מספר ילדים', 'האם אתם מגדלים בע"ח נוסף כיום?', 'ניסיון קודם בגידול כלבים: ',
+                      'במידה ואתם מתעניינים בכלב מסויים אצלנו, נא ציינו את שמו',
+                      'האם לאחד מבני המשפחה יש אלרגיה לכלבים ? ','האם הדירה בבעלותכם? ',
+                      'במידה ואתם גרים בשכירות - האם יש הסכמת בעל הדירה?',
+                      'סוג מקום מגורים ',
+                      'במידה וישנה חצר, האם היא מגודרת?',
+                      'היכן הכלב ישהה? ',
+                      'האם אתם מעוניינים בגודל מסוים של כלב?','הערות נוספות ', 'מזהה שאלון']]
+
+    subset = subset.rename(columns={'מי מטפלת?': 'response_owner',
+                                    'סטטוס': 'status',
+                                     'הערות': 'comments',
+                                    'שם מלא':'full_name',
+                                     'גיל': 'age',
+                                     'עיר מגורים': 'city',
+                                     'טלפון ליצירת קשר':'phone_num',
+                                     'מייל':'mail',
+                                     'מצב משפחתי': 'maritalStatus',
+                                     'מספר ילדים': 'numChildren',
+                                     'האם אתם מגדלים בע"ח נוסף כיום?': 'otherPets',
+                                     'ניסיון קודם בגידול כלבים: ': 'experience',
+                                     'במידה ואתם מתעניינים בכלב מסויים אצלנו, נא ציינו את שמו': 'dog_name',
+                                     'האם לאחד מבני המשפחה יש אלרגיה לכלבים ? ': 'allergies',
+                                     'האם הדירה בבעלותכם? ':'own_apartment',
+                                     'במידה ואתם גרים בשכירות - האם יש הסכמת בעל הדירה?': 'rent_agreed',
+                                     'סוג מקום מגורים ': 'residenceType',
+                                    'במידה וישנה חצר, האם היא מגודרת?':'fence',
+                                     'היכן הכלב ישהה? ': 'dogPlace',
+                                     'האם אתם מעוניינים בגודל מסוים של כלב?': 'dogSize',
+                                     'הערות נוספות ': 'response_comments',
+                                    'מזהה שאלון': 'QID',
+                                    })  # correct colum's names
+
+    subset['age'] = subset[['age']].astype('int')
+    subset['QID'] = subset['QID'].astype('int')
+    subset['numChildren'] = subset['numChildren'].astype('int')
+
+    return subset
+
+
 def fetch_black_list_from_sheet(request):
     sheet_instance = get_sheet()
     records_data = sheet_instance.get_all_records()
@@ -335,15 +377,20 @@ def get_test_sheet():
 def fetch_from_sheet(request):
     sheet_instance = get_sheet()
     records_data = sheet_instance.get_all_records()
-    records_df = pd.DataFrame.from_dict(records_data)  # this is Panda dataframe if you need you can use it.
+    records_df = pd.DataFrame.from_dict(records_data)
     records_df['IDX'] = pd.to_datetime(records_df['Timestamp']).astype(np.int64)
     records_df = records_df[records_df['IDX'] >0 ]
-    # records_df = prepare_data(records_df)
-
+    records_df = convert_headers(records_df)
 
     context = {
         'df': records_df
     }
+    responce_model = list(Response.objects.all())
+      # ITERATES ON ALL RAWS, IF FOUND NEW ROW -> ADD TO RESPONSE MODEL
+    for index, row in records_df.iterrows():
+        if row['QID'] not in responce_model:
+            add_to_Response(row)
+
     return render(request, 'google-sheet-date.html', context)
 
 def add_to_adopter(row):
@@ -361,6 +408,39 @@ def convert_ascii_sum(word):#Convert city names to ascii value
         number+=val
     return number
 
+
+def add_to_Response(row):
+    response_owner= row['response_owner']
+    status = row['status']
+    comments =row['comments']
+    full_name = row['full_name']
+    age = row['age']
+    city = row['city']
+    phone_num =row['phone_num']
+    mail =row['mail']
+    maritalStatus =row['maritalStatus']
+    numChildren = row['numChildren']
+    otherPets =row['otherPets']
+    experience = row['experience']
+    dog_name = row['dog_name']
+    allergies = row['allergies']
+    own_apartment = row['own_apartment']
+    rent_agreed = row['rent_agreed']
+    residenceType = row['residenceType']
+    fence = row['fence']
+    dogPlace = row['dogPlace']
+    dogSize = row['dogSize']
+    response_comments = row['response_comments']
+    QID = row['QID']
+
+
+    Response.objects.create(response_owner=response_owner, status=status, comments= comments, full_name=full_name,
+                           age=age, city=city,  phone_num=phone_num, mail=mail, maritalStatus=maritalStatus,
+                           numChildren=numChildren,otherPets=otherPets, experience=experience, dog_name=dog_name,
+                           allergies=allergies, own_apartment=own_apartment, rent_agreed=rent_agreed,
+                           residenceType=residenceType, fence=fence, dogPlace=dogPlace,dogSize=dogSize,
+                           response_comments=response_comments, QID=QID)
+
 def add_to_sheet(request):
     if request.POST:
         '''
@@ -375,3 +455,4 @@ def add_to_sheet(request):
             return redirect('google-sheet')  # redirect anywhere as you want.
 
     return redirect('google-sheet')  # else request is not POST request
+

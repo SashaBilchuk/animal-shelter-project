@@ -1,7 +1,7 @@
 from django import forms
 from .models import Dog, Cat, DogAdoption, CatAdoption #, ShelterHistory
+from django.utils.translation import gettext_lazy as _
 
-#
 # class ShelterCreateForm(forms.ModelForm):
 #     class Meta:
 #         model = Shelter
@@ -21,8 +21,8 @@ from .models import Dog, Cat, DogAdoption, CatAdoption #, ShelterHistory
 #             if instance.item_name == item_name:
 #                 raise forms.ValidationError(str(item_name) + ' is already created')
 #         return item_name
-
-
+#
+#
 # class ShelterHistorySearchForm(forms.ModelForm):
 #     export_to_CSV = forms.BooleanField(required=False)
 #     start_date = forms.DateTimeField(required=False)
@@ -32,16 +32,23 @@ from .models import Dog, Cat, DogAdoption, CatAdoption #, ShelterHistory
 #         fields = ['id', 'name', 'days_in_the_association', 'start_date', 'end_date']
 
 
-# class DogForm(forms.ModelForm):
-#     class Meta:
-#         model = DogAdoption
-#         fields = ['id', 'name', 'days_in_the_association']
-
-
 class DogAdoptionsForm(forms.ModelForm):
     class Meta:
         model = DogAdoption
-        fields = ['dog', 'adopter', 'adoption_date']
-        #labels = {'dog': _('שם הכלב'), }
+        fields = "__all__"
+        widgets = {'adoption_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+                   'next_followup_call': forms.DateInput(attrs={'class': 'form-control','type': 'date'}),
+                   'return_date': forms.DateInput(attrs={'class': 'form-control','type': 'date'}),
+                   'adoption_comments ': forms.Textarea(attrs={'class': 'form-control','rows': 3})}
         #help_texts = {'due_back': _('Enter a date between now and 4 weeks (default 3).'), }
 
+
+class CatAdoptionsForm(forms.ModelForm):
+    class Meta:
+        model = CatAdoption
+        fields = "__all__"
+
+        widgets = {'adoption_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'dir': 'rtl'}),
+                   'next_followup_call': forms.DateInput(attrs={'type': 'date'}),
+                   'return_date': forms.DateInput(attrs={'type': 'date'}),
+                   'adoption_comments ': forms.Textarea(attrs={'class': 'form-control', 'rows': 3})}

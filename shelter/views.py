@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .models import Dog, Cat, Adopter, DogAdoption
-from .forms import DogAdoptionsForm
+from .models import Dog, Cat, Adopter
+from .forms import DogAdoptionsForm,  CatAdoptionsForm
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
@@ -103,11 +103,33 @@ def add_dog_adoption(request):
         form = DogAdoptionsForm(request.POST)
         if form.is_valid():
             form.save()
-            return render(request, 'home.html')
+            return redirect('home')
     else:
         form_class = DogAdoptionsForm
 
     return render(request, 'add_dog_adoption.html', {'dogs': dogs, 'adopters': adopters, 'form': form_class})
+
+
+def add_cat_adoption(request):
+    cats = Cat.objects.all()
+    adopters = Adopter.objects.all()
+    if request.method == 'POST':
+        form = CatAdoptionsForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form_class = CatAdoptionsForm
+
+    return render(request, 'add_cat_adoption.html', {'cats': cats, 'adopters': adopters, 'form': form_class})
+
+
+def reportURL(request):
+    from django.core import serializers
+    dog_data = serializers.serialize("python", Dog.objects.all())
+    cat_data = serializers.serialize("python", Cat.objects.all())
+    context = {'dog_data': dog_data, 'cat_data': cat_data}
+    return render(request, 'reports.html', context)
 
 
 def download_report(request):
@@ -131,56 +153,53 @@ def download_report(request):
     return response
 
 
-def reportURL(request):
-    return render(request, 'reports.html')
 
-
-def list_history(request):
-    header = 'דו"חות מצבת'
-    queryset = Dog.objects.all().order_by('_name')
-    form = ShelterHistorySearchForm(request.POST or None)
-    context = {
-        "header": header,
-        "queryset": queryset,
-        "form": form,
-    }
-    if request.method == 'POST':
-        name = form['name'].value()
-        queryset = StockHistory.objects.filter(
-            item_name__icontains=form['item_name'].value(),
-            last_updated__range=[
-                form['start_date'].value(),
-                form['end_date'].value()
-            ]
-        )
-
-        if (name != ''):
-            queryset = queryset.filter(name=name)
-
-        if form['export_to_CSV'].value() == True:
-            response = HttpResponse(content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename="Dogs History.csv"'
-            writer = csv.writer(response)
-            writer.writerow(
-                ['NAME',
-                 'CHIP NUM',
-                 'AGE',
-                 'DAYS_IN_ASOCC'])
-            instance = queryset
-            for dog in instance:
-                writer.writerow(
-                    [dog.name,
-                     dog.chip_number,
-                     dog.age_years,
-                     dog.days_in_the_association])
-            return response
-
-        context = {
-            "form": form,
-            "header": header,
-            "queryset": queryset,
-        }
-    return render(request, "list_history.html", context)
+# def list_history(request):
+#     header = 'דו"חות מצבת'
+#     queryset = Dog.objects.all().order_by('_name')
+#     form = ShelterHistorySearchForm(request.POST or None)
+#     context = {
+#         "header": header,
+#         "queryset": queryset,
+#         "form": form,
+#     }
+#     if request.method == 'POST':
+#         name = form['name'].value()
+#         queryset = StockHistory.objects.filter(
+#             item_name__icontains=form['item_name'].value(),
+#             last_updated__range=[
+#                 form['start_date'].value(),
+#                 form['end_date'].value()
+#             ]
+#         )
+#
+#         if (name != ''):
+#             queryset = queryset.filter(name=name)
+#
+#         if form['export_to_CSV'].value() == True:
+#             response = HttpResponse(content_type='text/csv')
+#             response['Content-Disposition'] = 'attachment; filename="Dogs History.csv"'
+#             writer = csv.writer(response)
+#             writer.writerow(
+#                 ['NAME',
+#                  'CHIP NUM',
+#                  'AGE',
+#                  'DAYS_IN_ASOCC'])
+#             instance = queryset
+#             for dog in instance:
+#                 writer.writerow(
+#                     [dog.name,
+#                      dog.chip_number,
+#                      dog.age_years,
+#                      dog.days_in_the_association])
+#             return response
+#
+#         context = {
+#             "form": form,
+#             "header": header,
+#             "queryset": queryset,
+#         }
+#     return render(request, "list_history.html", context)
 
 
 ############################################# Responses ############################################################

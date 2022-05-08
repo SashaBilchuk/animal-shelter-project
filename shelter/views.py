@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Dog, Cat, Adopter
+from .models import Dog, Cat, Adopter, Response
 from .forms import DogAdoptionsForm,  CatAdoptionsForm
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
@@ -12,6 +12,11 @@ from django.http import HttpResponse
 import gspread
 import pandas as pd
 from oauth2client.service_account import ServiceAccountCredentials
+import numpy as np
+import sklearn
+from sklearn.neighbors import KNeighborsClassifier
+from django.http import HttpResponseRedirect
+# from .forms import AddToSheet
 
 
 def home(request):
@@ -65,19 +70,22 @@ def search(request):
     search_query = request.GET.get('q')
 
     if search_query:
+
         cats = cats.filter(
             Q(name__icontains=search_query) |
-            Q(gender__iexact=search_query)
+            Q(animal_type__icontains=search_query)|
+            Q(adopter_relation_cat__adopter_city__icontains=search_query)
         )
         dogs = dogs.filter(
             Q(name__icontains=search_query) |
-            Q(gender__iexact=search_query) |
-            Q(chip_number__iexact=search_query)
+            Q(chip_number__iexact=search_query)|
+            Q(animal_type__icontains=search_query)|
+            Q(adopter_relation_dog__adopter_city__icontains=search_query)
         )
 
     results = chain(dogs, cats)
+    return render(request, 'search.html', {'shelter': list(results), 'search_query': search_query})
 
-    return render(request, 'search.html', {'shelter': results, 'search_query': search_query})
 
 
 def admin(request):
@@ -222,27 +230,28 @@ def get_black_list(df):
 
     return subset[['שם מלא','טלפון ליצירת קשר','הערות ']]
 
-
-def fetch_from_sheet(request):
-    sheet_instance = get_sheet()
-    records_data = sheet_instance.get_all_records()
-    records_df = pd.DataFrame.from_dict(records_data)  # this is Panda dataframe if you need you can use it.
-    # records_df = records_df.fillna(-5)
-    # records_df = records_df[records_df['Timestamp'] != -5]
-    records_df.dropna(
-        axis=0,
-        how='any',
-        thresh=20,
-        subset=None,
-        inplace=True
-    )
-    # records_df = records_df[[
-    #     'מי מטפלת?', 'סטטוס', 'הערות ', 'שם מלא', 'עיר מגורים', 'מייל', 'טלפון ליצירת קשר',
-        # 'במידה ואתם מתעניינים בכלב מסויים אצלנו, נא ציינו את שמו']]  # If you want all columns then remove this line.
-    context = {
-        'df': records_df
-    }
-    return render(request, 'google-sheet-date.html', context)
+##  old~~~~~!!!!!!!!
+# def fetch_from_sheet(request):
+#     sheet_instance = get_sheet()
+#     records_data = sheet_instance.get_all_records()
+#     records_df = pd.DataFrame.from_dict(records_data)  # this is Panda dataframe if you need you can use it.
+#     # records_df = records_df.fillna(-5)
+#     # records_df = records_df[records_df['Timestamp'] != -5]
+#     records_df.dropna(
+#         axis=0,
+#         how='any',
+#         thresh=20,
+#         subset=None,
+#         inplace=True
+#     )
+#     # records_df = records_df[[
+#     #     'מי מטפלת?', 'סטטוס', 'הערות ', 'שם מלא', 'עיר מגורים', 'מייל', 'טלפון ליצירת קשר',
+#         # 'במידה ואתם מתעניינים בכלב מסויים אצלנו, נא ציינו את שמו']]  # If you want all columns then remove this line.
+#     context = {
+#         'df': records_df
+#     }
+#     return render(request, 'google-sheet-date.html', context)
+##  old~~~~~!!!!!!!!
 
 
 def prepare_data(df):
@@ -307,6 +316,48 @@ def prepare_data(df):
     return Nlabeled, labeled, data
 
 
+def convert_headers(df):
+    subset = df[['מי מטפלת?', 'סטטוס','הערות', 'Timestamp',  'שם מלא',  'גיל','עיר מגורים', 'טלפון ליצירת קשר',
+                      'מייל',  'מצב משפחתי', 'מספר ילדים', 'האם אתם מגדלים בע"ח נוסף כיום?', 'ניסיון קודם בגידול כלבים: ',
+                      'במידה ואתם מתעניינים בכלב מסויים אצלנו, נא ציינו את שמו',
+                      'האם לאחד מבני המשפחה יש אלרגיה לכלבים ? ','האם הדירה בבעלותכם? ',
+                      'במידה ואתם גרים בשכירות - האם יש הסכמת בעל הדירה?',
+                      'סוג מקום מגורים ',
+                      'במידה וישנה חצר, האם היא מגודרת?',
+                      'היכן הכלב ישהה? ',
+                      'האם אתם מעוניינים בגודל מסוים של כלב?','הערות נוספות ', 'מזהה שאלון']]
+
+    subset = subset.rename(columns={'מי מטפלת?': 'response_owner',
+                                    'סטטוס': 'status',
+                                     'הערות': 'comments',
+                                    'שם מלא':'full_name',
+                                     'גיל': 'age',
+                                     'עיר מגורים': 'city',
+                                     'טלפון ליצירת קשר':'phone_num',
+                                     'מייל':'mail',
+                                     'מצב משפחתי': 'maritalStatus',
+                                     'מספר ילדים': 'numChildren',
+                                     'האם אתם מגדלים בע"ח נוסף כיום?': 'otherPets',
+                                     'ניסיון קודם בגידול כלבים: ': 'experience',
+                                     'במידה ואתם מתעניינים בכלב מסויים אצלנו, נא ציינו את שמו': 'dog_name',
+                                     'האם לאחד מבני המשפחה יש אלרגיה לכלבים ? ': 'allergies',
+                                     'האם הדירה בבעלותכם? ':'own_apartment',
+                                     'במידה ואתם גרים בשכירות - האם יש הסכמת בעל הדירה?': 'rent_agreed',
+                                     'סוג מקום מגורים ': 'residenceType',
+                                    'במידה וישנה חצר, האם היא מגודרת?':'fence',
+                                     'היכן הכלב ישהה? ': 'dogPlace',
+                                     'האם אתם מעוניינים בגודל מסוים של כלב?': 'dogSize',
+                                     'הערות נוספות ': 'response_comments',
+                                    'מזהה שאלון': 'QID',
+                                    })  # correct colum's names
+
+    subset['age'] = subset[['age']].astype('int')
+    subset['QID'] = subset['QID'].astype('int')
+    subset['numChildren'] = subset['numChildren'].astype('int')
+
+    return subset
+
+
 def fetch_black_list_from_sheet(request):
     sheet_instance = get_sheet()
     records_data = sheet_instance.get_all_records()
@@ -317,19 +368,110 @@ def fetch_black_list_from_sheet(request):
     }
     return render(request, 'black_list.html', context)
 
+# old AAddTo Sheet
+# def add_to_sheet(request):
+#     if request.POST:
+#         '''
+#         validate posted data. then create a dataframe I give you a example below.
+#         '''
+#
+#         new_df = pd.DataFrame(data={'column_name1': ['value'], 'column_name2': ['value'],
+#                                     '....so on..': ''})  # example dataframe to insert in google sheet.
+#         sheet_instance = get_sheet()
+#         sheet_instance.append_rows(new_df.values.tolist())  # it will save the data to your sheet.
+#         return redirect('google-sheet')  # redirect anywhere as you want.
+#
+#     return redirect('google-sheet')  # else request is not POST request
+
+
+def get_test_sheet():
+    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+    creds = ServiceAccountCredentials.from_json_keyfile_name('./pbpython-345313-70ce25d6b97c.json', scope)
+    client = gspread.authorize(creds)
+    sheet = client.open('test sheet')
+    sheet_instance = sheet.get_worksheet(0)
+    return sheet_instance
+
+
+def fetch_from_sheet(request):
+    sheet_instance = get_sheet()
+    records_data = sheet_instance.get_all_records()
+    records_df = pd.DataFrame.from_dict(records_data)
+    records_df['IDX'] = pd.to_datetime(records_df['Timestamp']).astype(np.int64)
+    records_df = records_df[records_df['IDX'] >0 ]
+    records_df = convert_headers(records_df)
+
+    context = {
+        'df': records_df
+    }
+    responce_model = list(Response.objects.all())
+      # ITERATES ON ALL RAWS, IF FOUND NEW ROW -> ADD TO RESPONSE MODEL
+    for index, row in records_df.iterrows():
+        if row['QID'] not in responce_model:
+            add_to_Response(row)
+
+    return render(request, 'google-sheet-date.html', context)
+
+def add_to_adopter(row):
+    name = row['שם מלא']
+    city = row['עיר מגורים']
+    phone_number = row['טלפון ליצירת קשר']
+    mail = row['מייל']
+    Adopter.objects.create(adopter_ID=12345, name=name, adopter_city=city, email_address=mail, phone_number=phone_number)
+
+
+def convert_ascii_sum(word):#Convert city names to ascii value
+    ascii_values = [ord(character) for character in word]
+    number = 0
+    for val in ascii_values:
+        number+=val
+    return number
+
+
+def add_to_Response(row):
+    response_owner= row['response_owner']
+    status = row['status']
+    comments =row['comments']
+    full_name = row['full_name']
+    age = row['age']
+    city = row['city']
+    phone_num =row['phone_num']
+    mail =row['mail']
+    maritalStatus =row['maritalStatus']
+    numChildren = row['numChildren']
+    otherPets =row['otherPets']
+    experience = row['experience']
+    dog_name = row['dog_name']
+    allergies = row['allergies']
+    own_apartment = row['own_apartment']
+    rent_agreed = row['rent_agreed']
+    residenceType = row['residenceType']
+    fence = row['fence']
+    dogPlace = row['dogPlace']
+    dogSize = row['dogSize']
+    response_comments = row['response_comments']
+    QID = row['QID']
+
+
+    Response.objects.create(response_owner=response_owner, status=status, comments= comments, full_name=full_name,
+                           age=age, city=city,  phone_num=phone_num, mail=mail, maritalStatus=maritalStatus,
+                           numChildren=numChildren,otherPets=otherPets, experience=experience, dog_name=dog_name,
+                           allergies=allergies, own_apartment=own_apartment, rent_agreed=rent_agreed,
+                           residenceType=residenceType, fence=fence, dogPlace=dogPlace,dogSize=dogSize,
+                           response_comments=response_comments, QID=QID)
 
 def add_to_sheet(request):
     if request.POST:
         '''
         validate posted data. then create a dataframe I give you a example below.
         '''
-
-        new_df = pd.DataFrame(data={'column_name1': ['value'], 'column_name2': ['value'],
-                                    '....so on..': ''})  # example dataframe to insert in google sheet.
-        sheet_instance = get_sheet()
-        sheet_instance.append_rows(new_df.values.tolist())  # it will save the data to your sheet.
-        return redirect('google-sheet')  # redirect anywhere as you want.
+        form = AddToSheet(request.POST)
+        if form.is_valid():
+            print("Hi")
+            new_df = pd.DataFrame(data={'מי מטפלת?': ['אנה']})
+            sheet_instance = get_test_sheet()
+            sheet_instance.append_rows(new_df.values.tolist())  # it will save the data to your sheet.
+            return redirect('google-sheet')  # redirect anywhere as you want.
 
     return redirect('google-sheet')  # else request is not POST request
-
 

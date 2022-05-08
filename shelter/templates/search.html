@@ -6,7 +6,7 @@
   <div class="row">
     <div class="col-md-12">
       <h1 class="text-info display-4 text-center">חיפוש</h1>
-      <p class="text-muted text-center mb-2">הזן שם או מין</p>
+      <p class="text-muted text-center mb-2">חפשו לפי שם, סוג, מספר שבב ועיר</p>
       <form class="mr-5 ml-5">
         <div class="input-group mb-3">
           <input
@@ -30,6 +30,7 @@
       <div class="swiper-container">
         <!-- Additional required wrapper -->
         <div class="swiper-wrapper">
+     {%if shelter%}
       {% for animal in shelter %}
          {% with animal|class_name as klass %}
           {% if klass == 'Dog' %}
@@ -44,7 +45,7 @@
                 />
                 <div class="card-body bg-info">
                   <h5 class="card-title text-light text-center">
-                    {{ animal.name }}
+                    {{ animal.name }} <i class="fas fa-dog"></i>
                   </h5>
                   <p class="card-text text-center">
                     <small class="text-light"
@@ -68,7 +69,7 @@
                     />
                 <div class="card-body bg-info">
                   <h5 class="card-title text-light text-center">
-                    {{ animal.name }}
+                    {{ animal.name }} <i class="fas fa-cat"></i>
                   </h5>
                   <p class="card-text text-center">
                     <small class="text-light"
@@ -85,6 +86,9 @@
  <!-- Slides -->
 
           {% endfor %}
+          {%else%}
+          <h4 class="text-info display-12 text-center">מצטערים, לא מצאנו בע"ח מתאים לחיפוש... </h4>
+          {%endif%}
         </div>
         <!-- If we need pagination -->
         <div class="swiper-pagination"></div>

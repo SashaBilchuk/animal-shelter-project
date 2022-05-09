@@ -4,179 +4,150 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
+
 <style>
-  .bd-placeholder-img {
-    font-size: 1.125rem;
-    text-anchor: middle;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
 
-  @media (min-width: 768px) {
-    .bd-placeholder-img-lg {
-      font-size: 3.5rem;
-    }
-  }
-</style>
+table{
+	text-align: center;
+	width: 95%;
+	margin: auto;
+	text-align: center;
+}
+
+/*Make alternating colors for the table rows*/
+table tr:nth-child(odd){
+	background: #8DCBC8
+}
+
+table tr:nth-child(even){
+	background: #D1EAE9
+}
+
+th {
+  background-color: #1b9891;
+  color: white;
+}</style>
 
 
+<h1 class="display-4 text-center">דו"חות מערכת</h1><br>
+ <div class="container-sm">
+         <div class="col-4 mt-2">
+        <form method='POST' action=''>
+    {% csrf_token %} {{form}}
+    <input type="submit" value="פלטר"/>
+</form>
+    </div>
+</div>
+<body><center>
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <h1 class="text-info display-4 text-center">דו"חות מערכת</h1>
-      <p class="text-muted text-center mb-2">פלטר לפי טווח תאריכים</p>
-
-      <div class="jumbotron">
-    <div class="header">{{header}}</div>
-    <div class="row">
-      <div class="col-sm-2">
-            <form method='POST' action=''>
-                {{form|crispy}}
-                <input type="submit" value='Search'/>
-            </form>
-      </div>
-      <div class="col-sm-10">
-            <br>
-             <div class="display_table">
-                <table class='table'>
-                  <thead>
-                    <tr>
-                      <th>NAME</th>
-                      <th>CHIP NUM</th>
-                      <th>AGE</th>
-                      <th>DAYS_IN_ASOCC</th>
-                    </tr>
-                  </thead>
-                {% for instance in queryset %}
-                    <tr>
-
-                      <td>{{forloop.counter}}</td>
-                      <td>{{instance.id}}</td>
-                      <td>{{instance.category}}</td>
-                      <td>{{instance.item_name}}</td>
-                      <td>{{instance.quantity}}</td>
-                      <td>{{instance.issue_quantity}}</td>
-                      <td>{{instance.receive_quantity}}</td>
-                      <td>{{instance.receive_by}}</td>
-                      <td>{{instance.issue_by}}</td>
-                      <td>{{instance.last_updated}}</td>
-                    </tr>
+    <a class="btn btn-outline-dark" role="button" href="{% url 'download_report' %}" >הורד כ-CSV</a>
+    <div class="jumbotron">
+    <table class="table">
+        <thead>
+            <tr>
+                <th> שם החיה </th>
+                <th> מספר שבב </th>
+                <th> מין </th>
+                <th> תאריך כניסה לעמותה</th>
+                <th>תאריך הפטירה</th>
+                <th>סיבת הפטירה</th>
+            </tr>
+        </thead>
+            {% for instance in queryset %}
+            <tr>
+                <td> {{instance.name}}</td>
+                <td> {{instance.chip_number}}</td>
+                <td> {{instance.get_gender_display}}</td>
+                <td> {{instance.acceptance_date}}</td>
+                <td> {{instance.death_date }}</td>
+                <td> {{instance.death_reason}}</td>
+            </tr>
                 {% endfor %}
-              </table>
-            </div>
-          </div><!--END COL-SM-10-->
-    </div><!--END ROW-->
-
-  </div>
-
-      <div/>
-    <div/>
-  <div/>
-
-
-
-
+<!--            {% for instance in cat_data %}-->
+<!--            <tr>-->
+<!--                <td> {{instance.fields.name}}</td>-->
+<!--                <td> חתול </td>-->
+<!--                <td> -&#45;&#45; </td>-->
+<!--                <td> {{instance.fields.acceptance_date}}</td>-->
+<!--                <td> {{instance.fields.days_in_the_association}}</td>-->
+<!--            </tr>-->
+<!--                {% endfor %}-->
+  </table>
+</div>
+</center></body>
 
 
 
+<!--<style>-->
+<!--  .bd-placeholder-img {-->
+<!--    font-size: 1.125rem;-->
+<!--    text-anchor: middle;-->
+<!--    -webkit-user-select: none;-->
+<!--    -moz-user-select: none;-->
+<!--    -ms-user-select: none;-->
+<!--    user-select: none;-->
+<!--  }-->
+
+<!--  @media (min-width: 768px) {-->
+<!--    .bd-placeholder-img-lg {-->
+<!--      font-size: 3.5rem;-->
+<!--    }-->
+<!--  }-->
+<!--</style>-->
 
 
 
-
-<!--      <form class="mr-5 ml-5">-->
-<!--        <div class="input-group mb-3">-->
-<!--          <input-->
-<!--            type="search"-->
-<!--            class="form-control"-->
-<!--            placeholder="מצא את החבר החדש שלך..."-->
-<!--            name="q"-->
-<!--          />-->
-<!--          <div class="input-group-prepend">-->
-<!--            <button type="submit" class="btn btn-secondary">-->
-<!--              <i class="fas fa-search"></i>-->
-<!--            </button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </form>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--  {% if search_query %}-->
+<!--<div class="container">-->
 <!--  <div class="row">-->
 <!--    <div class="col-md-12">-->
-<!--      <div class="swiper-container">-->
-<!--        &lt;!&ndash; Additional required wrapper &ndash;&gt;-->
-<!--        <div class="swiper-wrapper">-->
-<!--      {% for animal in shelter %}-->
-<!--          {% with animal|class_name as klass %}-->
-<!--          {% if klass == 'Dog' %}-->
-<!--        <div class="swiper-slide">-->
-<!--            <a href="../dog/{{animal.id}}">-->
-<!--              <div class="card" >-->
-<!--                <img-->
-<!--                  src="{{ animal.image.url }}"-->
-<!--                  class="card-img-top"-->
-<!--                  alt="..."-->
-<!--                  style="height: 25rem;"-->
-<!--                />-->
-<!--                <div class="card-body bg-info">-->
-<!--                  <h5 class="card-title text-light text-center">-->
-<!--                    {{ animal.name }}-->
-<!--                  </h5>-->
-<!--                  <p class="card-text text-center">-->
-<!--                    <small class="text-light"-->
-<!--                      > תאריך כניסה לעמותה: {{ animal.acceptance_date }}-->
-<!--                    </small>-->
-<!--                  </p>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </a>-->
-<!--          </div>-->
+<!--      <h1 class="text-info display-4 text-center">דו"חות מערכת</h1>-->
+<!--      <p class="text-muted text-center mb-2">פלטר לפי טווח תאריכים</p>-->
 
-<!--        {% elif klass == 'Cat' %}-->
-<!--              <div class="swiper-slide">-->
-<!--                <a href="../cat/{{animal.id}}">-->
-<!--                 <div class="card">-->
-<!--                 <img-->
-<!--                  src="{{ animal.image.url }}"-->
-<!--                  class="card-img-top"-->
-<!--                  alt="..."-->
-<!--                  style="height: 25rem;"-->
-<!--                    />-->
-<!--                <div class="card-body bg-info">-->
-<!--                  <h5 class="card-title text-light text-center">-->
-<!--                    {{ animal.name }}-->
-<!--                  </h5>-->
-<!--                  <p class="card-text text-center">-->
-<!--                    <small class="text-light"-->
-<!--                      >תאריך כניסה לעמותה: {{ animal.acceptance_date }}-->
-<!--                    </small>-->
-<!--                  </p>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </a>-->
-<!--          </div>-->
-
-<!--        {% endif %}-->
-
-
-<!--              {% endwith %}-->
-
-<!-- &lt;!&ndash; Slides &ndash;&gt;-->
-
-<!--          {% endfor %}-->
-<!--        </div>-->
-<!--        &lt;!&ndash; If we need pagination &ndash;&gt;-->
-<!--        <div class="swiper-pagination"></div>-->
-
-<!--        &lt;!&ndash; If we need navigation buttons &ndash;&gt;-->
-<!--        <div class="swiper-button-prev text-info"></div>-->
-<!--        <div class="swiper-button-next text-info "></div>-->
+<!--      <div class="jumbotron">-->
+<!--    <div class="header">{{header}}</div>-->
+<!--    <div class="row">-->
+<!--      <div class="col-sm-2">-->
+<!--            <form method='POST' action=''>-->
+<!--                {{form|crispy}}-->
+<!--                <input type="submit" value='Search'/>-->
+<!--            </form>-->
 <!--      </div>-->
-<!--    </div>-->
+<!--      <div class="col-sm-10">-->
+<!--            <br>-->
+<!--             <div class="display_table">-->
+<!--                <table class='table'>-->
+<!--                  <thead>-->
+<!--                    <tr>-->
+<!--                      <th>NAME</th>-->
+<!--                      <th>CHIP NUM</th>-->
+<!--                      <th>AGE</th>-->
+<!--                      <th>DAYS_IN_ASOCC</th>-->
+<!--                    </tr>-->
+<!--                  </thead>-->
+<!--                {% for instance in queryset %}-->
+<!--                    <tr>-->
+
+<!--                      <td>{{forloop.counter}}</td>-->
+<!--                      <td>{{instance.id}}</td>-->
+<!--                      <td>{{instance.category}}</td>-->
+<!--                      <td>{{instance.item_name}}</td>-->
+<!--                      <td>{{instance.quantity}}</td>-->
+<!--                      <td>{{instance.issue_quantity}}</td>-->
+<!--                      <td>{{instance.receive_quantity}}</td>-->
+<!--                      <td>{{instance.receive_by}}</td>-->
+<!--                      <td>{{instance.issue_by}}</td>-->
+<!--                      <td>{{instance.last_updated}}</td>-->
+<!--                    </tr>-->
+<!--                {% endfor %}-->
+<!--              </table>-->
+<!--            </div>-->
+<!--          </div>&lt;!&ndash;END COL-SM-10&ndash;&gt;-->
+<!--    </div>&lt;!&ndash;END ROW&ndash;&gt;-->
+
 <!--  </div>-->
-<!--  {% endif %}-->
-<!--</div>-->
+
+<!--      <div/>-->
+<!--    <div/>-->
+<!--  <div/>-->
+
 {% endblock content %}

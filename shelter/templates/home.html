@@ -1,4 +1,16 @@
 {% extends 'base.html' %} {% block content %}
+
+<style>
+table td {
+  background-color: #1b9891;
+  color: white;
+}
+th {
+  background-color: #BAE0DE;
+  color: black;
+}</style>
+
+
 <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
   <ol class="carousel-indicators">
     <li
@@ -83,17 +95,17 @@
         <i class="fas fa-cat"></i> חתולים
       </h4>
       <table class="table table-striped text-center">
-        <thead class="table-info">
+        <thead>
           <tr>
             <th scope="col">שם</th>
             <th scope="col">מין</th>
             <th scope="col">תאריך כניסה לעמותה</th>
           </tr>
         </thead>
-        <tbody class="bg-info">
+        <tbody>
           {% for cat in cats %}
           {% if cat.location == 'Association' %}
-          <tr class="text-light">
+          <tr>
             <td><a href="../cat/{{cat.id}}"><div style="color: white; height:100%; width:100%"> {{cat.name}} </div></a></td>
             <td>{{ cat.get_gender_display }}</td>
             <td>{{ cat.acceptance_date }}</td>
@@ -120,7 +132,7 @@
           <br />
           {% if cats.number == pages %}
           <li class="page-item">
-            <a class="page-link text-success" href="?catpage={{ pages }}"
+            <a class="page-link text-info" href="?catpage={{ pages }}"
               >{{ pages }}</a
             >
           </li>
@@ -152,17 +164,17 @@
         <i class="fas fa-dog"></i> כלבים
       </h4>
       <table class="table table-striped text-center" >
-        <thead class="table-info" >
+        <thead>
           <tr>
             <th scope="col">שם</th>
             <th scope="col">מין</th>
             <th scope="col">תאריך כניסה לעמותה</th>
           </tr>
         </thead>
-        <tbody class="bg-info">
+        <tbody>
           {% for dog in dogs %}
           {% if dog.location == 'Association' %}
-          <tr class="text-light">
+          <tr>
           <td><a href="../dog/{{dog.id}}"><div style="color: white; height:100%;width:100%"> {{dog.name}} </div></a></td>
             <td>{{ dog.get_gender_display }}</td>
             <td>{{ dog.acceptance_date }}</td>

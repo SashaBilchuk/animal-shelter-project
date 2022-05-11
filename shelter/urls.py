@@ -16,6 +16,7 @@ urlpatterns = [
     path('reports/', views.reportURL, name='reports'),
     path('download_report/', views.download_report, name='download_report'),
     path('fetch-from-google-sheet/', views.fetch_from_sheet, name='google-sheet'),
-    path('fetch_black_list_from_sheet/', views.fetch_black_list_from_sheet, name='black_list')
+    path('fetch_black_list_from_sheet/', views.fetch_black_list_from_sheet, name='black_list'),
+    path('recommendation_system/', views.get_recommendation, name='recommendation')
 
 ]

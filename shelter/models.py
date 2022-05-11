@@ -261,7 +261,8 @@ class Response(models.Model):
     dogPlace = models.CharField(max_length=255, verbose_name=_(''),editable=False)
     dogSize =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
     response_comments =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    QID = models.IntegerField(unique=True, max_length=9, verbose_name=_(''),editable=False)
+    response_date = models.DateTimeField()
+    QID = models.IntegerField(unique=True, verbose_name=_(''),editable=False)
 
     def __str__(self):
         return self.QID

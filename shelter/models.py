@@ -122,13 +122,6 @@ class Dog(models.Model):
 
 
 
-    def get_city_from_adopters(self):
-        adopters = self.adopter_relation_dog.all()
-        city_lst = []
-        for adopter in adopters:
-            city_lst.append(adopter.adopter_city)
-        return city_lst
-
 
 
 class Cat(models.Model):

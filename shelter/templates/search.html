@@ -35,21 +35,21 @@
          {% with animal|class_name as klass %}
           {% if klass == 'Dog' %}
         <div class="swiper-slide">
-            <a href="../dog/{{dog.id}}">
+            <a href="../dog/{{animal.id}}">
               <div class="card" >
                 <img
-                  src="{{ dog.image.url }}"
+                  src="{{ animal.image.url }}"
                   class="card-img-top"
                   alt="..."
                   style="height: 25rem;"
                 />
                 <div class="card-body bg-info">
                   <h5 class="card-title text-light text-center">
-                    {{ animal.name }} <i class="fas fa-dog"></i>
+                    {{ cat.name }} <i class="fas fa-dog"></i>
                   </h5>
                   <p class="card-text text-center">
                     <small class="text-light"
-                      > תאריך כניסה לעמותה: {{ animal.acceptance_date }}
+                      > תאריך כניסה לעמותה: {{ cat.acceptance_date }}
                     </small>
                   </p>
                 </div>
@@ -59,21 +59,21 @@
 
         {% elif klass == 'Cat' %}
               <div class="swiper-slide">
-                <a href="../cat/{{cat.id}}">
+                <a href="../cat/{{animal.id}}">
                  <div class="card">
                  <img
-                  src="{{ cat.image.url }}"
+                  src="{{ cat.animal.url }}"
                   class="card-img-top"
                   alt="..."
                   style="height: 25rem;"
                     />
                 <div class="card-body bg-info">
                   <h5 class="card-title text-light text-center">
-                    {{ animal.name }} <i class="fas fa-cat"></i>
+                    {{ cat.name }} <i class="fas fa-cat"></i>
                   </h5>
                   <p class="card-text text-center">
                     <small class="text-light"
-                      >תאריך כניסה לעמותה: {{ animal.acceptance_date }}
+                      >תאריך כניסה לעמותה: {{ cat.acceptance_date }}
                     </small>
                   </p>
                 </div>

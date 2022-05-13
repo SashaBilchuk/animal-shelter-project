@@ -1,4 +1,7 @@
 {% extends 'base.html' %} {% block content %}
+
+<a class="btn btn-primary" href="{{ request.get_full_path }}" role="button">refresh</a>
+
 <style>
 
 table{
@@ -27,8 +30,8 @@ th {
     <table class="table">
         <thead>
         <tr>
-            {% for col in not_handled.columns %}
-                <th scope="col">{{ col }}</th>
+            {% for key, header in hebrew_headers_dict.items %}
+                <th scope="col">{{ header }}</th>
             {% endfor %}
         </tr>
         </thead>
@@ -36,8 +39,34 @@ th {
         {% for index, row in not_handled.iterrows %}
             <tr>
                 {% for cell in row %}
-                    <td>
+               <td>
+                    {% if forloop.last %}
+                         <p>
+                            {% if  row.normGrade  >= 1 %}
+                            <i class="fas fa-paw" style="color: yellow;"></i>
+                            {% else %}
+                            <i class="fas fa-paw"></i>
+                            {% endif %} {% if  row.normGrade  >= 2 %}
+                            <i class="fas fa-paw" style="color: yellow;"></i>
+                            {% else %}
+                            <i class="fas fa-paw"></i>
+                            {% endif %} {% if  row.normGrade  >= 3 %}
+                            <i class="fas fa-paw" style="color: yellow;"></i>
+                            {% else %}
+                            <i class="fas fa-paw"></i>
+                            {% endif %} {% if  row.normGrade  >= 4 %}
+                            <i class="fas fa-paw" style="color: yellow;"></i>
+                            {% else %}
+                            <i class="fas fa-paw"></i>
+                            {% endif %} {% if  row.normGrade  >= 5 %}
+                            <i class="fas fa-paw" style="color: yellow;"></i>
+                            {% else %}
+                            <i class="fas fa-paw"></i>
+                            {% endif %}
+                          </p>
+                {%else%}
                         {{ cell }}
+                {% endif %}
                     </td>
                 {% endfor %}
             </tr>
@@ -50,8 +79,12 @@ th {
     <table class="table">
         <thead>
         <tr>
-            {% for col in initial_contact.columns %}
-                <th scope="col">{{ col }}</th>
+            {% for key, header in hebrew_headers_dict.items %}
+            {% if forloop.last %}
+                 <th scope="col" style="width:80%" >{{ header }}</th>
+            {%else%}
+                <th scope="col" style="width:80%">{{ header }}</th>
+            {%endif%}
             {% endfor %}
         </tr>
         </thead>
@@ -59,14 +92,43 @@ th {
         {% for index, row in initial_contact.iterrows %}
             <tr>
                 {% for cell in row %}
-                    <td>
+                <td>
+                    {% if forloop.last %}
+                         <p>
+                            {% if  row.normGrade  >= 1 %}
+                            <i class="fas fa-paw" style="color: yellow;"></i>
+                            {% else %}
+                            <i class="fas fa-paw"></i>
+                            {% endif %} {% if  row.normGrade  >= 2 %}
+                            <i class="fas fa-paw" style="color: yellow;"></i>
+                            {% else %}
+                            <i class="fas fa-paw"></i>
+                            {% endif %} {% if  row.normGrade  >= 3 %}
+                            <i class="fas fa-paw" style="color: yellow;"></i>
+                            {% else %}
+                            <i class="fas fa-paw"></i>
+                            {% endif %} {% if  row.normGrade  >= 4 %}
+                            <i class="fas fa-paw" style="color: yellow;"></i>
+                            {% else %}
+                            <i class="fas fa-paw"></i>
+                            {% endif %} {% if  row.normGrade  >= 5 %}
+                            <i class="fas fa-paw" style="color: yellow;"></i>
+                            {% else %}
+                            <i class="fas fa-paw"></i>
+                            {% endif %}
+                          </p>
+                {%else%}
                         {{ cell }}
+                {% endif %}
                     </td>
+
                 {% endfor %}
             </tr>
         {% endfor %}
         </tbody>
     </table>
+
+
 
 <h1 class="display-4 text-center">טבלת מאושרים לאימוץ</h1><br>
 
@@ -74,8 +136,8 @@ th {
     <table class="table">
         <thead>
         <tr>
-            {% for col in adoption_approved.columns %}
-                <th scope="col">{{ col }}</th>
+            {% for key, header in hebrew_headers_dict.items %}
+                <th scope="col">{{ header }}</th>
             {% endfor %}
         </tr>
         </thead>
@@ -83,8 +145,34 @@ th {
         {% for index, row in adoption_approved.iterrows %}
             <tr>
                 {% for cell in row %}
-                    <td>
+               <td>
+                    {% if forloop.last %}
+                         <p>
+                            {% if  row.normGrade  >= 1 %}
+                            <i class="fas fa-paw" style="color: yellow;"></i>
+                            {% else %}
+                            <i class="fas fa-paw"></i>
+                            {% endif %} {% if  row.normGrade  >= 2 %}
+                            <i class="fas fa-paw" style="color: yellow;"></i>
+                            {% else %}
+                            <i class="fas fa-paw"></i>
+                            {% endif %} {% if  row.normGrade  >= 3 %}
+                            <i class="fas fa-paw" style="color: yellow;"></i>
+                            {% else %}
+                            <i class="fas fa-paw"></i>
+                            {% endif %} {% if  row.normGrade  >= 4 %}
+                            <i class="fas fa-paw" style="color: yellow;"></i>
+                            {% else %}
+                            <i class="fas fa-paw"></i>
+                            {% endif %} {% if  row.normGrade  >= 5 %}
+                            <i class="fas fa-paw" style="color: yellow;"></i>
+                            {% else %}
+                            <i class="fas fa-paw"></i>
+                            {% endif %}
+                          </p>
+                {%else%}
                         {{ cell }}
+                {% endif %}
                     </td>
                 {% endfor %}
             </tr>

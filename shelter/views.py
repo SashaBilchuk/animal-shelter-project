@@ -1,8 +1,6 @@
 from django.shortcuts import render
 from .models import Dog, Cat, Adopter, Response
-
-from .forms import DogAdoptionsForm,  CatAdoptionsForm, DogDeathForm
-
+from .forms import DogAdoptionsForm,  CatAdoptionsForm
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
@@ -11,7 +9,6 @@ from itertools import chain
 from django.views.generic import ListView
 import csv
 from django.http import HttpResponse
-from django.core import serializers
 import gspread
 import pandas as pd
 from oauth2client.service_account import ServiceAccountCredentials
@@ -38,9 +35,9 @@ def home(request):
             cat_count += 1
     no_of_cats = cat_count
 
-    paginator1 = Paginator(cats, 3)
-    page = request.GET.get('catpage')
-    cats = paginator1.get_page(page)
+    paginator1 = Paginator(cats, 8)
+    page1 = request.GET.get('catpage')
+    cats = paginator1.get_page(page1)
 
     dogs = Dog.objects.all()
     dog_count = 0
@@ -49,9 +46,9 @@ def home(request):
             dog_count += 1
     no_of_dogs = dog_count
 
-    paginator2 = Paginator(dogs, 3)
-    page = request.GET.get('dogpage')
-    dogs = paginator2.get_page(page)
+    paginator2 = Paginator(dogs, 8)
+    page2 = request.GET.get('dogpage')
+    dogs = paginator2.get_page(page2)
 
     no_of_animals = no_of_cats + no_of_dogs
     return render(request, 'home.html', {'cats': cats,
@@ -118,35 +115,14 @@ def add_dog_adoption(request):
     dogs = Dog.objects.all()
     adopters = Adopter.objects.all()
     if request.method == 'POST':
-        form = DogAdoptionsForm(request.POST, request.FILES)
+        form = DogAdoptionsForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('home')
     else:
-        form = DogAdoptionsForm
+        form_class = DogAdoptionsForm
 
-    return render(request, 'add_dog_adoption.html', {'dogs': dogs, 'adopters': adopters, 'form': form})
-
-
-def add_cat_adoption(request):
-    cats = Cat.objects.all()
-    adopters = Adopter.objects.all()
-    if request.method == 'POST':
-        form = CatAdoptionsForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-    else:
-        form = CatAdoptionsForm
-
-    return render(request, 'add_cat_adoption.html', {'cats': cats, 'adopters': adopters, 'form': form})
-
-
-# def reportURL(request):
-#     dog_data = serializers.serialize("python", Dog.objects.all())
-#     cat_data = serializers.serialize("python", Cat.objects.all())
-#     context = {'dog_data': dog_data, 'cat_data': cat_data}
-#     return render(request, 'reports.html', context)
+    return render(request, 'add_dog_adoption.html', {'dogs': dogs, 'adopters': adopters, 'form': form_class})
 
 
 def add_cat_adoption(request):
@@ -173,62 +149,72 @@ def reportURL(request):
 
 def download_report(request):
     response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
-    response['Content-Disposition'] = 'attachment; filename="merkava.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['ימים בעמותה', 'תאריך כניסה לעמותה', 'מספר שבב', 'סוג החיה', 'שם החיה'])
-    dog_data = Dog.objects.all()
-    cat_data = Cat.objects.all()
+    writer.writerow(['מין', 'מספר שבב', 'שם', ',תאריך לידה'])
 
-    for dog in dog_data:
-        writer.writerow([dog.days_in_the_association, dog.acceptance_date, dog.chip_number, 'כלב', dog.name])
-    for cat in cat_data:
-        writer.writerow([cat.days_in_the_association, cat.acceptance_date, '---', 'חתול', cat.name])
+    for dog in Dog.objects.all().values_list('gender', 'chip_number', 'name', 'birth_date'):
+        dog_lst = list(dog)
+        for i, val in enumerate(dog_lst):
+            if val == "Male":
+                dog_lst[i] = 'זכר'
+            elif val == 'Female':
+                dog_lst[i] = 'נקבה'
+        dog = tuple(dog_lst)
+        writer.writerow(dog)
+
+    response['Content-Disposition'] = 'attachment; filename="dogs.csv"'
 
     return response
 
 
-def reportURL(request):
-    header = 'דו"חות מצבת'
-    queryset = Dog.objects.all()
-    form = DogDeathForm(request.POST or None)
-    context = {
-        "header": header,
-        "queryset": queryset,
-        "form": form,
-    }
-    if request.method == 'POST':
 
-        queryset = Dog.objects.filter(death_date__range=[form['death_date'].value(), form['death_date'].value()])
-
-        context = {
-            "header": header,
-            "queryset": queryset,
-            "form": form,
-        }
-
-        # if (name != ''):
-        #     queryset = queryset.filter(name=name)
-        #
-        # if download_report:
-        #     response = HttpResponse(content_type='text/csv')
-        #     response['Content-Disposition'] = 'attachment; filename="Dogs History.csv"'
-        #     writer = csv.writer(response)
-        #     writer.writerow(
-        #         ['NAME',
-        #          'CHIP NUM',
-        #          'AGE',
-        #          'DAYS_IN_ASOCC'])
-        #     instance = queryset
-        #     for dog in instance:
-        #         writer.writerow(
-        #             [dog.name,
-        #              dog.chip_number,
-        #              dog.age_years,
-        #              dog.days_in_the_association])
-        #     return response
-
-    return render(request, "reports.html", context)
+# def list_history(request):
+#     header = 'דו"חות מצבת'
+#     queryset = Dog.objects.all().order_by('_name')
+#     form = ShelterHistorySearchForm(request.POST or None)
+#     context = {
+#         "header": header,
+#         "queryset": queryset,
+#         "form": form,
+#     }
+#     if request.method == 'POST':
+#         name = form['name'].value()
+#         queryset = StockHistory.objects.filter(
+#             item_name__icontains=form['item_name'].value(),
+#             last_updated__range=[
+#                 form['start_date'].value(),
+#                 form['end_date'].value()
+#             ]
+#         )
+#
+#         if (name != ''):
+#             queryset = queryset.filter(name=name)
+#
+#         if form['export_to_CSV'].value() == True:
+#             response = HttpResponse(content_type='text/csv')
+#             response['Content-Disposition'] = 'attachment; filename="Dogs History.csv"'
+#             writer = csv.writer(response)
+#             writer.writerow(
+#                 ['NAME',
+#                  'CHIP NUM',
+#                  'AGE',
+#                  'DAYS_IN_ASOCC'])
+#             instance = queryset
+#             for dog in instance:
+#                 writer.writerow(
+#                     [dog.name,
+#                      dog.chip_number,
+#                      dog.age_years,
+#                      dog.days_in_the_association])
+#             return response
+#
+#         context = {
+#             "form": form,
+#             "header": header,
+#             "queryset": queryset,
+#         }
+#     return render(request, "list_history.html", context)
 
 
 ############################################# Responses ############################################################
@@ -344,6 +330,36 @@ def prepare_data(df):
 def normalize_grades(cur_grade,max_all, min_all):
     return int(round((((MAXGRADE - MINGRADE)/(max_all-min_all))*(cur_grade- max_all) + MAXGRADE),0))
 
+
+
+def create_header_dict():
+    map_dict = {
+        'response_owner': 'מי מטפלת? ',
+        'status': 'סטטוס',
+        'comments':'הערות עמותה',
+        'full_name': 'שם',
+        'age': 'גיל',
+        'city': 'עיר',
+        'phone_num': 'טלפון',
+        'mail': 'מייל',
+        'maritalStatus': 'מצב משפחתי',
+        'numChildren': 'מספר ילדים',
+        'otherPets': 'חיות נוספות',
+        'experience': 'נסיון',
+        'dog_name': 'שם הכלב לפנייה',
+        'allergies': 'אלרגיות?',
+        'own_apartment': 'דירה בבעלותו',
+        'rent_agreed': 'הסכמת בעל הדירה',
+        'residenceType': 'סוג ממגורים',
+        'fence': 'יש גדר?',
+        'dogPlace': 'היכן הכלב ישהה?',
+        'dogSize': 'גודל כלב רצוי',
+        'response_comments': 'הערות מהשאלון',
+        'response_date': 'תאריך',
+        'normGrade': 'ציון מנורמל',
+    }
+    return map_dict
+
 def grading_response():
     """
     takes Response from models and calculates the grade for each instance
@@ -353,7 +369,7 @@ def grading_response():
     Nlabeled, labeled, data = prepare_data(df)
     data_no_labels = data.drop(['y'], axis=1)
     X = data_no_labels.values[:, 0:len(data_no_labels.columns)]
-    grading_vec = np.array([0,0,0,0,0,0,1,1,1,0.5,1,0.5,2,1,1,-10,2,1,2,-10,2,-0.2,-1])
+    grading_vec = np.array([0,0,0,0,0,0,1,1,1,0.5,1,0.5,2,1,1,-15,2,1,2,-10,2,-0.2,-1])
     grades = X@grading_vec
 
     data_no_labels['grade'] = grades.tolist() # add grade column to df without labels
@@ -368,14 +384,23 @@ def grading_response():
     min_all = sorted_df['grade'].min()
     sorted_df['normGrade'] = sorted_df['grade'].apply(lambda cur_grade: normalize_grades(cur_grade, max_all, min_all))
     sorted_df['phone_num'] = sorted_df['phone_num'].apply(lambda row: str(row).zfill(10) if (len(str(row)) == 9) else (str(row).zfill(9)))
+    sorted_df = sorted_df.drop(['id'], axis=1)
+    sorted_df = sorted_df.drop(['grade'], axis=1)
+
+    sorted_df = sorted_df[sorted_df['allergies'] == 'לא']
+    sorted_df = sorted_df[sorted_df['dogPlace'] != 'מחוץ לבית בלבד']
+
+
     return sorted_df
 
 def get_recommendation(request):
+    hebrew_headers_dict = create_header_dict()
     results = grading_response()
-    results.response_date = results.response_date.apply(lambda x: x.date()) #change timestamp type to date
+    results.response_date = results.response_date.apply(lambda x: x.date())
 
     not_handled = results.query("status in ('','טרם טופל')") # filter by dates
     not_handled = not_handled[not_handled.response_date > datetime.today().date() - pd.to_timedelta("15day")]
+
 
     initial_contact = results.query("status in ('בוצעה שיחה ראשונית', 'ממתינים לוידאו')")
     initial_contact = initial_contact[initial_contact.response_date > datetime.today().date() - pd.to_timedelta("30day")]
@@ -386,7 +411,8 @@ def get_recommendation(request):
     context = {
         'not_handled': not_handled,
         'initial_contact': initial_contact,
-        'adoption_approved': adoption_approved
+        'adoption_approved': adoption_approved,
+        'hebrew_headers_dict': hebrew_headers_dict
     }
 
     return render(request, 'Recommender.html', context)
@@ -446,14 +472,6 @@ def convert_headers(df):
 
 
 
-def reversed_convert_headers(x):
-    match x:
-        case 'a':
-            return 1
-        case 'b':
-            return 2
-        case _:
-            return 0
 
 def fetch_black_list_from_sheet(request):
     sheet_instance = get_sheet()
@@ -491,6 +509,21 @@ def get_test_sheet():
 
 # TODO
 
+
+def refresh_model():
+    sheet_instance = get_sheet()
+    records_data = sheet_instance.get_all_records()
+    records_df = pd.DataFrame.from_dict(records_data)
+    records_df = records_df[records_df['Timestamp'] != ""]
+    records_df = convert_headers(records_df)
+    records_df['convertedTimestamp'] = pd.to_datetime(records_df['Timestamp']).astype(np.int64)
+    records_df = records_df.assign(QID=lambda x: (x['convertedTimestamp'] + x['age']))
+    records_df = records_df[records_df['QID'] > 0]
+    response_model = Response.objects.values_list('QID', flat=True)
+      # ITERATES ON ALL RAWS, IF FOUND NEW ROW -> ADD TO RESPONSE MODEL
+    for index, row in records_df.iterrows():
+         if row['QID'] not in response_model:
+             add_to_Response(row)
 
 
 def fetch_from_sheet(request):

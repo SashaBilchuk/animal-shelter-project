@@ -35,10 +35,10 @@
          {% with animal|class_name as klass %}
           {% if klass == 'Dog' %}
         <div class="swiper-slide">
-            <a href="../animal/{{animal.id}}">
+            <a href="../dog/{{dog.id}}">
               <div class="card" >
                 <img
-                  src="{{ animal.image.url }}"
+                  src="{{ dog.image.url }}"
                   class="card-img-top"
                   alt="..."
                   style="height: 25rem;"
@@ -59,10 +59,10 @@
 
         {% elif klass == 'Cat' %}
               <div class="swiper-slide">
-                <a href="../cat/{{animal.id}}">
+                <a href="../cat/{{cat.id}}">
                  <div class="card">
                  <img
-                  src="{{ animal.image.url }}"
+                  src="{{ cat.image.url }}"
                   class="card-img-top"
                   alt="..."
                   style="height: 25rem;"

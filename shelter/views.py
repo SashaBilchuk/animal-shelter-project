@@ -17,6 +17,11 @@ import sklearn
 from sklearn.neighbors import KNeighborsClassifier
 from django.http import HttpResponseRedirect
 from datetime import datetime
+from enum import Enum
+
+
+MAXGRADE = 5
+MINGRADE = 1
 
 # from .forms import AddToSheet
 
@@ -322,6 +327,8 @@ def prepare_data(df):
     grades = []
     return Nlabeled, labeled, data
 
+def normalize_grades(cur_grade,max_all, min_all):
+    return int(round((((MAXGRADE - MINGRADE)/(max_all-min_all))*(cur_grade- max_all) + MAXGRADE),0))
 
 def grading_response():
     """
@@ -338,25 +345,36 @@ def grading_response():
     data_no_labels['grade'] = grades.tolist() # add grade column to df without labels
 
     df_aux = data_no_labels[['QID', 'grade']] # creat aux dataframe
-
     df_aux = df_aux.set_index('QID')
     df = df.set_index('QID')
-
     sorted_df = df.merge(df_aux, left_index=True, right_index=True)
-
     sorted_df = sorted_df.sort_values(by='grade', ascending=False)
 
-    sorted_df.response_date = sorted_df.response_date.apply(lambda x: x.date())
-    sorted_df = sorted_df[sorted_df.response_date > datetime.today().date() - pd.to_timedelta("30day")]
-
-    sorted_df = sorted_df.query("status in ('טרם טופל','בוצעה שיחה ראשונית','', 'ממתינים לוידאו')")
+    max_all =sorted_df['grade'].max()
+    min_all = sorted_df['grade'].min()
+    sorted_df['normGrade'] = sorted_df['grade'].apply(lambda cur_grade: normalize_grades(cur_grade, max_all, min_all))
+    sorted_df['phone_num'] = sorted_df['phone_num'].apply(lambda row: str(row).zfill(10) if (len(str(row)) == 9) else (str(row).zfill(9)))
     return sorted_df
 
 def get_recommendation(request):
     results = grading_response()
+    results.response_date = results.response_date.apply(lambda x: x.date()) #change timestamp type to date
+
+    not_handled = results.query("status in ('','טרם טופל')") # filter by dates
+    not_handled = not_handled[not_handled.response_date > datetime.today().date() - pd.to_timedelta("15day")]
+
+    initial_contact = results.query("status in ('בוצעה שיחה ראשונית', 'ממתינים לוידאו')")
+    initial_contact = initial_contact[initial_contact.response_date > datetime.today().date() - pd.to_timedelta("30day")]
+
+    adoption_approved = results.query("status in ('מאושר לאימוץ')")
+
+
     context = {
-        'df': results
+        'not_handled': not_handled,
+        'initial_contact': initial_contact,
+        'adoption_approved': adoption_approved
     }
+
     return render(request, 'Recommender.html', context)
 
 
@@ -413,6 +431,15 @@ def convert_headers(df):
     return subset
 
 
+
+def reversed_convert_headers(x):
+    match x:
+        case 'a':
+            return 1
+        case 'b':
+            return 2
+        case _:
+            return 0
 
 def fetch_black_list_from_sheet(request):
     sheet_instance = get_sheet()

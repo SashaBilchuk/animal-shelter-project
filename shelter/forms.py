@@ -32,6 +32,7 @@ from django.utils.translation import gettext_lazy as _
 #         fields = ['id', 'name', 'days_in_the_association', 'start_date', 'end_date']
 
 
+
 class DogDeathForm(forms.ModelForm):
     class Meta:
         model = Dog
@@ -39,7 +40,6 @@ class DogDeathForm(forms.ModelForm):
         # fromDate = Dog.acceptance_date
         # toDate = Dog.acceptance_date
         widgets = {'death_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})}
-
 
 class DogAdoptionsForm(forms.ModelForm):
     class Meta:
@@ -56,8 +56,6 @@ class DogAdoptionsForm(forms.ModelForm):
             if instance.dog == dog:
                 raise forms.ValidationError(dog.name + ' כבר אומצ/ה')
         return dog
-        #help_texts = {'due_back': _('Enter a date between now and 4 weeks (default 3).'), }
-
 
 class CatAdoptionsForm(forms.ModelForm):
     class Meta:
@@ -75,3 +73,4 @@ class CatAdoptionsForm(forms.ModelForm):
             if instance.cat == cat:
                 raise forms.ValidationError(cat.name + ' כבר אומצ/ה')
         return cat
+

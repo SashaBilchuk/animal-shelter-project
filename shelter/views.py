@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from .models import Dog, Cat, Adopter, Response
+
 from .forms import DogAdoptionsForm,  CatAdoptionsForm, DogDeathForm
+
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
@@ -88,6 +90,7 @@ def search(request):
     return render(request, 'search.html', {'shelter': list(results), 'search_query': search_query})
 
 
+
 def admin(request):
     return redirect('/admin')
 
@@ -137,6 +140,28 @@ def add_cat_adoption(request):
 #     cat_data = serializers.serialize("python", Cat.objects.all())
 #     context = {'dog_data': dog_data, 'cat_data': cat_data}
 #     return render(request, 'reports.html', context)
+
+
+def add_cat_adoption(request):
+    cats = Cat.objects.all()
+    adopters = Adopter.objects.all()
+    if request.method == 'POST':
+        form = CatAdoptionsForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form_class = CatAdoptionsForm
+
+    return render(request, 'add_cat_adoption.html', {'cats': cats, 'adopters': adopters, 'form': form_class})
+
+
+def reportURL(request):
+    from django.core import serializers
+    dog_data = serializers.serialize("python", Dog.objects.all())
+    cat_data = serializers.serialize("python", Cat.objects.all())
+    context = {'dog_data': dog_data, 'cat_data': cat_data}
+    return render(request, 'reports.html', context)
 
 
 def download_report(request):
@@ -400,7 +425,6 @@ def fetch_from_sheet(request):
             add_to_Response(row)
 
     return render(request, 'google-sheet-date.html', context)
-
 
 def add_to_adopter(row):
     name = row['שם מלא']

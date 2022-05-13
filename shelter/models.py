@@ -120,6 +120,17 @@ class Dog(models.Model):
         return city_lst
 
 
+
+
+    def get_city_from_adopters(self):
+        adopters = self.adopter_relation_dog.all()
+        city_lst = []
+        for adopter in adopters:
+            city_lst.append(adopter.adopter_city)
+        return city_lst
+
+
+
 class Cat(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(unique=True, max_length=255, verbose_name=_('שם'))

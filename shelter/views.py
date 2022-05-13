@@ -446,15 +446,6 @@ def convert_headers(df):
 
 
 
-def reversed_convert_headers(x):
-    match x:
-        case 'a':
-            return 1
-        case 'b':
-            return 2
-        case _:
-            return 0
-
 def fetch_black_list_from_sheet(request):
     sheet_instance = get_sheet()
     records_data = sheet_instance.get_all_records()

@@ -43,7 +43,7 @@ class Adopter(models.Model):
 class Dog(models.Model):
     id = models.AutoField(primary_key=True)
     chip_number = models.IntegerField(blank=True, default=None, null=True, verbose_name=_('מספר שבב'))
-    name = models.CharField(max_length=255, verbose_name=_('שם'))
+    name = models.CharField(unique=True, max_length=255, verbose_name=_('שם'))
     birth_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך לידה'))
     gender = models.CharField(max_length=255, choices=GENDER_CHOICES, verbose_name=_('מין'))
     physical_description = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('תיאור חיצוני'))
@@ -112,6 +112,13 @@ class Dog(models.Model):
     def __str__(self):
         return self.name
 
+    def get_city_from_adopters(self):
+        adopters = self.adopter_relation_dog.all()
+        city_lst = []
+        for adopter in adopters:
+            city_lst.append(adopter.adopter_city)
+        return city_lst
+
 
 
 
@@ -126,7 +133,7 @@ class Dog(models.Model):
 
 class Cat(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255, verbose_name=_('שם'))
+    name = models.CharField(unique=True, max_length=255, verbose_name=_('שם'))
     birth_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך לידה'))
     gender = models.CharField(choices=GENDER_CHOICES, max_length=6, verbose_name=_('מין'))
     physical_description = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('תיאור חיצוני'))
@@ -177,14 +184,12 @@ class Cat(models.Model):
         adopters = self.adopter_relation_cat.all()
         return adopters
 
-
     def get_city_from_adopters(self):
         adopters = self.adopter_relation_cat.all()
         city_lst = []
         for adopter in adopters:
             city_lst.append(adopter.adopter_city)
         return city_lst
-
 
     def __str__(self):
         return self.name
@@ -207,7 +212,7 @@ class DogAdoption(models.Model):
     return_volunteer = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('גורם מטפל בהחזרה'))
 
     def __str__(self):
-        return "{}_{}".format(self.adopter.__str__(), self.dog.__str__())
+        return "{}_{}".format(self.dog.__str__(), self.adopter.__str__())
 
 
 class CatAdoption(models.Model):
@@ -227,7 +232,7 @@ class CatAdoption(models.Model):
     return_volunteer = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('גורם מטפל בהחזרה'))
 
     def __str__(self):
-        return "{}_{}".format(self.adopter.__str__(), self.cat.__str__())
+        return "{}_{}".format(self.cat.__str__(), self.adopter.__str__())
     
     
 # class Foster(models.Model):

@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from .models import Dog, Cat, Adopter, Response
-from .forms import DogAdoptionsForm,  CatAdoptionsForm
+
+from .forms import DogAdoptionsForm,  CatAdoptionsForm, DogDeathForm
+
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
@@ -9,6 +11,7 @@ from itertools import chain
 from django.views.generic import ListView
 import csv
 from django.http import HttpResponse
+from django.core import serializers
 import gspread
 import pandas as pd
 from oauth2client.service_account import ServiceAccountCredentials
@@ -108,14 +111,35 @@ def add_dog_adoption(request):
     dogs = Dog.objects.all()
     adopters = Adopter.objects.all()
     if request.method == 'POST':
-        form = DogAdoptionsForm(request.POST)
+        form = DogAdoptionsForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('home')
     else:
-        form_class = DogAdoptionsForm
+        form = DogAdoptionsForm
 
-    return render(request, 'add_dog_adoption.html', {'dogs': dogs, 'adopters': adopters, 'form': form_class})
+    return render(request, 'add_dog_adoption.html', {'dogs': dogs, 'adopters': adopters, 'form': form})
+
+
+def add_cat_adoption(request):
+    cats = Cat.objects.all()
+    adopters = Adopter.objects.all()
+    if request.method == 'POST':
+        form = CatAdoptionsForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = CatAdoptionsForm
+
+    return render(request, 'add_cat_adoption.html', {'cats': cats, 'adopters': adopters, 'form': form})
+
+
+# def reportURL(request):
+#     dog_data = serializers.serialize("python", Dog.objects.all())
+#     cat_data = serializers.serialize("python", Cat.objects.all())
+#     context = {'dog_data': dog_data, 'cat_data': cat_data}
+#     return render(request, 'reports.html', context)
 
 
 def add_cat_adoption(request):
@@ -142,72 +166,62 @@ def reportURL(request):
 
 def download_report(request):
     response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
+    response['Content-Disposition'] = 'attachment; filename="merkava.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['מין', 'מספר שבב', 'שם', ',תאריך לידה'])
+    writer.writerow(['ימים בעמותה', 'תאריך כניסה לעמותה', 'מספר שבב', 'סוג החיה', 'שם החיה'])
+    dog_data = Dog.objects.all()
+    cat_data = Cat.objects.all()
 
-    for dog in Dog.objects.all().values_list('gender', 'chip_number', 'name', 'birth_date'):
-        dog_lst = list(dog)
-        for i, val in enumerate(dog_lst):
-            if val == "Male":
-                dog_lst[i] = 'זכר'
-            elif val == 'Female':
-                dog_lst[i] = 'נקבה'
-        dog = tuple(dog_lst)
-        writer.writerow(dog)
-
-    response['Content-Disposition'] = 'attachment; filename="dogs.csv"'
+    for dog in dog_data:
+        writer.writerow([dog.days_in_the_association, dog.acceptance_date, dog.chip_number, 'כלב', dog.name])
+    for cat in cat_data:
+        writer.writerow([cat.days_in_the_association, cat.acceptance_date, '---', 'חתול', cat.name])
 
     return response
 
 
+def reportURL(request):
+    header = 'דו"חות מצבת'
+    queryset = Dog.objects.all()
+    form = DogDeathForm(request.POST or None)
+    context = {
+        "header": header,
+        "queryset": queryset,
+        "form": form,
+    }
+    if request.method == 'POST':
 
-# def list_history(request):
-#     header = 'דו"חות מצבת'
-#     queryset = Dog.objects.all().order_by('_name')
-#     form = ShelterHistorySearchForm(request.POST or None)
-#     context = {
-#         "header": header,
-#         "queryset": queryset,
-#         "form": form,
-#     }
-#     if request.method == 'POST':
-#         name = form['name'].value()
-#         queryset = StockHistory.objects.filter(
-#             item_name__icontains=form['item_name'].value(),
-#             last_updated__range=[
-#                 form['start_date'].value(),
-#                 form['end_date'].value()
-#             ]
-#         )
-#
-#         if (name != ''):
-#             queryset = queryset.filter(name=name)
-#
-#         if form['export_to_CSV'].value() == True:
-#             response = HttpResponse(content_type='text/csv')
-#             response['Content-Disposition'] = 'attachment; filename="Dogs History.csv"'
-#             writer = csv.writer(response)
-#             writer.writerow(
-#                 ['NAME',
-#                  'CHIP NUM',
-#                  'AGE',
-#                  'DAYS_IN_ASOCC'])
-#             instance = queryset
-#             for dog in instance:
-#                 writer.writerow(
-#                     [dog.name,
-#                      dog.chip_number,
-#                      dog.age_years,
-#                      dog.days_in_the_association])
-#             return response
-#
-#         context = {
-#             "form": form,
-#             "header": header,
-#             "queryset": queryset,
-#         }
-#     return render(request, "list_history.html", context)
+        queryset = Dog.objects.filter(death_date__range=[form['death_date'].value(), form['death_date'].value()])
+
+        context = {
+            "header": header,
+            "queryset": queryset,
+            "form": form,
+        }
+
+        # if (name != ''):
+        #     queryset = queryset.filter(name=name)
+        #
+        # if download_report:
+        #     response = HttpResponse(content_type='text/csv')
+        #     response['Content-Disposition'] = 'attachment; filename="Dogs History.csv"'
+        #     writer = csv.writer(response)
+        #     writer.writerow(
+        #         ['NAME',
+        #          'CHIP NUM',
+        #          'AGE',
+        #          'DAYS_IN_ASOCC'])
+        #     instance = queryset
+        #     for dog in instance:
+        #         writer.writerow(
+        #             [dog.name,
+        #              dog.chip_number,
+        #              dog.age_years,
+        #              dog.days_in_the_association])
+        #     return response
+
+    return render(request, "reports.html", context)
 
 
 ############################################# Responses ############################################################

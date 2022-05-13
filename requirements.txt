@@ -6,3 +6,6 @@ google-api-python-client
 oauth2client
 pandas
 Pillow
+whitenoise
+sklearn
+django-crispy-forms

@@ -1,0 +1,94 @@
+{% extends 'base.html' %} {% block content %}
+<style>
+
+table{
+	text-align: center;
+	width: 95%;
+	margin: auto;
+	text-align: center;
+}
+
+/*Make alternating colors for the table rows*/
+table tr:nth-child(odd){
+	background: #8DCBC8
+}
+
+table tr:nth-child(even){
+	background: #D1EAE9
+}
+
+th {
+  background-color: #1b9891;
+  color: white;
+}</style>
+
+<h1 class="display-4 text-center">טבלת לא טופל</h1><br>
+
+    <table class="table">
+        <thead>
+        <tr>
+            {% for col in not_handled.columns %}
+                <th scope="col">{{ col }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for index, row in not_handled.iterrows %}
+            <tr>
+                {% for cell in row %}
+                    <td>
+                        {{ cell }}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+<h1 class="display-4 text-center">טבלת יצרו קשר</h1><br>
+
+    <table class="table">
+        <thead>
+        <tr>
+            {% for col in initial_contact.columns %}
+                <th scope="col">{{ col }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for index, row in initial_contact.iterrows %}
+            <tr>
+                {% for cell in row %}
+                    <td>
+                        {{ cell }}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+<h1 class="display-4 text-center">טבלת מאושרים לאימוץ</h1><br>
+
+
+    <table class="table">
+        <thead>
+        <tr>
+            {% for col in adoption_approved.columns %}
+                <th scope="col">{{ col }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for index, row in adoption_approved.iterrows %}
+            <tr>
+                {% for cell in row %}
+                    <td>
+                        {{ cell }}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}

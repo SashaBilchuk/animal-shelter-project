@@ -19,6 +19,13 @@ import numpy as np
 import sklearn
 from sklearn.neighbors import KNeighborsClassifier
 from django.http import HttpResponseRedirect
+from datetime import datetime
+from enum import Enum
+
+
+MAXGRADE = 5
+MINGRADE = 1
+
 # from .forms import AddToSheet
 
 
@@ -269,44 +276,30 @@ def get_black_list(df):
 
 
 def prepare_data(df):
-    df = df.fillna(-5)
-    rslt_df = df[df['Timestamp'] != -5]
-    subset = rslt_df[['סטטוס', 'Timestamp', 'האם לאחד מבני המשפחה יש אלרגיה לכלבים ? ', 'ניסיון קודם בגידול כלבים: '
-        , 'גיל', 'עיר מגורים', 'האם אתם מעוניינים בגודל מסוים של כלב?'
-        , 'סוג מקום מגורים ', 'היכן הכלב ישהה? ', 'מצב משפחתי'
-        , 'מספר ילדים', 'האם אתם מגדלים בע"ח נוסף כיום?']]
-
-    subset = subset.rename(columns={"סטטוס": 'status',
-                                    'עיר מגורים': 'City',
-                                    'האם לאחד מבני המשפחה יש אלרגיה לכלבים ? ': 'Allergies',
-                                    'ניסיון קודם בגידול כלבים: ': 'Experience',
-                                    'גיל': 'Age',
-                                    'עיר מגורים': 'City',
-                                    'האם אתם מעוניינים בגודל מסוים של כלב?': 'DogSize',
-                                    'סוג מקום מגורים ': 'ResidenceType',
-                                    'היכן הכלב ישהה? ': 'DogPlace',
-                                    'מצב משפחתי': 'MaritalStatus',
-                                    'מספר ילדים': 'NumChildren',
-                                    'האם אתם מגדלים בע"ח נוסף כיום?': 'OtherPets'})  # correct colum's names
-
-    subset = subset.astype({'Age': int, 'NumChildren': int})
-    subset['Small'] = np.where(subset['DogSize'].str.contains("קטן", case=False), 1, 0)
-    subset['Medium'] = np.where(subset['DogSize'].str.contains("בינוני", case=False), 1, 0)
-    subset['Large'] = np.where(subset['DogSize'].str.contains("גדול", case=False), 1, 0)
-    subset['HasCat'] = np.where(subset['OtherPets'].str.contains("חתול", case=False), 1, 0)
-    subset['HasDog'] = np.where(subset['OtherPets'].str.contains("כלב", case=False), 1, 0)
-    subset['Single'] = np.where(subset['MaritalStatus'].str.contains("רווק/ה", case=False), 1, 0)
-    subset['Widow'] = np.where(subset['MaritalStatus'].str.contains("אלמן/ה", case=False), 1, 0)
-    subset['Married'] = np.where(subset['MaritalStatus'].str.contains("נשוי/ה", case=False), 1, 0)
-    subset['Divorced'] = np.where(subset['MaritalStatus'].str.contains("גרוש/ה", case=False), 1, 0)
-    subset['HomeYard'] = np.where(subset['ResidenceType'].str.contains("בית", case=False), 1, 0)
-    subset['Apartment'] = np.where(subset['ResidenceType'].str.contains("דירה", case=False), 1, 0)
-    subset['Dog_inside'] = np.where(subset['DogPlace'].str.contains("בית בלבד", case=False), 1, 0)
-    subset['Dog_outside'] = np.where(subset['DogPlace'].str.contains("מחוץ לבית בלבד", case=False), 1, 0)
-    subset['Dog_inside_outside'] = np.where(subset['DogPlace'].str.contains("בית ומחוץ לבית", case=False), 1, 0)
-    subset['HasExperience'] = np.where(subset['Experience'].str.contains("יש", case=False), 1, 0)
-    subset['HasAllergies'] = np.where(subset['Allergies'].str.contains("כן", case=False), 1, 0)
-    subset['CityNumber'] = subset['City'].apply(lambda row: convert_ascii_sum(row))
+    """
+    :param df: data frame from models- Response
+    :return: table converted to binary for recommendation system
+    """
+    subset = df.astype({'age': int, 'numChildren': int})
+    subset['Small'] = np.where(subset['dogSize'].str.contains("קטן", case=False), 1, 0)
+    subset['Medium'] = np.where(subset['dogSize'].str.contains("בינוני", case=False), 1, 0)
+    subset['Large'] = np.where(subset['dogSize'].str.contains("גדול", case=False), 1, 0)
+    subset['HasCat'] = np.where(subset['otherPets'].str.contains("חתול", case=False), 1, 0)
+    subset['HasDog'] = np.where(subset['otherPets'].str.contains("כלב", case=False), 1, 0)
+    subset['Single'] = np.where(subset['maritalStatus'].str.contains("רווק/ה", case=False), 1, 0)
+    subset['Widow'] = np.where(subset['maritalStatus'].str.contains("אלמן/ה", case=False), 1, 0)
+    subset['Married'] = np.where(subset['maritalStatus'].str.contains("נשוי/ה", case=False), 1, 0)
+    subset['Divorced'] = np.where(subset['maritalStatus'].str.contains("גרוש/ה", case=False), 1, 0)
+    subset['HomeYard'] = np.where(subset['residenceType'].str.contains("בית", case=False), 1, 0)
+    subset['Apartment'] = np.where(subset['residenceType'].str.contains("דירה", case=False), 1, 0)
+    subset['Dog_inside'] = np.where(subset['dogPlace'].str.contains("בית בלבד", case=False), 1, 0)
+    subset['Dog_outside'] = np.where(subset['dogPlace'].str.contains("מחוץ לבית בלבד", case=False), 1, 0)
+    subset['Dog_inside_outside'] = np.where(subset['dogPlace'].str.contains("בית ומחוץ לבית", case=False), 1, 0)
+    subset['Has_fence'] = np.where(subset['fence'].str.contains("כן", case=False), 1, np.where(subset['fence'].str.contains("לא", case=False),-5,0))
+    subset['HasExperience'] = np.where(subset['experience'].str.contains("יש", case=False), 1, 0)
+    subset['HasAllergies'] = np.where(subset['allergies'].str.contains("כן", case=False), 1, 0)
+    # subset['CityNumber'] = subset['city'].apply(lambda row: convert_ascii_sum(row))
+    subset['specificRequest'] = np.where(subset['dog_name'].apply(lambda x: x == ''), 0, 1)
 
     conditions = [
         (subset['status'] == 'אימץ מהעמותה'),
@@ -316,18 +309,99 @@ def prepare_data(df):
         (subset['status'] == 'טרם טופל'),
         (subset['status'] == 'לא מתאים לאימוץ'),
         (subset['status'] == 'רשימה שחורה'),
+        (subset['status'] == ''),
     ]
 
-    values = [1, 1, -1, -1, -1, 0, 0]
+    values = [1, 1, -1, -1, -1, 0, 0, -1]
     subset['y'] = np.select(conditions, values, default=-1)
-    data = subset[['Small', 'Medium', 'Large', 'HasCat', 'HasDog', 'Single', 'Widow', 'Married', 'Divorced', 'HomeYard',
-                   'Apartment',
-                   'Dog_inside', 'Dog_outside', 'Dog_inside_outside', 'HasExperience', 'HasAllergies', 'CityNumber',
-                   'y']]
-    Nlabeled = data[data['y'] < 0]
-    labeled = data[data['y'] >= 0]
+    # new_y = subset.age.mean() #STOPPED HERE - need to update data in db (avg outlier) QID = 1643364054000006045
+    avg_age = subset[subset['y'] == 1].age.mean() #average age of those who can adopt
+    # subset['newAge'] = abs(subset['age'] - avg_age)
+    subset = subset.assign(newAge=lambda x: (abs(x['age'] - avg_age)))
+    subset = subset.assign(numChildrenAbove5=np.maximum(subset.numChildren.values - 4 , 0))
 
+    data = subset[['QID','age','numChildren', 'Small', 'Medium', 'Large', 'HasCat', 'HasDog', 'Single',
+                   'Widow', 'Married', 'Divorced', 'HomeYard','Apartment',
+                   'Dog_inside', 'Dog_outside', 'Dog_inside_outside', 'Has_fence','HasExperience',
+                   'HasAllergies',  'specificRequest', 'newAge','numChildrenAbove5','y']]
+
+    data = data.reindex(columns=['QID','age','numChildren', 'Small', 'Medium', 'Large', 'HasCat', 'HasDog', 'Single',
+                   'Widow', 'Married', 'Divorced', 'HomeYard','Apartment',
+                   'Dog_inside', 'Dog_outside', 'Dog_inside_outside', 'Has_fence', 'HasExperience',
+                   'HasAllergies',  'specificRequest', 'newAge','numChildrenAbove5','y'])
+
+    Nlabeled = data[data['y'] < 0]
+    Nlabeled= Nlabeled[['QID','age','numChildren', 'Small', 'Medium', 'Large', 'HasCat', 'HasDog', 'Single',
+                   'Widow', 'Married', 'Divorced', 'HomeYard','Apartment',
+                   'Dog_inside', 'Dog_outside', 'Dog_inside_outside','Has_fence','HasExperience',
+                   'HasAllergies',  'specificRequest', 'newAge','numChildrenAbove5']]
+
+    labeled = data[data['y'] >= 0]
+    # print(Nlabeled)
+    grades = []
     return Nlabeled, labeled, data
+
+def normalize_grades(cur_grade,max_all, min_all):
+    return int(round((((MAXGRADE - MINGRADE)/(max_all-min_all))*(cur_grade- max_all) + MAXGRADE),0))
+
+def grading_response():
+    """
+    takes Response from models and calculates the grade for each instance
+    :return: merged dataFrame, with original data, sorted by grade (Descending) - headers still in english
+    """
+    df = pd.DataFrame(list(Response.objects.all().values()))
+    Nlabeled, labeled, data = prepare_data(df)
+    data_no_labels = data.drop(['y'], axis=1)
+    X = data_no_labels.values[:, 0:len(data_no_labels.columns)]
+    grading_vec = np.array([0,0,0,0,0,0,1,1,1,0.5,1,0.5,2,1,1,-10,2,1,2,-10,2,-0.2,-1])
+    grades = X@grading_vec
+
+    data_no_labels['grade'] = grades.tolist() # add grade column to df without labels
+
+    df_aux = data_no_labels[['QID', 'grade']] # creat aux dataframe
+    df_aux = df_aux.set_index('QID')
+    df = df.set_index('QID')
+    sorted_df = df.merge(df_aux, left_index=True, right_index=True)
+    sorted_df = sorted_df.sort_values(by='grade', ascending=False)
+
+    max_all =sorted_df['grade'].max()
+    min_all = sorted_df['grade'].min()
+    sorted_df['normGrade'] = sorted_df['grade'].apply(lambda cur_grade: normalize_grades(cur_grade, max_all, min_all))
+    sorted_df['phone_num'] = sorted_df['phone_num'].apply(lambda row: str(row).zfill(10) if (len(str(row)) == 9) else (str(row).zfill(9)))
+    return sorted_df
+
+def get_recommendation(request):
+    results = grading_response()
+    results.response_date = results.response_date.apply(lambda x: x.date()) #change timestamp type to date
+
+    not_handled = results.query("status in ('','טרם טופל')") # filter by dates
+    not_handled = not_handled[not_handled.response_date > datetime.today().date() - pd.to_timedelta("15day")]
+
+    initial_contact = results.query("status in ('בוצעה שיחה ראשונית', 'ממתינים לוידאו')")
+    initial_contact = initial_contact[initial_contact.response_date > datetime.today().date() - pd.to_timedelta("30day")]
+
+    adoption_approved = results.query("status in ('מאושר לאימוץ')")
+
+
+    context = {
+        'not_handled': not_handled,
+        'initial_contact': initial_contact,
+        'adoption_approved': adoption_approved
+    }
+
+    return render(request, 'Recommender.html', context)
+
+
+
+def fetch_black_list_from_sheet(request):
+    sheet_instance = get_sheet()
+    records_data = sheet_instance.get_all_records()
+    records_df = pd.DataFrame.from_dict(records_data)  # this is Panda dataframe if you need you can use it.
+    records_df = get_black_list(records_df)
+    context = {
+        'df': records_df
+    }
+    return render(request, 'black_list.html', context)
 
 
 def convert_headers(df):
@@ -339,7 +413,7 @@ def convert_headers(df):
                       'סוג מקום מגורים ',
                       'במידה וישנה חצר, האם היא מגודרת?',
                       'היכן הכלב ישהה? ',
-                      'האם אתם מעוניינים בגודל מסוים של כלב?','הערות נוספות ', 'מזהה שאלון']]
+                      'האם אתם מעוניינים בגודל מסוים של כלב?','הערות נוספות ']]
 
     subset = subset.rename(columns={'מי מטפלת?': 'response_owner',
                                     'סטטוס': 'status',
@@ -361,16 +435,25 @@ def convert_headers(df):
                                     'במידה וישנה חצר, האם היא מגודרת?':'fence',
                                      'היכן הכלב ישהה? ': 'dogPlace',
                                      'האם אתם מעוניינים בגודל מסוים של כלב?': 'dogSize',
-                                     'הערות נוספות ': 'response_comments',
-                                    'מזהה שאלון': 'QID',
+                                     'הערות נוספות ': 'response_comments'
                                     })  # correct colum's names
 
     subset['age'] = subset[['age']].astype('int')
-    subset['QID'] = subset['QID'].astype('int')
+#    subset['QID'] = subset['QID'].astype('int')
     subset['numChildren'] = subset['numChildren'].astype('int')
 
     return subset
 
+
+
+def reversed_convert_headers(x):
+    match x:
+        case 'a':
+            return 1
+        case 'b':
+            return 2
+        case _:
+            return 0
 
 def fetch_black_list_from_sheet(request):
     sheet_instance = get_sheet()
@@ -406,25 +489,29 @@ def get_test_sheet():
     sheet_instance = sheet.get_worksheet(0)
     return sheet_instance
 
+# TODO
+
+
 
 def fetch_from_sheet(request):
     sheet_instance = get_sheet()
     records_data = sheet_instance.get_all_records()
     records_df = pd.DataFrame.from_dict(records_data)
-    records_df['IDX'] = pd.to_datetime(records_df['Timestamp']).astype(np.int64)
-    records_df = records_df[records_df['IDX'] >0 ]
+    records_df = records_df[records_df['Timestamp'] != ""]
     records_df = convert_headers(records_df)
-
+    records_df['convertedTimestamp'] = pd.to_datetime(records_df['Timestamp']).astype(np.int64)
+    records_df = records_df.assign(QID=lambda x: (x['convertedTimestamp'] + x['age']))
+    records_df = records_df[records_df['QID'] > 0]
     context = {
         'df': records_df
     }
-    responce_model = list(Response.objects.all())
+    response_model = Response.objects.values_list('QID', flat=True)
       # ITERATES ON ALL RAWS, IF FOUND NEW ROW -> ADD TO RESPONSE MODEL
     for index, row in records_df.iterrows():
-        if row['QID'] not in responce_model:
-            add_to_Response(row)
-
+         if row['QID'] not in response_model:
+             add_to_Response(row)
     return render(request, 'google-sheet-date.html', context)
+
 
 def add_to_adopter(row):
     name = row['שם מלא']
@@ -464,6 +551,7 @@ def add_to_Response(row):
     dogPlace = row['dogPlace']
     dogSize = row['dogSize']
     response_comments = row['response_comments']
+    response_date = pd.to_datetime(row['Timestamp'])
     QID = row['QID']
 
 
@@ -472,7 +560,7 @@ def add_to_Response(row):
                            numChildren=numChildren,otherPets=otherPets, experience=experience, dog_name=dog_name,
                            allergies=allergies, own_apartment=own_apartment, rent_agreed=rent_agreed,
                            residenceType=residenceType, fence=fence, dogPlace=dogPlace,dogSize=dogSize,
-                           response_comments=response_comments, QID=QID)
+                           response_comments=response_comments, response_date=response_date, QID=QID)
 
 def add_to_sheet(request):
     if request.POST:
@@ -488,4 +576,3 @@ def add_to_sheet(request):
             return redirect('google-sheet')  # redirect anywhere as you want.
 
     return redirect('google-sheet')  # else request is not POST request
-

@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load class_name %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+<style>
+table{
+	text-align: center;
+	width: 95%;
+	margin: auto;
+	text-align: center;
+}
+
+/*Make alternating colors for the table rows*/
+table tr:nth-child(odd){
+	background: #8DCBC8
+}
+
+table tr:nth-child(even){
+	background: #D1EAE9
+}
+
+th {
+  background-color: #1b9891;
+  color: white;
+}</style>
+
+
+<h1 class="display-4 text-center">דו"ח אומנות</h1><br>
+<body><center>
+
+    <div class="jumbotron">
+    <table class="table">
+        <h3 class="display-4 text-center">עבור כלבים</h3>
+        <thead>
+            <tr>
+                <th> מספר אומנה </th>
+                <th> שם המאמצ/ת </th>
+                <th> ת''ז המאמץ </th>
+                <th> מס' כלב </th>
+                <th> שם הכלב </th>
+                <th>תאריך תחילת אומנה </th>
+                <th> תאריך סוף אומנה </th>
+                <th> הערות האומנה </th>
+                <th> קישור לטופס האומנה </th>
+                <th> קישור לטופס אומנה למטרת אימוץ </th>
+            </tr>
+        </thead>
+            {% for instance in querysetdogs %}
+            <tr>
+                <td> {{instance.id}}</td>
+                <td> {{instance.foster}}</td>
+                <td> {{instance.id}}</td>
+                <td> {{instance.id}}</td>
+                <td> {{instance.dog }}</td>
+                <td> {{instance.fostering_date_start}}</td>
+                <td> {{instance.fostering_date_end}}</td>
+                <td> {{instance.fostering_comments }}</td>
+                <td> {{instance.fostering_link_text}}</td>
+                <td> {{instance.fostering_link_for_adoption_text}}</td>
+            </tr>
+                {% endfor %}
+
+  </table>
+        <h3 class="display-4 text-center">עבור חתולים</h3>
+  <table class="table">
+        <thead>
+            <tr>
+                <th> מספר אומנה </th>
+                <th> שם המאמצ/ת </th>
+                <th> ת''ז המאמץ </th>
+                <th> מס' חתול </th>
+                <th> שם ההחתול </th>
+                <th>תאריך תחילת אומנה </th>
+                <th> תאריך סוף אומנה </th>
+                <th> הערות האומנה </th>
+                <th> קישור לטופס האומנה </th>
+                <th> קישור לטופס אומנה למטרת אימוץ </th>
+            </tr>
+        </thead>
+            {% for instance in querysetcats %}
+            <tr>
+                <td> {{instance.id}}</td>
+                <td> {{instance.foster}}</td>
+                <td> {{instance.id}}</td>
+                <td> {{instance.id}}</td>
+                <td> {{instance.cat }}</td>
+                <td> {{instance.fostering_date_start}}</td>
+                <td> {{instance.fostering_date_end}}</td>
+                <td> {{instance.fostering_comments }}</td>
+                <td> {{instance.fostering_link_text}}</td>
+                <td> {{instance.fostering_link_for_adoption_text}}</td>
+            </tr>
+                {% endfor %}
+  </table>
+
+</div>
+</center></body>
+{% endblock content %}

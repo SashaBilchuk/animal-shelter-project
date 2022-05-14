@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Dog, Cat, Adopter, DogAdoption, CatAdoption
+from .models import Dog, Cat, Adopter, DogAdoption, CatAdoption, Foster, DogFostering,CatFostering
 
 # from .models import Foster
 
@@ -13,13 +13,13 @@ admin.site.register(Dog, DogAdmin)
 class CatAdmin(admin.ModelAdmin):
     exclude = ('animal_type',)
 admin.site.register(Cat, CatAdmin)
-# admin.site.register(Dog)
-# admin.site.register(Cat)
+
 admin.site.register(Adopter)
 admin.site.register(DogAdoption)
 admin.site.register(CatAdoption)
+admin.site.register(Foster)
+admin.site.register(DogFostering)
+admin.site.register(CatFostering)
 
-
-# admin.site.register(Foster)
 
 

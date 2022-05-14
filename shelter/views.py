@@ -1,7 +1,6 @@
 from django.shortcuts import render
-from .models import Dog, Cat, Adopter, Response
-from .forms import DogAdoptionsForm, CatAdoptionsForm, DogDeathForm
-
+from .models import Dog, Cat, Adopter, Response, DogAdoption, CatAdoption, CatFostering, Foster, DogFostering
+from .forms import DogAdoptionsForm, CatAdoptionsForm, DogDeathForm, CatFosteringForm, DogFosteringForm
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
@@ -108,6 +107,8 @@ def add_dog(request):
 def add_adopter(request):
     return redirect('admin/shelter/adopter/add/')
 
+def add_foster(request):
+    return redirect('admin/shelter/foster/add/')
 
 def logout(request):
     return redirect('admin/logout/')
@@ -127,6 +128,20 @@ def add_dog_adoption(request):
     return render(request, 'add_dog_adoption.html', {'dogs': dogs, 'adopters': adopters, 'form': form})
 
 
+def add_dog_fostering(request):
+    dogs = Dog.objects.all()
+    fosters = Foster.objects.all()
+    if request.method == 'POST':
+        form = DogFosteringForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = DogFosteringForm
+
+    return render(request, 'add_dog_fostering.html', {'dogs': dogs, 'fosters': fosters, 'form': form})
+
+
 def add_cat_adoption(request):
     cats = Cat.objects.all()
     adopters = Adopter.objects.all()
@@ -139,6 +154,20 @@ def add_cat_adoption(request):
         form = CatAdoptionsForm
 
     return render(request, 'add_cat_adoption.html', {'cats': cats, 'adopters': adopters, 'form': form})
+
+
+def add_cat_fostering(request):
+    cats = Cat.objects.all()
+    fosters = Foster.objects.all()
+    if request.method == 'POST':
+        form = CatFosteringForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = CatFosteringForm
+
+    return render(request, 'add_cat_fostering.html', {'cats': cats, 'fosters': fosters, 'form': form})
 
 
 # def reportURL(request):
@@ -171,6 +200,38 @@ def report_adopter_URL(request):
     }
 
     return render(request, "reports_adopters.html", context)
+
+def report_foster_URL(request):
+    queryset = Foster.objects.all()
+    context = {
+        "queryset": queryset,
+    }
+
+    return render(request, "reports_fosters.html", context)
+
+
+
+def report_adoptions_URL(request):
+    querysetdogs = DogAdoption.objects.all()
+    querysetcats = CatAdoption.objects.all()
+    context = {
+        "querysetdogs": querysetdogs,
+        "querysetcats": querysetcats
+    }
+
+    return render(request, "reports_fostering.html", context)
+
+def report_fostering_URL(request):
+    querysetdogs = DogFostering.objects.all()
+    querysetcats = CatFostering.objects.all()
+    context = {
+        "querysetdogs": querysetdogs,
+        "querysetcats": querysetcats
+    }
+
+    return render(request, "reports_fostering.html", context)
+
+
 
 def download_report(request):
     response = HttpResponse(content_type='text/csv; charset=utf-8-sig')

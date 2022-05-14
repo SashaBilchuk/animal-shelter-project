@@ -16,3 +16,9 @@ class AdoptersConfig(AppConfig):
     name = 'adopters'
     verbose_name = _('מאמצים')
 
+
+class FostersConfig(AppConfig):
+    name = 'fosters'
+    verbose_name = _('אומנה')
+
+

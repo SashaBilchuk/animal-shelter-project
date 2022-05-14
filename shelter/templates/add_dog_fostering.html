@@ -1,0 +1,21 @@
+{% extends 'base.html' %} {% block content %}
+
+
+
+<h1 class="display-4 mb-4 text-center"> פרטי אומנה לכלב</h1>
+
+<body><center>
+   <form method="post" >
+    	{% csrf_token %}
+       <table>{{ form }}
+    </table>
+    <input type="submit" value="שמירה" />
+    </form>
+
+</center></body>
+
+</div>
+  </div>
+  </div>
+
+{% endblock %}

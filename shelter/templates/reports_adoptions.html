@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load class_name %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+<style>
+table{
+	text-align: center;
+	width: 95%;
+	margin: auto;
+	text-align: center;
+}
+
+/*Make alternating colors for the table rows*/
+table tr:nth-child(odd){
+	background: #8DCBC8
+}
+
+table tr:nth-child(even){
+	background: #D1EAE9
+}
+
+th {
+  background-color: #1b9891;
+  color: white;
+}</style>
+
+
+<h1 class="display-4 text-center">דו"ח אימצים</h1><br>
+<body><center>
+
+    <div class="jumbotron">
+    <table class="table">
+        <h3 class="display-4 text-center">עבור כלבים</h3>
+        <thead>
+            <tr>
+                <th> מספר אימוץ </th>
+                <th> שם המאמצ/ת </th>
+                <th> ת''ז המאמץ </th>
+                <th> מס' כלב </th>
+                <th> שם הכלב </th>
+                <th>תאריך אימוץ </th>
+                <th> מספר חשבונית </th>
+                <th> הערות האימוץ </th>
+                <th>שיחת מעכב האחרונה </th>
+                <th> תאריך שיחת מעקב הבאה </th>
+                <th>גורם מטפל באימוץ </th>
+                <th> החזרה </th>
+                <th> תאריך ההחזרה </th>
+                <th>סיבת ההחזרה </th>
+                <th>גורם המטפל ההחזרה </th>
+            </tr>
+        </thead>
+            {% for instance in querysetdogs %}
+            <tr>
+                <td> {{instance.id}}</td>
+                <td> {{instance.adopter}}</td>
+                <td> {{instance.id}}</td>
+                <td> {{instance.id}}</td>
+                <td> {{instance.dog }}</td>
+                <td> {{instance.adoption_date}}</td>
+                <td> {{instance.receipt_number}}</td>
+                <td> {{instance.adoption_comments }}</td>
+                <td> {{instance.last_followup_call}}</td>
+                <td> {{instance.next_followup_call}}</td>
+                <td> {{instance.adoption_volunteer }}</td>
+                <td> {{instance.returned}}</td>
+                <td> {{instance.return_date}}</td>
+                <td> {{instance.return_reason }}</td>
+                <td> {{instance.return_volunteer}}</td>
+            </tr>
+                {% endfor %}
+
+  </table>
+        <h3 class="display-4 text-center">עבור חתולים</h3>
+  <table class="table">
+        <thead>
+            <tr>
+                <th> מספר אימוץ </th>
+                <th> שם המאמצ/ת </th>
+                <th> ת''ז המאמץ </th>
+                <th> מס' כלב </th>
+                <th> שם הכלב </th>
+                <th>תאריך אימוץ </th>
+                <th> מספר חשבונית </th>
+                <th> הערות האימוץ </th>
+                <th>שיחת מעכב האחרונה </th>
+                <th> תאריך שיחת מעקב הבאה </th>
+                <th>גורם מטפל באימוץ </th>
+                <th> החזרה </th>
+                <th> תאריך ההחזרה </th>
+                <th>סיבת ההחזרה </th>
+                <th>גורם המטפל ההחזרה </th>
+            </tr>
+        </thead>
+            {% for instance in querysetcats %}
+            <tr>
+                <td> {{instance.id}}</td>
+                <td> {{instance.adopter}}</td>
+                <td> {{instance.id}}</td>
+                <td> {{instance.id}}</td>
+                <td> {{instance.cat }}</td>
+                <td> {{instance.adoption_date}}</td>
+                <td> {{instance.receipt_number}}</td>
+                <td> {{instance.adoption_comments }}</td>
+                <td> {{instance.last_followup_call}}</td>
+                <td> {{instance.next_followup_call}}</td>
+                <td> {{instance.adoption_volunteer }}</td>
+                <td> {{instance.returned}}</td>
+                <td> {{instance.return_date}}</td>
+                <td> {{instance.return_reason }}</td>
+                <td> {{instance.return_volunteer}}</td>
+            </tr>
+                {% endfor %}
+  </table>
+
+</div>
+</center></body>
+{% endblock content %}

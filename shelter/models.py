@@ -21,7 +21,7 @@ PLACES = (
 )
 
 STATUS_ADOPTER = (
-    ('ACTIVE ADOPTION', 'אימץ',), ('RETURNED', 'החזיר')
+    ('אימץ', 'אימץ',), ('RETURNED', 'החזיר')
      )
 
 
@@ -29,12 +29,23 @@ class Adopter(models.Model):
     adopter_ID = models.IntegerField(unique=True, default=None, verbose_name=_('ת"ז'))
     name = models.CharField(max_length=255, default=None, verbose_name=_('שם המאמצ/ת'))
     ID_link = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('קישור לת"ז'))
+    birth_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך לידה'))
     adopter_city = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('עיר מגורים'))
     adopter_street = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('רחוב'))
     phone_number = models.CharField(max_length=12,default=None, blank=True, null=True, verbose_name=_('מספר טלפון'))
     email_address = models.EmailField(max_length=254, blank=True, default=None, null=True, verbose_name=_('כתובת מייל'))
     activity_status = models.CharField(choices=STATUS_ADOPTER, default='אימץ', max_length=20, verbose_name=_('סטטוס פעילות'))
     black_listed = models.BooleanField(default=False, verbose_name=_('רשימה שחורה'))
+    adopter_comments = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('שם המאמצ/ת'))
+
+
+    def age_years(self):
+        if self.birth_date is not None:
+            return datetime.date.today().year - self.birth_date.year
+        else:
+            return 0
+
+
 
     def __str__(self):
         return self.name

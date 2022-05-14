@@ -13,6 +13,7 @@ admin.site.register(Dog, DogAdmin)
 class CatAdmin(admin.ModelAdmin):
     exclude = ('animal_type',)
 admin.site.register(Cat, CatAdmin)
+
 # admin.site.register(Dog)
 # admin.site.register(Cat)
 admin.site.register(Adopter)

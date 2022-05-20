@@ -56,10 +56,10 @@ th {
             {% for instance in querysetdogs %}
             <tr>
                 <td> {{instance.id}}</td>
-                <td> {{instance.adopter}}</td>
-                <td> {{instance.id}}</td>
-                <td> {{instance.id}}</td>
-                <td> {{instance.dog }}</td>
+                <td> {{instance.adopter.name}}</td>
+                <td> {{instance.adopter.adopter_ID}}</td>
+                <td> {{instance.dog.id}}</td>
+                <td> {{instance.dog.name }}</td>
                 <td> {{instance.adoption_date}}</td>
                 <td> {{instance.receipt_number}}</td>
                 <td> {{instance.adoption_comments }}</td>
@@ -98,10 +98,10 @@ th {
             {% for instance in querysetcats %}
             <tr>
                 <td> {{instance.id}}</td>
-                <td> {{instance.adopter}}</td>
-                <td> {{instance.id}}</td>
-                <td> {{instance.id}}</td>
-                <td> {{instance.cat }}</td>
+                <td> {{instance.adopter.name}}</td>
+                <td> {{instance.adopter.adopter_ID}}</td>
+                <td> {{instance.cat.id}}</td>
+                <td> {{instance.cat`.name }}</td>
                 <td> {{instance.adoption_date}}</td>
                 <td> {{instance.receipt_number}}</td>
                 <td> {{instance.adoption_comments }}</td>

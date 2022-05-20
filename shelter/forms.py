@@ -67,7 +67,6 @@ class CatFosteringForm(forms.ModelForm):
     class Meta:
         model = CatFostering
         fields = "__all__"
-
         widgets = {'fostering_date_start': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'dir': 'rtl'}),
                    'fostering_date_end': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'dir': 'rtl'}),
                    'fostering_comments ': forms.Textarea(attrs={'class': 'form-control', 'rows': 3})}

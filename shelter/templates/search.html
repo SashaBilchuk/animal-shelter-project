@@ -26,7 +26,7 @@
   </div>
   {% if search_query %}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-6">
       <div class="swiper-container">
         <!-- Additional required wrapper -->
         <div class="swiper-wrapper">
@@ -38,10 +38,10 @@
             <a href="../dog/{{animal.id}}">
               <div class="card" >
                 <img
-                  src="{{ animal.image.url }}"
+                  src="/images/media/generic_dog.png"
                   class="card-img-top"
                   alt="..."
-                  style="height: 25rem;"
+                  style="height: 10rem;"
                 />
                 <div class="card-body bg-info">
                   <h5 class="card-title text-light text-center">
@@ -62,10 +62,10 @@
                 <a href="../cat/{{animal.id}}">
                  <div class="card">
                  <img
-                  src="{{ cat.animal.url }}"
+                  src="/images/media/generic_cat.png"
                   class="card-img-top"
                   alt="..."
-                  style="height: 25rem;"
+                  style="height: 10rem;"
                     />
                 <div class="card-body bg-info">
                   <h5 class="card-title text-light text-center">

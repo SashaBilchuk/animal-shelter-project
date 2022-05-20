@@ -219,7 +219,7 @@ def report_adoptions_URL(request):
         "querysetcats": querysetcats
     }
 
-    return render(request, "reports_fostering.html", context)
+    return render(request, "reports_adoptions.html", context)
 
 def report_fostering_URL(request):
     querysetdogs = DogFostering.objects.all()

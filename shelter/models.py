@@ -41,18 +41,14 @@ class Adopter(models.Model):
     black_listed = models.BooleanField(default=False, verbose_name=_('רשימה שחורה'))
     adopter_comments = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('הערות'))
 
-
     def age_years(self):
         if self.birth_date is not None:
             return datetime.date.today().year - self.birth_date.year
         else:
             return 0
 
-
-
     def __str__(self):
         return self.name
-
 
 
 class Foster(models.Model):
@@ -79,8 +75,6 @@ class Foster(models.Model):
         return self.name
 
 
-
-
 class Dog(models.Model):
     id = models.AutoField(primary_key=True)
     chip_number = models.IntegerField(blank=True, default=None, null=True, verbose_name=_('מספר שבב'))
@@ -92,7 +86,6 @@ class Dog(models.Model):
     color = models.CharField(max_length=255, blank=True, default=None, null=True, verbose_name=_('צבע'))
     behaviour_description = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('תיאור התנהגותי'))
     story = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיפור רקע'))
-    image = models.ImageField(upload_to='mediaDogs/', default='media/generic_img.png', blank=True, null=True, verbose_name=_('תמונה'))
     acceptance_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך קבלה לעמותה'))
     location = models.CharField(max_length=255, choices=PLACES, blank=True, default='עמותה', null=True, verbose_name=_('מיקום הכלב'))
     # exit_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך יציאה מעמותה'))

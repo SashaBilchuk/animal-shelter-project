@@ -11,6 +11,7 @@ class DogDeathForm(forms.ModelForm):
         # toDate = Dog.acceptance_date
         widgets = {'death_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})}
 
+
 class DogAdoptionsForm(forms.ModelForm):
     class Meta:
         model = DogAdoption

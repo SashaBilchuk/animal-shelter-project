@@ -1,5 +1,5 @@
 from django import forms
-from .models import Dog, Cat, DogAdoption, CatAdoption, CatFostering, DogFostering
+from .models import Dog, Cat, DogAdoption, CatAdoption, CatFostering, DogFostering,BlackList, Response
 from django.utils.translation import gettext_lazy as _
 
 
@@ -78,3 +78,36 @@ class CatFosteringForm(forms.ModelForm):
                 raise forms.ValidationError(cat.name + ' כבר באומנה')
         return cat
 
+class BlackListForm(forms.ModelForm):
+    class Meta:
+        model = BlackList
+        fields = "__all__"
+        widgets = {'name': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
+                   'city': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
+                   'email_address ': forms.EmailInput(),
+                   'phone_num ': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
+                   'comments ': forms.Textarea(attrs={'class': 'form-control', 'rows': 3})}
+
+    def clean_response(self):
+        existing_phones = self.cleaned_data.get('phone_num')
+        for instance in BlackList.objects.all():
+            if instance.phone_num == existing_phones:
+                raise forms.ValidationError(instance.name + ' קיים ברשימה')
+        return existing_phones
+
+class EditResponseStatus(forms.ModelForm):
+    class Meta:
+        model = Response
+        fields = ("status", "response_owner", "comments")
+        widgets = {'name': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
+                   'city': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
+                   'email_address ': forms.EmailInput(),
+                   'phone_num ': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
+                   'comments ': forms.Textarea(attrs={'class': 'form-control', 'rows': 3})}
+
+    def clean_response(self):
+        existing_phones = self.cleaned_data.get('phone_num')
+        for instance in BlackList.objects.all():
+            if instance.phone_num == existing_phones:
+                raise forms.ValidationError(instance.name + ' קיים ברשימה')
+        return existing_phones

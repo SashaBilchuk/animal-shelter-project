@@ -83,6 +83,8 @@ class Foster(models.Model):
 
 class Dog(models.Model):
     id = models.AutoField(primary_key=True)
+    acceptance_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך קבלה לעמותה'))
+    location = models.CharField(max_length=255, choices=PLACES, blank=True, default='עמותה', null=True, verbose_name=_('מיקום הכלב'))
     chip_number = models.IntegerField(blank=True, default=None, null=True, verbose_name=_('מספר שבב'))
     name = models.CharField(unique=True, max_length=255, verbose_name=_('שם'))
     birth_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך לידה'))
@@ -93,8 +95,6 @@ class Dog(models.Model):
     behaviour_description = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('תיאור התנהגותי'))
     story = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיפור רקע'))
     image = models.ImageField(upload_to='mediaDogs/', default='media/generic_img.png', blank=True, null=True, verbose_name=_('תמונה'))
-    acceptance_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך קבלה לעמותה'))
-    location = models.CharField(max_length=255, choices=PLACES, blank=True, default='עמותה', null=True, verbose_name=_('מיקום הכלב'))
     # exit_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך יציאה מעמותה'))
     clinic = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('מרפאה וטרינרית'))
     vaccine_book = models.BooleanField(default=False, verbose_name=_('פנקס חיסונים'))
@@ -180,14 +180,14 @@ class Dog(models.Model):
 
 class Cat(models.Model):
     id = models.AutoField(primary_key=True)
+    acceptance_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך כניסה לעמותה'))
+    location = models.CharField(choices=PLACES, blank=True, default='עמותה', null=True, max_length=20, verbose_name=_('מיקום'))
     name = models.CharField(unique=True, max_length=255, verbose_name=_('שם'))
     birth_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך לידה'))
     gender = models.CharField(choices=GENDER_CHOICES, max_length=6, verbose_name=_('מין'))
     physical_description = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('תיאור חיצוני'))
     story = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיפור רקע'))
     image = models.ImageField(upload_to='mediaCats/', blank=True, null=True, default='media/generic_img.png', verbose_name=_('תמונה'))
-    acceptance_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך כניסה לעמותה'))
-    location = models.CharField(choices=PLACES, blank=True, default='עמותה', null=True, max_length=20, verbose_name=_('מיקום'))
     clinic = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('מרפאה וטרינרית'))
     vaccination_book = models.BooleanField(default=False, verbose_name=_('פנקס חיסונים'))
     vaccination_book_link = models.FileField(upload_to='mediaCats/', blank=True, default=None, null=True, verbose_name=_('קישור לפנקס חיסונים'))
@@ -325,31 +325,49 @@ class CatFostering(models.Model):
         return "{}_{}".format(self.cat.__str__(), self.foster.__str__())
 
 
+class Volunteer(models.Model):
+    name =  models.CharField(max_length=255, default=None, verbose_name=_('שם'))
+    def __str__(self):
+        return self.name
+
 
 class Response(models.Model):
-    response_owner= models.CharField(max_length=255, verbose_name=_('שם מטפלת '))
-    status = models.CharField(max_length=255, verbose_name=_(''))
-    comments = models.CharField(max_length=255, verbose_name=_(' '))
-    full_name = models.CharField(max_length=255, verbose_name=_(' '), editable=False)
-    age = models.IntegerField(verbose_name=_(' '), editable=False)
-    city = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    phone_num = models.CharField(max_length=255, verbose_name=_(''),editable=False)
-    mail = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    maritalStatus =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    numChildren = models.IntegerField( verbose_name=_(' '),editable=False)
-    otherPets =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    experience = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    dog_name = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    allergies = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    own_apartment = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    rent_agreed = models.CharField(max_length=255, verbose_name=_(''),editable=False)
-    residenceType =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    fence =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    dogPlace = models.CharField(max_length=255, verbose_name=_(''),editable=False)
-    dogSize =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    response_comments =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
+    response_owner = models.CharField(max_length=255, verbose_name=_('שם מטפלת '))
+    status = models.CharField(max_length=255, verbose_name=_('סטטוס'))
+    comments = models.CharField(max_length=255, verbose_name=_('הערות'))
+    full_name = models.CharField(max_length=255, editable=False)
+    age = models.IntegerField(editable=False)
+    city = models.CharField(max_length=255, editable=False)
+    phone_num = models.CharField(max_length=255, editable=False)
+    mail = models.CharField(max_length=255,editable=False)
+    maritalStatus =models.CharField(max_length=255,editable=False)
+    numChildren = models.IntegerField(editable=False)
+    otherPets =models.CharField(max_length=255, editable=False)
+    experience = models.CharField(max_length=255, editable=False)
+    dog_name = models.CharField(max_length=255,editable=False)
+    allergies = models.CharField(max_length=255,editable=False)
+    own_apartment = models.CharField(max_length=255,editable=False)
+    rent_agreed = models.CharField(max_length=255,editable=False)
+    residenceType =models.CharField(max_length=255, editable=False)
+    fence =models.CharField(max_length=255, editable=False)
+    dogPlace = models.CharField(max_length=255,editable=False)
+    dogSize =models.CharField(max_length=255, editable=False)
+    response_comments =models.CharField(max_length=255, editable=False)
     response_date = models.DateTimeField()
-    QID = models.IntegerField(unique=True, verbose_name=_(''),editable=False)
+    QID = models.IntegerField(unique=True,editable=False)
 
     def __str__(self):
         return self.QID
+
+
+class BlackList(models.Model):
+    name = models.CharField(max_length=255, default=None, verbose_name=_('שם'))
+    city = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('עיר מגורים'))
+    email_address = models.EmailField(max_length=254, blank=True, default=None, null=True, verbose_name=_('כתובת מייל'))
+    phone_num = models.CharField(max_length=255, unique=True, verbose_name=_('מספר טלפון'))
+    comments = models.CharField(max_length=400,default=None, verbose_name=_('הערות'))
+
+
+    def __str__(self):
+        return self.name
+

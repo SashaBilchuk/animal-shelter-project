@@ -82,7 +82,7 @@
               <section class="row"><div><span> עיקור/סירוס: </span>{% if cat.sterilization is None %} טרם טופל
               {% else %}<a href='{{dog.sterilization_approval.url}}'> {{ cat.sterilization }} </a></div>
               {% endif %}</section>
-              <div class="row"><div> <span> הערות רפואיות: </span> {{ dog.medical_comments }} </div></div>
+              <div class="row"><div> <span> הערות רפואיות: </span> {{ cat.medical_comments }} </div></div>
 
             </div>
         </div>
@@ -98,12 +98,15 @@
         </div>
         <div id="collapseFour" class="collapse" role="tabpanel" aria-labelledby="headingFour">
             <div class="card-body">
-                כרגע לא נכון, אחרי תיקון רלציות - לשנות!
-            <section class="row"><div> <span> שם המאמצ/ת: </span> {% if cat.adopter %} {{ dog.adopter.adopter_ID }} {% else %} טרם טופל {% endif %}</div></section>
-            <section class="row"><div> <span> תאריך אימוץ: </span> {% if cat.adopter %} {{ dog.adopter.adoption_date }} {% else %} טרם טופל {% endif %}</div></section>
-            <section class="row"><div> <span> מסמך אימוץ: </span> {% if cat.adopter %} {{ dog.adopter.adoption_date }} {% else %} טרם טופל {% endif %}</div></section>
-            <section class="row"><div> <span> תאריך החזרה: </span> {% if cat.adopter %} {{ dog.adopter.adoption_date }} {% else %} טרם טופל {% endif %}</div></section>
-            <section class="row"><div> <span> סיבת החזרה: </span> {% if cat.adopter %} {{ dog.adopter.adoption_date }} {% else %} טרם טופל {% endif %}</div></section>
+            <section class="row"><div> <span> ת"ז המאמצ/ת: </span> {% if cat_adoption.adopter.adopter_ID %} {{ cat_adoption.adopter.adopter_ID }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> שם המאמצ/ת: </span> {% if cat_adoption.adopter %} {{ cat_adoption.adopter }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> תאריך אימוץ: </span> {% if cat_adoption.adoption_date %} {{ cat_adoption.adoption_date }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> מסמך אימוץ: </span> {% if cat_adoption.adoption_form_link %} <a href='{{cat_adoption.adoption_form_link.url}}'> קישור </a>
+            {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> תאריך החזרה: </span> {% if cat_adoption.return_date %} {{ cat_adoption.return_date }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> סיבת החזרה: </span> {% if cat_adoption.return_reason %} {{ cat_adoption.return_reason }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> מסמך וויתור: </span> {% if cat_adoption.waiver_document %} <a href='{{cat_adoption.waiver_document.url}}'> קישור </a>
+            {% else %} - {% endif %}</div></section>
             </div>
         </div>
     </div>
@@ -112,11 +115,31 @@
            <div class="row">
             <h5 class="mb-0">
                 <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-                פרטי מוות:</a>
+                פרטי אומנה:</a>
             </h5>
             </div>
         </div>
         <div id="collapseFive" class="collapse" role="tabpanel" aria-labelledby="headingFive">
+            <div class="card-body">
+            <section class="row"><div> <span> ת"ז האומנה: </span> {% if cat_fostering.foster.foster_ID %} {{ cat_fostering.foster.foster_ID}} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> שם האומנה: </span> {% if cat_fostering.foster %} {{ cat_fostering.foster }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> תאריך התחלת האומנה: </span> {% if cat_fostering.fostering_date_start %} {{cat_fostering.fostering_date_start }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> תאריך סיום האומנה: </span> {% if cat_fostering.fostering_date_end %} {{ cat_fostering.fostering_date_end}} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> הערות האומנה: </span> {% if cat_fostering.fostering_comments%} {{ cat_fostering.fostering_comments }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> גורם מטפל בעמותה: </span> {% if cat_fostering.fostering_volunteer %} {{ cat_fostering.fostering_volunteer }} {% else %} - {% endif %}</div></section>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header" role="tab" id="headingSix">
+           <div class="row">
+            <h5 class="mb-0">
+                <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                פרטי מוות:</a>
+            </h5>
+            </div>
+        </div>
+        <div id="collapseSix" class="collapse" role="tabpanel" aria-labelledby="headingSix">
             <div class="card-body">
             <section class="row"><div> <span> האם נפתר/ה: </span> {% if cat.died %} כן {% else %} - {% endif %}</div></section>
             <section class="row"><div> <span> תאריך הפתירה: </span> {% if cat.death_date %} {{ dog.death_date }} {% else %} - {% endif %}</div></section>

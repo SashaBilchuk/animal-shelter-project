@@ -36,11 +36,11 @@
         </div>
         <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
             <div class="card-body">
-              <div class="row"><div> <span> מספר שבב: </span> {% if dog.chip_number is None %} אין {% else %} {{ dog.chip_number }} {% endif %}</div></div>
-              <div class="row"><div> <span> גיל:</span> {{ dog.age_years }} שנים ו-{{ dog.age_months }} חודשים</div></div>
+              <div class="row"><div> <span> מספר שבב: </span>{% if dog.chip_number %} {{ dog.chip_number }} {% else %} אין {% endif %} </div></div>
+              <div class="row"><div> <span> גיל:</span> {{ dog.age_years }} שנים ו{{ dog.age_months }} חודשים</div></div>
               <div class="row"><div> <span> תיאור חיצוני: </span> {{ dog.physical_description }} </div></div>
-              <div class="row"><div> <span> גודל: </span> {{ dog.get_size_display }} </div></div>
-              <div class="row"><div> <span> צבע: </span> {{ dog.color }} </div></div>
+              <div class="row"><div> <span> גודל: </span>{% if dog.size %} {{ dog.get_size_display }} {% else %} - {% endif %}</div></div>
+              <div class="row"><div> <span> צבע: </span>{% if dog.color %} {{ dog.color }} {% else %} - {% endif %}</div></div>
               <div class="row"><div> <span> תיאור התנהגותי: </span> {{ dog.behaviour_description }} </div></div>
               <div class="row"><div> <span> סיפור רקע: </span> {{ dog.story }} </div></div>
             </div>
@@ -77,8 +77,9 @@
             <div class="card-body">
               <section class="row"><div> <span> מרפאה וטרינרית: </span> {% if dog.clinic  %} {{ dog.clinic }} {% else %} טרם טופל {% endif %}</div></section>
               <section class="row"><div><span>פנקס חיסונים: </span>{% if dog.vaccine_book %} <a href='{{dog.vaccine_book_link.url}}'> יש </a>
-              {% else %}טרם טופל</div>
-              {% endif %}</section>
+              {% else %}טרם טופל</div>{% endif %}</section>
+              <section class="row"><div><span>תיק רפואי: </span>{% if dog.medical_file %} <a href='{{dog.medical_file.url}}'> יש </a>
+              {% else %}טרם טופל</div>{% endif %}</section>
               <section class="row"><div> <span> תילוע 1: </span> {% if dog.worming_1  %} {{ dog.worming_1 }} {% else %} טרם טופל {% endif %}
               <span> תילוע 2: </span> {% if dog.worming_2  %} {{ dog.worming_2 }} {% else %} טרם טופל {% endif %}</div>
               </section>
@@ -115,12 +116,15 @@
         </div>
         <div id="collapseFour" class="collapse" role="tabpanel" aria-labelledby="headingFour">
             <div class="card-body">
-                כרגע לא נכון, אחרי תיקון רלציות - לשנות!
-            <section class="row"><div> <span> שם המאמצ/ת: </span> {% if dog.adopter %} {{ dog.adopter.adopter_ID }} {% else %} טרם טופל {% endif %}</div></section>
-            <section class="row"><div> <span> תאריך אימוץ: </span> {% if dog.adopter %} {{ dog.adopter.adoption_date }} {% else %} טרם טופל {% endif %}</div></section>
-            <section class="row"><div> <span> מסמך אימוץ: </span> {% if dog.adopter %} {{ dog.adopter.adoption_date }} {% else %} טרם טופל {% endif %}</div></section>
-            <section class="row"><div> <span> תאריך החזרה: </span> {% if dog.adopter %} {{ dog.adopter.adoption_date }} {% else %} טרם טופל {% endif %}</div></section>
-            <section class="row"><div> <span> סיבת החזרה: </span> {% if dog.adopter %} {{ dog.adopter.adoption_date }} {% else %} טרם טופל {% endif %}</div></section>
+            <section class="row"><div> <span> ת"ז המאמצ/ת: </span> {% if dog_adoption.adopter.adopter_ID %} {{ dog_adoption.adopter.adopter_ID }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> שם המאמצ/ת: </span> {% if dog_adoption.adopter %} {{ dog_adoption.adopter }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> תאריך אימוץ: </span> {% if dog_adoption.adoption_date %} {{ dog_adoption.adoption_date }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> מסמך אימוץ: </span> {% if dog_adoption.adoption_form_link %} <a href='{{dog_adoption.adoption_form_link.url}}'> קישור </a>
+            {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> תאריך החזרה: </span> {% if dog_adoption.return_date %} {{ dog_adoption.return_date }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> סיבת החזרה: </span> {% if dog_adoption.return_reason %} {{ dog_adoption.return_reason }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> מסמך וויתור: </span> {% if dog_adoption.waiver_document %} <a href='{{dog_adoption.waiver_document.url}}'> קישור </a>
+            {% else %} - {% endif %}</div></section>
             </div>
         </div>
     </div>
@@ -129,11 +133,31 @@
            <div class="row">
             <h5 class="mb-0">
                 <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-                פרטי מוות:</a>
+                פרטי אומנה:</a>
             </h5>
             </div>
         </div>
         <div id="collapseFive" class="collapse" role="tabpanel" aria-labelledby="headingFive">
+            <div class="card-body">
+            <section class="row"><div> <span> ת"ז האומנה: </span> {% if dog_fostering.foster.foster_ID %} {{ dog_fostering.foster.foster_ID}} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> שם האומנה: </span> {% if dog_fostering.foster %} {{ dog_fostering.foster }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> תאריך התחלת האומנה: </span> {% if dog_fostering.fostering_date_start %} {{dog_fostering.fostering_date_start }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> תאריך סיום האומנה: </span> {% if dog_fostering.fostering_date_end %} {{ dog_fostering.fostering_date_end}} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> הערות האומנה: </span> {% if dog_fostering.fostering_comments%} {{ dog_fostering.fostering_comments }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> גורם מטפל בעמותה: </span> {% if dog_fostering.fostering_volunteer %} {{ dog_fostering.fostering_volunteer }} {% else %} - {% endif %}</div></section>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header" role="tab" id="headingSix">
+           <div class="row">
+            <h5 class="mb-0">
+                <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                פרטי מוות:</a>
+            </h5>
+            </div>
+        </div>
+        <div id="collapseSix" class="collapse" role="tabpanel" aria-labelledby="headingSix">
             <div class="card-body">
             <section class="row"><div> <span> האם נפתר/ה: </span> {% if dog.died %} כן {% else %} - {% endif %}</div></section>
             <section class="row"><div> <span> תאריך הפתירה: </span> {% if dog.death_date %} {{ dog.death_date }} {% else %} - {% endif %}</div></section>

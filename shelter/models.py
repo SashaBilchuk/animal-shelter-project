@@ -21,12 +21,13 @@ PLACES = (
 )
 
 STATUS_ADOPTER = (
-    ('אימץ', 'אימץ',), ('RETURNED', 'החזיר')
+    ('אימצ/ה', 'אימצ/ה',), ('החזיר/ה', 'החזיר/ה')
      )
 
-FOSTER_ADOPTER = (
-    ('פעיל עם כלב כרגע', 'פעיל עם כלב כרגע'), ('פעיל ללא כלב', 'פעיל ללא כלב'),('לא פעיל','לא פעיל')
+STATUS_FOSTER = (
+    ('פעיל עם חיה', 'פעיל עם חיה'), ('פעיל ללא חיה', 'פעיל ללא חיה'), ('לא פעיל', 'לא פעיל')
      )
+
 
 class Adopter(models.Model):
     adopter_ID = models.IntegerField(unique=True, default=None, verbose_name=_('ת"ז'))
@@ -60,10 +61,8 @@ class Foster(models.Model):
     foster_street = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('רחוב'))
     phone_number = models.CharField(max_length=12, default=None, blank=True, null=True, verbose_name=_('מספר טלפון'))
     email_address = models.EmailField(max_length=254, blank=True, default=None, null=True, verbose_name=_('כתובת מייל'))
-    activity_status = models.CharField(choices=FOSTER_ADOPTER, default='פעיל ללא כלב', max_length=20,
-                                       verbose_name=_('סטטוס פעילות'))
-    adopter_comments = models.TextField(max_length=255, blank=True, default=None, null=True,
-                                        verbose_name=_('הערות'))
+    activity_status = models.CharField(choices=STATUS_FOSTER, default='פעיל ללא חיה', max_length=20, verbose_name=_('סטטוס פעילות'))
+    foster_comments = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('הערות'))
 
     def age_years(self):
         if self.birth_date is not None:
@@ -77,6 +76,8 @@ class Foster(models.Model):
 
 class Dog(models.Model):
     id = models.AutoField(primary_key=True)
+    acceptance_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך קבלה לעמותה'))
+    location = models.CharField(max_length=255, choices=PLACES, blank=True, default='עמותה', null=True, verbose_name=_('מיקום הכלב'))
     chip_number = models.IntegerField(blank=True, default=None, null=True, verbose_name=_('מספר שבב'))
     name = models.CharField(unique=True, max_length=255, verbose_name=_('שם'))
     birth_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך לידה'))
@@ -116,7 +117,6 @@ class Dog(models.Model):
     foster_relation_dog = models.ManyToManyField(Foster, through='DogFostering', related_name="fostering_dog")
     animal_type = models.CharField(max_length=32, default="כלב",  editable=False)
 
-
     @property
     def age_years(self):
         if self.birth_date is not None:
@@ -144,7 +144,6 @@ class Dog(models.Model):
         print(type(adopters))
         return adopters
 
-
     def get_city_from_adopters(self):
         adopters = self.adopter_relation_dog.all()
         city_lst = []
@@ -168,19 +167,16 @@ class Dog(models.Model):
         return self.name
 
 
-
-
-
 class Cat(models.Model):
     id = models.AutoField(primary_key=True)
+    acceptance_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך כניסה לעמותה'))
+    location = models.CharField(choices=PLACES, blank=True, default='עמותה', null=True, max_length=20, verbose_name=_('מיקום'))
     name = models.CharField(unique=True, max_length=255, verbose_name=_('שם'))
     birth_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך לידה'))
     gender = models.CharField(choices=GENDER_CHOICES, max_length=6, verbose_name=_('מין'))
     physical_description = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('תיאור חיצוני'))
     story = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיפור רקע'))
     image = models.ImageField(upload_to='mediaCats/', blank=True, null=True, default='media/generic_img.png', verbose_name=_('תמונה'))
-    acceptance_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך כניסה לעמותה'))
-    location = models.CharField(choices=PLACES, blank=True, default='עמותה', null=True, max_length=20, verbose_name=_('מיקום'))
     clinic = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('מרפאה וטרינרית'))
     vaccination_book = models.BooleanField(default=False, verbose_name=_('פנקס חיסונים'))
     vaccination_book_link = models.FileField(upload_to='mediaCats/', blank=True, default=None, null=True, verbose_name=_('קישור לפנקס חיסונים'))
@@ -198,7 +194,6 @@ class Cat(models.Model):
     adopter_relation_cat = models.ManyToManyField(Adopter, through='CatAdoption', related_name="adoptions_cat")
     foster_relation_cat = models.ManyToManyField(Foster, through='CatFostering', related_name="fostering_cat")
     animal_type = models.CharField(max_length=32, default="חתול",  editable=False)
-
 
     @property
     def age_years(self):
@@ -257,11 +252,12 @@ class DogAdoption(models.Model):
     adoption_form_link = models.FileField(upload_to='mediaDogs/', blank=True, default=None, null=True, verbose_name=_('קישור למסמך האימוץ'))
     adoption_comments = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('הערות האימוץ'))
     last_followup_call = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('שיחת מעקב אחרונה'))
-    next_followup_call = models.DateField(default=datetime.date.today, verbose_name=_('תאריך שיחת מעקב הבאה'))
+    next_followup_call = models.DateField(default=None, verbose_name=_('תאריך שיחת מעקב הבאה'))
     adoption_volunteer = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('גורם מטפל באימוץ'))
     returned = models.BooleanField(default=False, verbose_name=_('החזרה'))
-    return_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך החזרה'))
+    return_date = models.DateField(default=None, blank=True, null=True, verbose_name=_('תאריך החזרה'))
     return_reason = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיבת החזרה'))
+    waiver_document = models.FileField(upload_to='mediaDogs/', blank=True, default=None, null=True, verbose_name=_('מסמך וויתור'))
     return_volunteer = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('גורם מטפל בהחזרה'))
 
     def __str__(self):
@@ -272,16 +268,14 @@ class DogFostering(models.Model):
     dog = models.ForeignKey(Dog, on_delete=models.CASCADE, verbose_name=_('שם הכלב'))
     foster = models.ForeignKey(Foster, on_delete=models.CASCADE, verbose_name=_('שם האומנה'))
     fostering_date_start = models.DateField(default=datetime.date.today, verbose_name=_('תאריך תחילת האומנה'))
-    fostering_date_end = models.DateField(default=datetime.date.today, verbose_name=_('תאריך סוף האומנה'))
-    fostering_comments = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('הערות האומנ'))
-    fostering_volunteer = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('גורם מטפל באומנה'))
+    fostering_date_end = models.DateField(default=None, verbose_name=_('תאריך סיום האומנה'))
+    fostering_comments = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('הערות האומנה'))
+    fostering_volunteer = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('גורם מטפל בעמותה'))
     fostering_link_text = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('קישור לטופס אומנה'))
     fostering_link_for_adoption_text = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('קישור לטופס אומנה למטרת אימוץ'))
 
     def __str__(self):
         return "{}_{}".format(self.dog.__str__(), self.foster.__str__())
-
-
 
 
 class CatAdoption(models.Model):
@@ -290,27 +284,28 @@ class CatAdoption(models.Model):
     adoption_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך האימוץ'))
     method_of_payment = models.CharField(max_length=255, default=None, null=True, verbose_name=_('שיטת התשלום'))
     receipt_number = models.IntegerField(blank=True, default=None, null=True, verbose_name=_('מספר חשבונית'))
-    adoption_form_link = models.FileField(upload_to='mediaDogs/', blank=True, default=None, null=True, verbose_name=_('קישור למסמך האימוץ'))
+    adoption_form_link = models.FileField(upload_to='mediaCats/', blank=True, default=None, null=True, verbose_name=_('קישור למסמך האימוץ'))
     adoption_comments = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('הערות האימוץ'))
     last_followup_call = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('שיחת מעקב אחרונה'))
-    next_followup_call = models.DateField(default=datetime.date.today, verbose_name=_('תאריך שיחת מעקב הבאה'))
+    next_followup_call = models.DateField(default=None, verbose_name=_('תאריך שיחת מעקב הבאה'))
     adoption_volunteer = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('גורם מטפל באימוץ'))
     returned = models.BooleanField(default=False, verbose_name=_('החזרה'))
-    return_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך החזרה'))
+    return_date = models.DateField(default=None, blank=True, null=True, verbose_name=_('תאריך החזרה'))
     return_reason = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיבת החזרה'))
+    waiver_document = models.FileField(upload_to='mediaCats/', blank=True, default=None, null=True, verbose_name=_('מסמך וויתור'))
     return_volunteer = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('גורם מטפל בהחזרה'))
 
     def __str__(self):
-
         return "{}_{}".format(self.cat.__str__(), self.adopter.__str__())
+
 
 class CatFostering(models.Model):
     cat = models.ForeignKey(Cat, on_delete=models.CASCADE, verbose_name=_('שם החתול'))
     foster = models.ForeignKey(Foster, on_delete=models.CASCADE, verbose_name=_('שם האומנה'))
     fostering_date_start = models.DateField(default=datetime.date.today, verbose_name=_('תאריך תחילת האומנה'))
-    fostering_date_end = models.DateField(default=datetime.date.today, verbose_name=_('תאריך סוף האומנה'))
-    fostering_comments = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('הערות האומנ'))
-    fostering_volunteer = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('גורם מטפל באומנה'))
+    fostering_date_end = models.DateField(default=None, verbose_name=_('תאריך סיום האומנה'))
+    fostering_comments = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('הערות האומנה'))
+    fostering_volunteer = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('גורם מטפל בעמותה'))
     fostering_link_text = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('קישור לטופס אומנה'))
     fostering_link_for_adoption_text = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('קישור לטופס אומנה למטרת אימוץ'))
 
@@ -319,30 +314,50 @@ class CatFostering(models.Model):
 
 
 
+class Volunteer(models.Model):
+    name =  models.CharField(max_length=255, default=None, verbose_name=_('שם'))
+    def __str__(self):
+        return self.name
+
+
 class Response(models.Model):
-    response_owner= models.CharField(max_length=255, verbose_name=_('שם מטפלת '))
-    status = models.CharField(max_length=255, verbose_name=_(''))
-    comments = models.CharField(max_length=255, verbose_name=_(' '))
-    full_name = models.CharField(max_length=255, verbose_name=_(' '), editable=False)
-    age = models.IntegerField(verbose_name=_(' '), editable=False)
-    city = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    phone_num = models.CharField(max_length=255, verbose_name=_(''),editable=False)
-    mail = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    maritalStatus =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    numChildren = models.IntegerField( verbose_name=_(' '),editable=False)
-    otherPets =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    experience = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    dog_name = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    allergies = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    own_apartment = models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    rent_agreed = models.CharField(max_length=255, verbose_name=_(''),editable=False)
-    residenceType =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    fence =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    dogPlace = models.CharField(max_length=255, verbose_name=_(''),editable=False)
-    dogSize =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
-    response_comments =models.CharField(max_length=255, verbose_name=_(' '),editable=False)
+    response_owner = models.CharField(max_length=255, verbose_name=_('שם מטפלת '))
+    status = models.CharField(max_length=255, verbose_name=_('סטטוס'))
+    comments = models.CharField(max_length=255, verbose_name=_('הערות'))
+    full_name = models.CharField(max_length=255, editable=False)
+    age = models.IntegerField(editable=False)
+    city = models.CharField(max_length=255, editable=False)
+    phone_num = models.CharField(max_length=255, editable=False)
+    mail = models.CharField(max_length=255,editable=False)
+    maritalStatus =models.CharField(max_length=255,editable=False)
+    numChildren = models.IntegerField(editable=False)
+    otherPets =models.CharField(max_length=255, editable=False)
+    experience = models.CharField(max_length=255, editable=False)
+    dog_name = models.CharField(max_length=255,editable=False)
+    allergies = models.CharField(max_length=255,editable=False)
+    own_apartment = models.CharField(max_length=255,editable=False)
+    rent_agreed = models.CharField(max_length=255,editable=False)
+    residenceType =models.CharField(max_length=255, editable=False)
+    fence =models.CharField(max_length=255, editable=False)
+    dogPlace = models.CharField(max_length=255,editable=False)
+    dogSize =models.CharField(max_length=255, editable=False)
+    response_comments =models.CharField(max_length=255, editable=False)
+
     response_date = models.DateTimeField()
-    QID = models.IntegerField(unique=True, verbose_name=_(''),editable=False)
+    QID = models.IntegerField(unique=True,editable=False)
 
     def __str__(self):
         return self.QID
+
+
+class BlackList(models.Model):
+    name = models.CharField(max_length=255, default=None, verbose_name=_('שם'))
+    city = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('עיר מגורים'))
+    email_address = models.EmailField(max_length=254, blank=True, default=None, null=True, verbose_name=_('כתובת מייל'))
+    phone_num = models.CharField(max_length=255, unique=True, verbose_name=_('מספר טלפון'))
+    comments = models.CharField(max_length=400,default=None, verbose_name=_('הערות'))
+
+
+    def __str__(self):
+        return self.name
+

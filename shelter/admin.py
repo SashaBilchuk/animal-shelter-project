@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Dog, Cat, Adopter, DogAdoption, CatAdoption, Foster, DogFostering,CatFostering
+from .models import Dog, Cat, Adopter, DogAdoption, CatAdoption, Foster,\
+    DogFostering,CatFostering, Volunteer
 
 # from .models import Foster
 
@@ -20,6 +21,9 @@ admin.site.register(CatAdoption)
 admin.site.register(Foster)
 admin.site.register(DogFostering)
 admin.site.register(CatFostering)
+admin.site.register(Volunteer)
+
+
 
 
 

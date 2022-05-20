@@ -60,14 +60,20 @@ def home(request):
 
 def detail_cat(request, cat_id):
     cat = get_object_or_404(Cat, pk=cat_id)
-    cats = Cat.objects.all()
-    return render(request, 'detail_cat.html', {'cat': cat, 'cats': cats})
+    if CatAdoption.objects.filter(cat=cat.id):
+        return render(request, 'detail_cat.html', {'cat': cat, 'cat_adoption': CatAdoption.objects.get(cat=cat.id)})
+    if CatFostering.objects.filter(cat=cat.id):
+        return render(request, 'detail_cat.html', {'cat': cat, 'cat_fostering': CatFostering.objects.get(cat=cat.id)})
+    return render(request, 'detail_cat.html', {'cat': cat})
 
 
 def detail_dog(request, dog_id):
     dog = get_object_or_404(Dog, pk=dog_id)
-    dogs = Dog.objects.all()
-    return render(request, 'detail_dog.html', {'dog': dog, 'dogs': dogs})
+    if DogAdoption.objects.filter(dog=dog.id):
+        return render(request, 'detail_dog.html', {'dog': dog, 'dog_adoption': DogAdoption.objects.get(dog=dog.id)})
+    if DogFostering.objects.filter(dog=dog.id):
+        return render(request, 'detail_dog.html', {'dog': dog, 'dog_fostering': DogFostering.objects.get(dog=dog.id)})
+    return render(request, 'detail_dog.html', {'dog': dog})
 
 
 def search(request):
@@ -104,11 +110,14 @@ def add_cat(request):
 def add_dog(request):
     return redirect('admin/shelter/dog/add/')
 
+
 def add_adopter(request):
     return redirect('admin/shelter/adopter/add/')
 
+
 def add_foster(request):
     return redirect('admin/shelter/foster/add/')
+
 
 def logout(request):
     return redirect('admin/logout/')
@@ -121,6 +130,12 @@ def add_dog_adoption(request):
         form = DogAdoptionsForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            dog = form.cleaned_data.get('dog')
+            dog.location = 'Adoption'
+            dog.save()
+            adopter = form.cleaned_data.get('adopter')
+            adopter.activity_status = 'אימצ/ה'
+            adopter.save()
             return redirect('home')
     else:
         form = DogAdoptionsForm
@@ -135,6 +150,12 @@ def add_dog_fostering(request):
         form = DogFosteringForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            dog = form.cleaned_data.get('dog')
+            dog.location = 'Foster'
+            dog.save()
+            foster = form.cleaned_data.get('foster')
+            foster.activity_status = 'פעיל עם חיה'
+            foster.save()
             return redirect('home')
     else:
         form = DogFosteringForm
@@ -149,6 +170,12 @@ def add_cat_adoption(request):
         form = CatAdoptionsForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            cat = form.cleaned_data.get('cat')
+            cat.location = 'Adoption'
+            cat.save()
+            adopter = form.cleaned_data.get('adopter')
+            adopter.activity_status = 'אימצ/ה'
+            adopter.save()
             return redirect('home')
     else:
         form = CatAdoptionsForm
@@ -163,6 +190,12 @@ def add_cat_fostering(request):
         form = CatFosteringForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            cat = form.cleaned_data.get('cat')
+            cat.location = 'Foster'
+            cat.save()
+            foster = form.cleaned_data.get('foster')
+            foster.activity_status = 'פעיל עם חיה'
+            foster.save()
             return redirect('home')
     else:
         form = CatFosteringForm
@@ -177,22 +210,6 @@ def add_cat_fostering(request):
 #     return render(request, 'reports.html', context)
 
 
-def add_cat_adoption(request):
-    cats = Cat.objects.all()
-    adopters = Adopter.objects.all()
-    if request.method == 'POST':
-        form = CatAdoptionsForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-    else:
-        form_class = CatAdoptionsForm
-
-    return render(request, 'add_cat_adoption.html', {'cats': cats, 'adopters': adopters, 'form': form_class})
-
-
-
-
 def report_adopter_URL(request):
     queryset = Adopter.objects.all()
     context = {
@@ -200,6 +217,7 @@ def report_adopter_URL(request):
     }
 
     return render(request, "reports_adopters.html", context)
+
 
 def report_foster_URL(request):
     queryset = Foster.objects.all()
@@ -210,7 +228,6 @@ def report_foster_URL(request):
     return render(request, "reports_fosters.html", context)
 
 
-
 def report_adoptions_URL(request):
     querysetdogs = DogAdoption.objects.all()
     querysetcats = CatAdoption.objects.all()
@@ -219,7 +236,8 @@ def report_adoptions_URL(request):
         "querysetcats": querysetcats
     }
 
-    return render(request, "reports_fostering.html", context)
+    return render(request, "reports_adoptions.html", context)
+
 
 def report_fostering_URL(request):
     querysetdogs = DogFostering.objects.all()
@@ -230,7 +248,6 @@ def report_fostering_URL(request):
     }
 
     return render(request, "reports_fostering.html", context)
-
 
 
 def download_report(request):
@@ -260,7 +277,7 @@ def reportURL(request):
         "form": form,
     }
     if request.method == 'POST':
-        queryset = Dog.objects.filter(death_date__range=[form['death_date'].value(), form['death_date'].value()])
+        queryset = Dog.objects.filter(death_date__contains=(form['death_date'].value(), form['death_date'].value()))
 
         context = {
             "header": header,
@@ -270,8 +287,7 @@ def reportURL(request):
 
     return render(request, "reports.html", context)
 
-
-############################################# Responses ############################################################
+############################################ Responses ############################################################
 def get_sheet():
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
     creds = ServiceAccountCredentials.from_json_keyfile_name('./pbpython-345313-70ce25d6b97c.json', scope)

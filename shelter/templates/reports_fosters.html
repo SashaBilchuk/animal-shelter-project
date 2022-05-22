@@ -45,7 +45,7 @@ th {
         </thead>
             {% for instance in queryset %}
             <tr>
-                <td> {{instance.foster_ID}}</td>
+                <td><a href="../admin/shelter/foster/{{instance.id}}/change/"><div> {{instance.foster_ID}} </div></a></td>
                 <td> {{instance.name}}</td>
                 <td> {{instance.foster_city}}</td>
                 <td> {{instance.phone_number}}</td>

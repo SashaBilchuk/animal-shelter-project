@@ -28,6 +28,18 @@ STATUS_FOSTER = (
     ('פעיל עם חיה', 'פעיל עם חיה'), ('פעיל ללא חיה', 'פעיל ללא חיה'), ('לא פעיל', 'לא פעיל')
      )
 
+STATUS_CHOICES = (
+    ('', ''),
+    ('טרם טופל', 'טרם טופל'),
+    ('בוצעה שיחה ראשונית', 'בוצעה שיחה ראשונית'),
+    ('ממתינים לוידאו', 'ממתינים לוידאו'),
+    ('מאושר לאימוץ', 'מאושר לאימוץ'),
+    ('אימץ מהעמותה', 'אימץ מהעמותה'),
+    ('לא מתאים לאימוץ', 'לא מתאים לאימוץ'),
+    ('רשימה שחורה', 'רשימה שחורה'),
+)
+
+
 
 class Adopter(models.Model):
     adopter_ID = models.IntegerField(unique=True, default=None, verbose_name=_('ת"ז'))
@@ -321,7 +333,7 @@ class Volunteer(models.Model):
 
 class Response(models.Model):
     response_owner = models.CharField(max_length=255, verbose_name=_('שם מטפלת '))
-    status = models.CharField(max_length=255, verbose_name=_('סטטוס'))
+    status = models.CharField(max_length=255,  choices=STATUS_CHOICES, verbose_name=_('סטטוס'))
     comments = models.CharField(max_length=255, verbose_name=_('הערות'))
     full_name = models.CharField(max_length=255, editable=False)
     age = models.IntegerField(editable=False)
@@ -345,14 +357,14 @@ class Response(models.Model):
     response_date = models.DateTimeField()
     QID = models.IntegerField(unique=True,editable=False)
 
-    def __str__(self):
+    def __int__(self):
         return self.QID
 
 
 class BlackList(models.Model):
-    name = models.CharField(max_length=255, default=None, verbose_name=_('שם'))
+    full_name = models.CharField(max_length=255, default=None, verbose_name=_('שם'))
     city = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('עיר מגורים'))
-    email_address = models.EmailField(max_length=254, blank=True, default=None, null=True, verbose_name=_('כתובת מייל'))
+    mail = models.EmailField(max_length=254, blank=True, default=None, null=True, verbose_name=_('כתובת מייל'))
     phone_num = models.CharField(max_length=255, unique=True, verbose_name=_('מספר טלפון'))
     comments = models.CharField(max_length=400,default=None, verbose_name=_('הערות'))
 

@@ -1,6 +1,18 @@
 from django import forms
-from .models import Dog, Cat, DogAdoption, CatAdoption, CatFostering, DogFostering,BlackList, Response
+from .models import Dog, Cat, DogAdoption, CatAdoption, CatFostering, DogFostering,BlackList, Response, STATUS_CHOICES
 from django.utils.translation import gettext_lazy as _
+
+
+# STATUS_CHOICES = (
+#     ('adopted', 'אימץ מהעמותה'),
+#     ('adoption_approved', 'מאושר לאימוץ'),
+#     ('first_call', 'בוצעה שיחה ראשונית'),
+#     ('video_call_wait', 'ממתינים לוידאו'),
+#     ('pending', 'טרם טופל'),
+#     ('not_approved', 'לא מתאים לאימוץ'),
+#     ('black_list', 'רשימה שחורה')
+# )
+
 
 
 class DogDeathForm(forms.ModelForm):
@@ -78,13 +90,14 @@ class CatFosteringForm(forms.ModelForm):
                 raise forms.ValidationError(cat.name + ' כבר באומנה')
         return cat
 
+
 class BlackListForm(forms.ModelForm):
     class Meta:
         model = BlackList
         fields = "__all__"
-        widgets = {'name': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
+        widgets = {'full_name': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
                    'city': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
-                   'email_address ': forms.EmailInput(),
+                   'mail ': forms.EmailInput(),
                    'phone_num ': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
                    'comments ': forms.Textarea(attrs={'class': 'form-control', 'rows': 3})}
 
@@ -94,20 +107,22 @@ class BlackListForm(forms.ModelForm):
             if instance.phone_num == existing_phones:
                 raise forms.ValidationError(instance.name + ' קיים ברשימה')
         return existing_phones
+
 
 class EditResponseStatus(forms.ModelForm):
+
     class Meta:
         model = Response
-        fields = ("status", "response_owner", "comments")
-        widgets = {'name': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
-                   'city': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
-                   'email_address ': forms.EmailInput(),
-                   'phone_num ': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
-                   'comments ': forms.Textarea(attrs={'class': 'form-control', 'rows': 3})}
+        fields = ("response_owner", "status",  "comments")
+        # {"status": forms.Select(choices=STATUS_CHOICES, attrs={'class': 'form-control'}),
+        widgets = {"status": forms.ChoiceField(choices=STATUS_CHOICES),
+                    "response_owner": forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
+                   "comments": forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+                   }
 
-    def clean_response(self):
-        existing_phones = self.cleaned_data.get('phone_num')
-        for instance in BlackList.objects.all():
-            if instance.phone_num == existing_phones:
-                raise forms.ValidationError(instance.name + ' קיים ברשימה')
-        return existing_phones
+    # def clean_response(self):
+    #     existing_phones = self.cleaned_data.get('phone_num')
+    #     for instance in BlackList.objects.all():
+    #         if instance.phone_num == existing_phones:
+    #             raise forms.ValidationError(instance.name + ' קיים ברשימה')
+    #     return existing_phones

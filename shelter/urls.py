@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from .views import UpdateResponseView
+
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -26,6 +28,7 @@ urlpatterns = [
     path('fetch-from-google-sheet/', views.fetch_from_sheet, name='google-sheet'),
     path('fetch_black_list_from_sheet/', views.fetch_black_list_from_sheet, name='black_list'),
     path('recommendation_system/', views.get_recommendation, name='recommendation'),
-    path('add_to_black_list/', views.add_to_black_list_form, name='add_to_black_list')
+    path('add_to_black_list/', views.add_to_black_list_form, name='add_to_black_list'),
+    path('edit_response/<int:pk>/', UpdateResponseView.as_view(), name='edit_response')
 
 ]

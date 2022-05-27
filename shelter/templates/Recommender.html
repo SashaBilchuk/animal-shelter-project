@@ -1,6 +1,9 @@
 {% extends 'base.html' %} {% block content %}
 
-<a class="btn btn-primary" href="{{ request.get_full_path }}" role="button">refresh</a>
+<form action="#" method="get">
+
+ <input type="submit" class="btn btn-info"  value="רענן תשובות חדשות" name="mybtn">
+</form>
 
 <style>
 
@@ -40,7 +43,10 @@ th {
             <tr>
                 {% for cell in row %}
                <td>
-                    {% if forloop.last %}
+                    {% if forloop.first %}
+                  <a href="../edit_response/{{cell}}"><div style="color: green; height:100%; width:100%"> {{ cell }} </div></a>
+
+                    {% elif forloop.last %}
                          <p>
                             {% if  row.normGrade  >= 1 %}
                             <i class="fas fa-paw" style="color: yellow;"></i>
@@ -68,6 +74,12 @@ th {
                         {{ cell }}
                 {% endif %}
                     </td>
+                <!--may added-->
+                <form>
+
+                </form>
+             <!--may added-->
+
                 {% endfor %}
             </tr>
         {% endfor %}
@@ -93,7 +105,10 @@ th {
             <tr>
                 {% for cell in row %}
                 <td>
-                    {% if forloop.last %}
+                    {% if forloop.first %}
+                  <a href="../edit_response/{{cell}}"><div style="color: green; height:100%; width:100%"> {{ cell }} </div></a>
+
+                    {% elif forloop.last %}
                          <p>
                             {% if  row.normGrade  >= 1 %}
                             <i class="fas fa-paw" style="color: yellow;"></i>
@@ -146,7 +161,10 @@ th {
             <tr>
                 {% for cell in row %}
                <td>
-                    {% if forloop.last %}
+                    {% if forloop.first %}
+                  <a href="../edit_response/{{cell}}"><div style="color: green; height:100%; width:100%"> {{ cell }} </div></a>
+
+                    {% elif forloop.last %}
                          <p>
                             {% if  row.normGrade  >= 1 %}
                             <i class="fas fa-paw" style="color: yellow;"></i>

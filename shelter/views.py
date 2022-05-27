@@ -17,7 +17,7 @@ import numpy as np
 import sklearn
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
-
+from django.views.generic import UpdateView
 from django.http import HttpResponseRedirect
 from datetime import datetime
 import numpy as np
@@ -496,33 +496,44 @@ def grading_response():
 
 
 
-def create_header_dict():
-    map_dict = {
-        'id': 'מזהה שאלון',
-        'response_owner': 'מי מטפלת? ',
-        'status': 'סטטוס',
-        'comments':'הערות עמותה',
-        'full_name': 'שם',
-        'age': 'גיל',
-        'city': 'עיר',
-        'phone_num': 'טלפון',
-        'mail': 'מייל',
-        'maritalStatus': 'מצב משפחתי',
-        'numChildren': 'מספר ילדים',
-        'otherPets': 'חיות נוספות',
-        'experience': 'נסיון',
-        'dog_name': 'שם הכלב לפנייה',
-        'allergies': 'אלרגיות?',
-        'own_apartment': 'דירה בבעלותו',
-        'rent_agreed': 'הסכמת בעל הדירה',
-        'residenceType': 'סוג ממגורים',
-        'fence': 'יש גדר?',
-        'dogPlace': 'היכן הכלב ישהה?',
-        'dogSize': 'גודל כלב רצוי',
-        'response_comments': 'הערות מהשאלון',
-        'response_date': 'תאריך',
-        'normGrade': 'ציון מנורמל',
-    }
+def create_header_dict(tablename):
+    if tablename == "recommender":
+        map_dict = {
+            'id': 'מזהה שאלון',
+            'response_owner': 'מי מטפלת? ',
+            'status': 'סטטוס',
+            'comments':'הערות עמותה',
+            'full_name': 'שם',
+            'age': 'גיל',
+            'city': 'עיר',
+            'phone_num': 'טלפון',
+            'mail': 'מייל',
+            'maritalStatus': 'מצב משפחתי',
+            'numChildren': 'מספר ילדים',
+            'otherPets': 'חיות נוספות',
+            'experience': 'נסיון',
+            'dog_name': 'שם הכלב לפנייה',
+            'allergies': 'אלרגיות?',
+            'own_apartment': 'דירה בבעלותו',
+            'rent_agreed': 'הסכמת בעל הדירה',
+            'residenceType': 'סוג ממגורים',
+            'fence': 'יש גדר?',
+            'dogPlace': 'היכן הכלב ישהה?',
+            'dogSize': 'גודל כלב רצוי',
+            'response_comments': 'הערות מהשאלון',
+            'response_date': 'תאריך',
+            'normGrade': 'ציון מנורמל',
+        }
+    else:
+        map_dict = {
+            'id': 'מזהה שאלון',
+            'name': 'שם',
+            'city': 'עיר',
+            'email_address': 'מייל',
+            'phone_num': 'טלפון',
+            'comments': 'הערות עמותה'
+        }
+
     return map_dict
 
 
@@ -559,17 +570,12 @@ def add_to_Response(row):
                             residenceType=residenceType, fence=fence, dogPlace=dogPlace, dogSize=dogSize,
                             response_comments=response_comments, response_date=response_date, QID=QID)
 
-def add_to_black_list(row):
-    name = row['full_name']
-    city = row['city']
-    phone_num = "0" + str(row['phone_num'])
-    mail = row['mail']
-    comments = row['comments']
-
-    BlackList.objects.create(name=name,city=city,phone_num=phone_num,email_address=mail,comments=comments)
+def add_to_black_list(full_name,city,mail, phone_num, comments ):
+    BlackList.objects.create(full_name=full_name,  city=city, mail=mail, phone_num=phone_num,  comments=comments)
 
 def update_response_model():
     sheet_instance = get_sheet()
+    print("in update response model")
     records_data = sheet_instance.get_all_records()
     records_df = pd.DataFrame.from_dict(records_data)
     records_df = records_df[records_df['Timestamp'] != ""]
@@ -586,31 +592,44 @@ def update_response_model():
         response_model = Response.objects.values_list('QID', flat=True)
         black_list_phones = BlackList.objects.values_list('phone_num', flat=True)
         cur_QID = row['QID']
-        cur_phone = "0" + str(row['phone_num'])
-        # ITERATES ON ALL RAWS, IF FOUND NEW ROW -> ADD TO RESPONSE MODEL
-        if str(cur_phone) not in black_list_phones and (row['status'] == 'רשימה שחורה'):
-            print(cur_phone)
-            add_to_black_list(row)
-            print(BlackList.objects.values_list('phone_num', flat=True))
+
         if cur_QID not in response_model:
             add_to_Response(row)
+            cur_phone = "0" + str(row['phone_num'])
+            # ITERATES ON ALL RAWS, IF FOUND NEW ROW -> ADD TO RESPONSE MODEL
+            if str(cur_phone) not in black_list_phones and (row['status'] == 'רשימה שחורה'):
+                full_name = row['full_name']
+                city = row['city']
+                phone_num = "0" + str(row['phone_num'])
+                mail = row['mail']
+                comments = row['comments']
+                add_to_black_list(full_name,city, mail, phone_num, comments)
+                print(BlackList.objects.values_list('phone_num', flat=True))
+
         else:
-            response_owner_row = row['response_owner']
-            status_row = row['status']
-            comments_row = row['comments']
             response = Response.objects.get(QID = cur_QID)
-            response.response_owner = response_owner_row
-            response.status = status_row
-            response.comments = comments_row
+            print(response)
+
+            if response.phone_num not in black_list_phones and response.status == 'רשימה שחורה':
+                # black_df = pd.DataFrame.from_records(response.to_dict())
+                # print(black_df)
+                full_name = response.full_name
+                city = response.city
+                mail = response.mail
+                phone_num = response.phone_num
+                comments = response.comments
+                add_to_black_list(full_name, city, mail, phone_num, comments)
+            # response_owner_row = row['response_owner']
+            # status_row = row['status']
+            # comments_row = row['comments']
+            # response.response_owner = response_owner_row
+            # response.status = status_row
+            # response.comments = comments_row
             response.save()
 
 
-
-
-
 def get_recommendation(request):
-    update_response_model()
-    hebrew_headers_dict = create_header_dict()
+    hebrew_headers_dict = create_header_dict("recommender")
     results = grading_response()
     results.response_date = results.response_date.apply(lambda x: x.date())
 
@@ -630,6 +649,8 @@ def get_recommendation(request):
         'adoption_approved': adoption_approved,
         'hebrew_headers_dict': hebrew_headers_dict
     }
+    if (request.GET.get('mybtn')):
+        update_response_model()
 
     return render(request, 'Recommender.html', context)
 
@@ -677,12 +698,11 @@ def convert_headers(df):
 
 
 def fetch_black_list_from_sheet(request):
-    sheet_instance = get_sheet()
-    records_data = sheet_instance.get_all_records()
-    records_df = pd.DataFrame.from_dict(records_data)  # this is Panda dataframe if you need you can use it.
-    records_df = get_black_list(records_df)
+    records_df =  pd.DataFrame(list(BlackList.objects.all().values()))
+    headers = create_header_dict("blacklist")
     context = {
-        'df': records_df
+        'df': records_df,
+        'headers': headers
     }
     return render(request, 'black_list.html', context)
 
@@ -754,3 +774,15 @@ def add_to_sheet(request):
             return redirect('google-sheet')  # redirect anywhere as you want.
 
     return redirect('google-sheet')  # else request is not POST request
+
+
+class UpdateResponseView(UpdateView):
+    model = Response
+    template_name = 'edit_response.html'
+    fields = ['response_owner', 'status', 'comments']
+    success_url = '/recommendation_system/'
+
+    # def get_success_url(self):
+    #     pk = self.kwargs["pk"]
+    #     return reverse("view-employer", kwargs={"pk": pk})
+    # redirect('recommendation')

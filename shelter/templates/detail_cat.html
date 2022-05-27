@@ -36,7 +36,7 @@
         </div>
         <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
             <div class="card-body">
-              <div class="row"><div> <span> גיל:</span> {{ cat.age_years }} שנים ו-{{ cat.age_months }} חודשים</div></div>
+              <div class="row"><div> <span> גיל:</span>{% if cat.age_years == 0 and cat.age_months == 0  %} פחות מחודש {% else %} {{cat.age_years }} שנים ו-{{cat.age_months }} חודשים {% endif %}</div></div>
               <div class="row"><div> <span> תיאור חיצוני: </span> {{ cat.physical_description }} </div></div>
               <div class="row"><div> <span> סיפור רקע: </span> {{ cat.story }} </div></div>
             </div>
@@ -54,10 +54,9 @@
         <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
             <div class="card-body">
               <section class="row"><div> <span> מיקום: </span> {{ cat.get_location_display }} </div></section>
-              <section class="row"><div><span>תאריך כניסה לעמותה:</span>{% if cat.location == 'Association' %} {{ cat.acceptance_date }}
-              <span> ימים בעמותה: </span> {{ cat.days_in_the_association }}</div>
-              {% else %}<div> <span>תאריך יציאה מעמותה:</span> {{ cat.exit_date }} </div>
-              {% endif %}</section>
+              <section class="row"><div><span>תאריך כניסה לעמותה:</span>{{ cat.acceptance_date }}</div></section>
+              <section class="row"><div><span>ימים בעמותה:</span> {{ cat.days_in_the_association }}</div></section>
+              <section class="row"><div> <span> תאריך יציאה מעמותה: </span> {{ cat.exit_date }} </div></section>
             </div>
         </div>
     <div class="card">

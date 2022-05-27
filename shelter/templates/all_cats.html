@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+table{
+	text-align: center;
+	width: 95%;
+	margin: auto;
+	text-align: center;
+}
+
+/*Make alternating colors for the table rows*/
+table tr:nth-child(odd){
+	background: #8DCBC8
+}
+
+table tr:nth-child(even){
+	background: #D1EAE9
+}
+
+th {
+  background-color: #1b9891;
+  color: white;
+}</style>
+
+
+<h1 class="text-center">רשימת החתולים</h1><br>
+<body><center>
+    <!--<a class="btn btn-outline-dark" role="button" href="{% url 'download_report' %}" >הורד כ-CSV</a>-->
+    <div class="jumbotron">
+    <table class="table">
+        <thead>
+            <tr>
+                <th> מס' מזהה של החתול </th>
+                <th> שם החתול </th>
+                <th> גיל </th>
+                <th> מין </th>
+                <th> תיאור חיצוני </th>
+                <th> תאריך כניסה לעמותה </th>
+                <th> מיקום </th>
+                <th> נפתר/ה? </th>
+            </tr>
+        </thead>
+            {% for cat in cats %}
+            <tr>
+                <td><a href="../cat/{{cat.id}}"><div style="color: black; height:100%; width:100%">{{cat.id}}</div></a></td>
+                <td> {{cat.name}}</td>
+                <td> {% if cat.age_years == 0 and cat.age_months == 0  %} פחות מחודש {% else %} {{cat.age_years }} שנים ו-{{cat.age_months }} חודשים {% endif %}</td>
+                <td> {{cat.get_gender_display}}</td>
+                <td> {% if cat.physical_description%}{{cat.physical_description}} {% else %} - {% endif %}</td>
+                <td> {{cat.acceptance_date}}</td>
+                <td> {{cat.get_location_display}}</td>
+                <td> {% if cat.died %} כן {% else %} - {% endif %}</td>
+
+            </tr>
+                {% endfor %}
+  </table>
+</div>
+</center></body>
+{% endblock content %}
+
+</body>
+</html>

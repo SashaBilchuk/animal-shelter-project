@@ -105,7 +105,6 @@ th {
         </thead>
         <tbody>
           {% for cat in cats %}
-          {% if cat.location == 'Association' %}
           <tr>
             <td><a href="../cat/{{cat.id}}"><div style="color: white; height:100%; width:100%"> {{cat.name}} </div></a></td>
             <td>{{ cat.get_gender_display }}</td>
@@ -113,7 +112,7 @@ th {
             <td>{{ cat.get_location_display }}</td>
 
           </tr>
-          {% endif %}{% endfor %}
+          {% endfor %}
         </tbody>
       </table>
       {% if cats.has_other_pages %}
@@ -178,14 +177,13 @@ th {
         </thead>
         <tbody>
           {% for dog in dogs %}
-          {% if dog.location == 'Association' %}
           <tr>
           <td><a href="../dog/{{dog.id}}"><div style="color: white; height:100%;width:100%"> {{dog.name}} </div></a></td>
             <td>{{ dog.get_gender_display }}</td>
             <td>{{ dog.acceptance_date }}</td>
             <td>{{ dog.get_location_display }}</td>
           </tr>
-          {% endif %}{% endfor %}
+          {% endfor %}
         </tbody>
       </table>
       {% if dogs.has_other_pages %}

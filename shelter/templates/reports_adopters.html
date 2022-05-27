@@ -1,9 +1,5 @@
 {% extends 'base.html' %}
-{% load class_name %}
 {% block content %}
-{% load static %}
-{% load crispy_forms_tags %}
-
 
 <style>
 table{
@@ -28,29 +24,28 @@ th {
 }</style>
 
 
-<h1 class="display-4 text-center">דו"ח מאמצים</h1><br>
+<h1 class="text-center">רשימת המאמצים</h1><br>
 <body><center>
     <div class="jumbotron">
     <table class="table">
         <thead>
             <tr>
-                <th> ת''ז </th>
+                <th> ת''ז המאמצ/ת </th>
                 <th> שם המאמצ/ת </th>
-                <th> עיר מגורים </th>
-                <th> מספר טלפון </th>
-                <th>סטטוס פעילות</th>
+                <th> עיר המגורים </th>
+                <th> מספר הטלפון </th>
+                <th> סטטוס הפעילות </th>
                 <th>הערות המאמצ/ת </th>
             </tr>
         </thead>
             {% for instance in queryset %}
             <tr>
                 <td><a href="../admin/shelter/adopter/{{instance.id}}/change/"><div> {{instance.adopter_ID}} </div></a></td>
-                <td> {{instance.adopter_ID}}</td>
                 <td> {{instance.name}}</td>
                 <td> {{instance.adopter_city}}</td>
-                <td> {{instance.phone_number}}</td>
+                <td> {% if instance.phone_number%}{{instance.phone_number}} {% else %} - {% endif %}</td>
                 <td> {{instance.activity_status }}</td>
-                <td> {{instance.adopter_comments}}</td>
+                <td> {% if instance.adopter_comments %}{{instance.adopter_comments}} {% else %} - {% endif %}</td>
             </tr>
                 {% endfor %}
   </table>

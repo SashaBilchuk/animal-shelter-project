@@ -1,9 +1,5 @@
 {% extends 'base.html' %}
-{% load class_name %}
 {% block content %}
-{% load static %}
-{% load crispy_forms_tags %}
-
 
 <style>
 table{
@@ -28,29 +24,28 @@ th {
 }</style>
 
 
-<h1 class="display-4 text-center">דו"ח אימוצים</h1><br>
+<h1 class="text-center">רשימת האימוצים</h1><br>
 <body><center>
-
     <div class="jumbotron">
     <table class="table">
-        <h3 class="display-4 text-center">עבור כלבים</h3>
+        <h2 class="text-center">עבור כלבים</h2>
         <thead>
             <tr>
-                <th> מספר אימוץ </th>
+                <th> מספר האימוץ </th>
                 <th> שם המאמצ/ת </th>
-                <th> ת''ז המאמץ </th>
-                <th> מס' כלב </th>
+                <th> ת''ז המאמצ/ת </th>
+                <th> מס' מזהה של הכלב </th>
                 <th> שם הכלב </th>
-                <th>תאריך אימוץ </th>
+                <th>תאריך האימוץ </th>
                 <th> מספר חשבונית </th>
                 <th> הערות האימוץ </th>
                 <th>שיחת מעכב האחרונה </th>
                 <th> תאריך שיחת מעקב הבאה </th>
                 <th>גורם מטפל באימוץ </th>
-                <th> החזרה </th>
+                <th> הוחזר/ה? </th>
                 <th> תאריך ההחזרה </th>
                 <th>סיבת ההחזרה </th>
-                <th>גורם המטפל ההחזרה </th>
+                <th>גורם המטפל בהחזרה </th>
             </tr>
         </thead>
             {% for instance in querysetdogs %}
@@ -61,38 +56,38 @@ th {
                 <td> {{instance.dog.id}}</td>
                 <td> {{instance.dog.name }}</td>
                 <td> {{instance.adoption_date}}</td>
-                <td> {{instance.receipt_number}}</td>
-                <td> {{instance.adoption_comments }}</td>
-                <td> {{instance.last_followup_call}}</td>
+                <td> {% if instance.receipt_number %}{{instance.receipt_number}} {% else %} - {% endif %}</td>
+                <td> {% if instance.adoption_comments %}{{instance.adoption_comments}} {% else %} - {% endif %}</td>
+                <td> {% if instance.last_followup_call %}{{instance.last_followup_call}} {% else %} - {% endif %}</td>
                 <td> {{instance.next_followup_call}}</td>
-                <td> {{instance.adoption_volunteer }}</td>
-                <td> {{instance.returned}}</td>
-                <td> {{instance.return_date}}</td>
-                <td> {{instance.return_reason }}</td>
-                <td> {{instance.return_volunteer}}</td>
+                <td> {% if instance.adoption_volunteer %}{{instance.adoption_volunteer}} {% else %} - {% endif %}</td>
+                <td> {% if instance.returned.died %} כן {% else %} - {% endif %}</td>
+                <td> {% if instance.return_date %}{{instance.return_date }} {% else %} - {% endif %}</td>
+                <td> {% if instance.return_reason %}{{instance.return_reason }} {% else %} - {% endif %}</td>
+                <td> {% if instance.return_volunteer %}{{instance.return_volunteer }} {% else %} - {% endif %}</td>
             </tr>
                 {% endfor %}
 
   </table>
-        <h3 class="display-4 text-center">עבור חתולים</h3>
+        <h2 class="text-center">עבור חתולים</h2>
   <table class="table">
         <thead>
             <tr>
-                <th> מספר אימוץ </th>
+                <th> מספר האימוץ </th>
                 <th> שם המאמצ/ת </th>
-                <th> ת''ז המאמץ </th>
-                <th> מס' כלב </th>
-                <th> שם הכלב </th>
-                <th>תאריך אימוץ </th>
+                <th> ת''ז המאמצ/ת </th>
+                <th> מס' מזהה של החתול </th>
+                <th> שם החתול </th>
+                <th>תאריך האימוץ </th>
                 <th> מספר חשבונית </th>
                 <th> הערות האימוץ </th>
                 <th>שיחת מעכב האחרונה </th>
                 <th> תאריך שיחת מעקב הבאה </th>
                 <th>גורם מטפל באימוץ </th>
-                <th> החזרה </th>
+                <th> הוחזר/ה? </th>
                 <th> תאריך ההחזרה </th>
                 <th>סיבת ההחזרה </th>
-                <th>גורם המטפל ההחזרה </th>
+                <th>גורם המטפל בהחזרה </th>
             </tr>
         </thead>
             {% for instance in querysetcats %}
@@ -101,21 +96,20 @@ th {
                 <td> {{instance.adopter.name}}</td>
                 <td> {{instance.adopter.adopter_ID}}</td>
                 <td> {{instance.cat.id}}</td>
-                <td> {{instance.cat.name }}</td>
+                <td> {{instance.cat.name}}</td>
                 <td> {{instance.adoption_date}}</td>
-                <td> {{instance.receipt_number}}</td>
-                <td> {{instance.adoption_comments }}</td>
-                <td> {{instance.last_followup_call}}</td>
+                <td> {% if instance.receipt_number %}{{instance.receipt_number}} {% else %} - {% endif %}</td>
+                <td> {% if instance.adoption_comments %}{{instance.adoption_comments}} {% else %} - {% endif %}</td>
+                <td> {% if instance.last_followup_call %}{{instance.last_followup_call}} {% else %} - {% endif %}</td>
                 <td> {{instance.next_followup_call}}</td>
-                <td> {{instance.adoption_volunteer }}</td>
-                <td> {{instance.returned}}</td>
-                <td> {{instance.return_date}}</td>
-                <td> {{instance.return_reason }}</td>
-                <td> {{instance.return_volunteer}}</td>
+                <td> {% if instance.adoption_volunteer %}{{instance.adoption_volunteer}} {% else %} - {% endif %}</td>
+                <td> {% if instance.returned.died %} כן {% else %} - {% endif %}</td>
+                <td> {% if instance.return_date %}{{instance.return_date }} {% else %} - {% endif %}</td>
+                <td> {% if instance.return_reason %}{{instance.return_reason }} {% else %} - {% endif %}</td>
+                <td> {% if instance.return_volunteer %}{{instance.return_volunteer }} {% else %} - {% endif %}</td>
             </tr>
                 {% endfor %}
   </table>
-
 </div>
 </center></body>
 {% endblock content %}

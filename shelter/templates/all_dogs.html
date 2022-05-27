@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+table{
+	text-align: center;
+	width: 95%;
+	margin: auto;
+	text-align: center;
+}
+
+/*Make alternating colors for the table rows*/
+table tr:nth-child(odd){
+	background: #8DCBC8
+}
+
+table tr:nth-child(even){
+	background: #D1EAE9
+}
+
+th {
+  background-color: #1b9891;
+  color: white;
+}</style>
+
+
+<h1 class="text-center">רשימת הכלבים</h1><br>
+<body><center>
+    <!--<a class="btn btn-outline-dark" role="button" href="{% url 'download_report' %}" >הורד כ-CSV</a>-->
+    <div class="jumbotron">
+    <table class="table">
+        <thead>
+            <tr>
+                <th> מס' מזהה של הכלב </th>
+                <th> שם הכלב </th>
+                <th> מספר שבב </th>
+                <th> גיל </th>
+                <th>מין  </th>
+                <th> גודל </th>
+                <th> תיאור חיצוני </th>
+                <th> תיאור התנהגותי </th>
+                <th> תאריך כניסה לעמותה </th>
+                <th> מיקום </th>
+                <th> נפתר/ה? </th>
+            </tr>
+        </thead>
+            {% for dog in dogs %}
+            <tr>
+                <td><a href="../dog/{{dog.id}}"><div style="color: black; height:100%; width:100%">{{dog.id}}</div></a></td>
+                <td> {{dog.name}}</td>
+                <td> {{dog.chip_number}}</td>
+                <td> {% if dog.age_years == 0 and dog.age_months == 0  %} פחות מחודש {% else %} {{ dog.age_years }} שנים ו-{{ dog.age_months }} חודשים {% endif %}</td>
+                <td> {{dog.get_gender_display}}</td>
+                <td> {% if dog.size %} {{ dog.get_size_display }} {% else %} - {% endif %}</td>
+                <td> {% if dog.physical_description%}{{dog.physical_description}} {% else %} - {% endif %}</td>
+                <td> {% if dog.behaviour_description%}{{dog.behaviour_description}} {% else %} - {% endif %}</td>
+                <td> {{dog.acceptance_date}}</td>
+                <td> {{dog.get_location_display}}</td>
+                <td> {% if dog.died %} כן {% else %} - {% endif %}</td>
+
+            </tr>
+                {% endfor %}
+  </table>
+</div>
+</center></body>
+{% endblock content %}
+
+</body>
+</html>

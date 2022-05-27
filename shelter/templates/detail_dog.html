@@ -37,7 +37,7 @@
         <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
             <div class="card-body">
               <div class="row"><div> <span> מספר שבב: </span>{% if dog.chip_number %} {{ dog.chip_number }} {% else %} אין {% endif %} </div></div>
-              <div class="row"><div> <span> גיל:</span> {{ dog.age_years }} שנים ו{{ dog.age_months }} חודשים</div></div>
+              <div class="row"><div> <span> גיל:</span>{% if dog.age_years == 0 and dog.age_months == 0  %} פחות מחודש {% else %} {{ dog.age_years }} שנים ו-{{ dog.age_months }} חודשים {% endif %} </div></div>
               <div class="row"><div> <span> תיאור חיצוני: </span> {{ dog.physical_description }} </div></div>
               <div class="row"><div> <span> גודל: </span>{% if dog.size %} {{ dog.get_size_display }} {% else %} - {% endif %}</div></div>
               <div class="row"><div> <span> צבע: </span>{% if dog.color %} {{ dog.color }} {% else %} - {% endif %}</div></div>
@@ -58,10 +58,9 @@
         <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
             <div class="card-body">
               <section class="row"><div> <span> מיקום: </span> {{ dog.get_location_display }} </div></section>
-              <section class="row"><div><span>תאריך כניסה לעמותה:</span>{% if dog.location == 'Association' %} {{ dog.acceptance_date }}
-              <span> ימים בעמותה: </span> {{ dog.days_in_the_association }}</div>
-              {% else %}<div> <span>תאריך יציאה מעמותה:</span> {{ dog.exit_date }} </div>
-              {% endif %}</section>
+              <section class="row"><div><span>תאריך כניסה לעמותה:</span>{{ dog.acceptance_date }}</div></section>
+              <section class="row"><div><span>ימים בעמותה:</span> {{ dog.days_in_the_association }}</div></section>
+              <section class="row"><div> <span> תאריך יציאה מעמותה: </span> {{ dog.exit_date }} </div></section>
             </div>
         </div>
     <div class="card">

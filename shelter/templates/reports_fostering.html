@@ -1,9 +1,5 @@
 {% extends 'base.html' %}
-{% load class_name %}
 {% block content %}
-{% load static %}
-{% load crispy_forms_tags %}
-
 
 <style>
 table{
@@ -28,22 +24,21 @@ th {
 }</style>
 
 
-<h1 class="display-4 text-center">דו"ח אומנות</h1><br>
+<h1 class="text-center">רשימת האומנות</h1><br>
 <body><center>
-
     <div class="jumbotron">
+    <h2 class="text-center">עבור כלבים</h2>
     <table class="table">
-        <h3 class="display-4 text-center">עבור כלבים</h3>
         <thead>
             <tr>
-                <th> מספר אומנה </th>
-                <th> שם המאמצ/ת </th>
-                <th> ת''ז המאמץ </th>
-                <th> מס' כלב </th>
+                <th> מספר האומנה </th>
+                <th> שם האומנה </th>
+                <th> ת''ז האומנה </th>
+                <th> מס' מזהה של הכלב </th>
                 <th> שם הכלב </th>
                 <th>תאריך תחילת אומנה </th>
                 <th> תאריך סיום האומנה </th>
-                <th> הערות </th>
+                <th> הערות האומנה </th>
                 <th> קישור לטופס האומנה </th>
                 <th> קישור לטופס אומנה למטרת אימוץ </th>
             </tr>
@@ -56,26 +51,25 @@ th {
                 <td> {{instance.dog.id}}</td>
                 <td> {{instance.dog.name }}</td>
                 <td> {{instance.fostering_date_start}}</td>
-                <td> {{instance.fostering_date_end}}</td>
-                <td> {{instance.fostering_comments }}</td>
-                <td> {{instance.fostering_link_text}}</td>
-                <td> {{instance.fostering_link_for_adoption_text}}</td>
+                <td> {% if instance.fostering_date_end %}{{instance.fostering_date_end}} {% else %} - {% endif %}</td>
+                <td> {% if instance.fostering_comments %}{{instance.fostering_comments}} {% else %} - {% endif %}</td>
+                <td> {% if instance.fostering_link_text %}{{instance.fostering_link_text}} {% else %} - {% endif %}</td>
+                <td> {% if instance.fostering_link_for_adoption_text %}{{instance.fostering_link_for_adoption_text}} {% else %} - {% endif %}</td>
             </tr>
                 {% endfor %}
-
   </table>
-        <h3 class="display-4 text-center">עבור חתולים</h3>
+  <h2 class="text-center">עבור חתולים</h2>
   <table class="table">
         <thead>
             <tr>
-                <th> מספר אומנה </th>
-                <th> שם המאמצ/ת </th>
-                <th> ת''ז המאמץ </th>
-                <th> מס' חתול </th>
-                <th> שם ההחתול </th>
+                <th> מספר האומנה </th>
+                <th> שם האומנה </th>
+                <th> ת''ז האומנה </th>
+                <th> מס' מזהה של החתול </th>
+                <th> שם החתול </th>
                 <th>תאריך תחילת אומנה </th>
                 <th> תאריך סיום האומנה </th>
-                <th> הערות </th>
+                <th> הערות האומנה </th>
                 <th> קישור לטופס האומנה </th>
                 <th> קישור לטופס אומנה למטרת אימוץ </th>
             </tr>
@@ -88,10 +82,10 @@ th {
                 <td> {{instance.cat.id}}</td>
                 <td> {{instance.cat.name }}</td>
                 <td> {{instance.fostering_date_start}}</td>
-                <td> {{instance.fostering_date_end}}</td>
-                <td> {{instance.fostering_comments }}</td>
-                <td> {{instance.fostering_link_text}}</td>
-                <td> {{instance.fostering_link_for_adoption_text}}</td>
+                <td> {% if instance.fostering_date_end %}{{instance.fostering_date_end}} {% else %} - {% endif %}</td>
+                <td> {% if instance.fostering_comments %}{{instance.fostering_comments}} {% else %} - {% endif %}</td>
+                <td> {% if instance.fostering_link_text %}{{instance.fostering_link_text}} {% else %} - {% endif %}</td>
+                <td> {% if instance.fostering_link_for_adoption_text %}{{instance.fostering_link_for_adoption_text}} {% else %} - {% endif %}</td>
             </tr>
                 {% endfor %}
   </table>

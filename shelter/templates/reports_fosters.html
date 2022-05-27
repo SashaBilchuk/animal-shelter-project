@@ -1,9 +1,5 @@
 {% extends 'base.html' %}
-{% load class_name %}
 {% block content %}
-{% load static %}
-{% load crispy_forms_tags %}
-
 
 <style>
 table{
@@ -29,17 +25,17 @@ th {
 
 
 
-<h1 class="display-4 text-center">משפחות אומנה קיימות</h1><br>
+<h1 class="text-center">רשימת משפחות האומנה</h1><br>
 <body><center>
     <div class="jumbotron">
     <table class="table">
         <thead>
             <tr>
-                <th> ת''ז </th>
+                <th> ת''ז האומנה </th>
                 <th> שם האומנה </th>
-                <th> עיר מגורים </th>
-                <th> מספר טלפון </th>
-                <th> סטטוס פעילות </th>
+                <th> עיר המגורים </th>
+                <th> מספר הטלפון </th>
+                <th> סטטוס הפעילות </th>
                 <th>גורם המטפל בעמותה </th>
             </tr>
         </thead>
@@ -48,9 +44,9 @@ th {
                 <td><a href="../admin/shelter/foster/{{instance.id}}/change/"><div> {{instance.foster_ID}} </div></a></td>
                 <td> {{instance.name}}</td>
                 <td> {{instance.foster_city}}</td>
-                <td> {{instance.phone_number}}</td>
+                <td> {% if instance.phone_number%}{{instance.phone_number}} {% else %} - {% endif %}</td>
                 <td> {{instance.activity_status }}</td>
-                <td> {{instance.adopter_comments}}</td>
+                <td> {% if instance.foster_comments %}{{instance.foster_comments}} {% else %} - {% endif %}</td>
             </tr>
                 {% endfor %}
   </table>

@@ -9,3 +9,4 @@ Pillow
 whitenoise
 sklearn
 django-crispy-forms
+bs4

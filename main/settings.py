@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 from django.conf.locale.es import formats as es_formats
+from storages.backends.s3boto3 import S3Boto3Storage
 
 es_formats.DATE_INPUT_FORMATS = 'd-m-y'
 
@@ -42,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'shelter',
-    'crispy_forms'
+    'crispy_forms',
+    'storages'
 ]
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -81,11 +83,22 @@ WSGI_APPLICATION = 'main.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+#
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'animalshelterdb2',
+        'USER': 'ivanov11',
+        'PASSWORD': '12345678',
+        'HOST': 'hellodevdennisdb.cd8nqbqf7xvg.us-east-1.rds.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
@@ -141,3 +154,24 @@ STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'staticfiles'))
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 #pip install whitenoise
+# ---
+AWS_ACCESS_KEY_ID = 'AKIAVH5RY4S5VIGSTNM5'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'my-shelter-bucket'
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+# s3 static settings
+STATIC_LOCATION = 'static'
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
+
+# s3 public media settings
+PUBLIC_MEDIA_LOCATION = 'media'
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
+
+
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'

@@ -1,5 +1,6 @@
 {% extends 'base.html' %} {% block content %}
-
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
 <style>a {color: black;}</style>
 <style>span {color: #1b9891;font-weight: bold;}</style>
 
@@ -7,7 +8,7 @@
   <div class="row">
     <div class="col-7 mt-5">
       <img
-        src="/images/media/generic_dog.png"
+        src="{{dog.image.url}}"
         class="mx-auto d-block"
         style="height: 25rem; width: 25rem;"
         alt="/images/media/generic_cat.png" />

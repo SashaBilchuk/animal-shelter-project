@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from .models import Dog, Cat, Adopter, Response, DogAdoption, CatAdoption, CatFostering, Foster, DogFostering, BlackList
 from .forms import DogAdoptionsForm, CatAdoptionsForm, DogDeathForm, CatFosteringForm, DogFosteringForm, BlackListForm
 from django.core.paginator import Paginator
@@ -6,23 +5,24 @@ from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
 from django.shortcuts import render
 from itertools import chain
+import datetime
 from django.views.generic import ListView
 import csv
-from django.http import HttpResponse
+from django.http import HttpRequest
 from django.core import serializers
 import gspread
 import pandas as pd
+import requests
+import bs4
+
 from oauth2client.service_account import ServiceAccountCredentials
 import numpy as np
 import sklearn
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
-
 from django.http import HttpResponseRedirect
-from datetime import datetime
 import numpy as np
 from sklearn.model_selection import train_test_split
-
 
 MAXGRADE = 5
 MINGRADE = 1
@@ -40,7 +40,7 @@ def home(request):
 
     cat_count = 0
     for cat in cats:
-        if cat.location == 'Association' or cat.location == 'Foster' or cat.location == 'Pension':
+        if cat.location == 'Association' or 'Foster' or 'Pension':
             cat_count += 1
     no_of_cats = cat_count
 
@@ -56,7 +56,7 @@ def home(request):
 
     dog_count = 0
     for dog in dogs:
-        if dog.location == 'Association' or dog.location == 'Foster' or dog.location == 'Pension':
+        if dog.location == 'Association' or 'Foster' or 'Pension':
             dog_count += 1
     no_of_dogs = dog_count
 
@@ -70,6 +70,14 @@ def home(request):
                                          'no_of_animals': no_of_animals,
                                          'no_of_dogs': no_of_dogs,
                                          'no_of_cats': no_of_cats})
+
+
+def all_cats(request):
+    return render(request, 'all_cats.html', {'cats': Cat.objects.all()})
+
+
+def all_dogs(request):
+    return render(request, 'all_dogs.html', {'dogs': Dog.objects.all(), 'dog_adoption': DogAdoption.objects.all()})
 
 
 def detail_cat(request, cat_id):
@@ -158,6 +166,10 @@ def add_dog_adoption(request):
         if form.is_valid():
             form.save()
             dog = form.cleaned_data.get('dog')
+            if dog.location == "Association" or "Pension":
+                dog.exit_date = datetime.date.today()
+            elif dog.location == "Foster":
+                dog.fostering_date_end = datetime.date.today()
             dog.location = 'Adoption'
             dog.save()
             adopter = form.cleaned_data.get('adopter')
@@ -178,6 +190,10 @@ def add_dog_fostering(request):
         if form.is_valid():
             form.save()
             dog = form.cleaned_data.get('dog')
+            if dog.location == "Association" or "Pension":
+                dog.exit_date = datetime.date.today()
+            elif dog.location == "Adoption":
+                dog.return_date = datetime.date.today()
             dog.location = 'Foster'
             dog.save()
             foster = form.cleaned_data.get('foster')
@@ -198,6 +214,10 @@ def add_cat_adoption(request):
         if form.is_valid():
             form.save()
             cat = form.cleaned_data.get('cat')
+            if cat.location == "Association" or "Pension":
+                cat.exit_date = datetime.date.today()
+            elif cat.location == "Foster":
+                cat.fostering_date_end = datetime.date.today()
             cat.location = 'Adoption'
             cat.save()
             adopter = form.cleaned_data.get('adopter')
@@ -218,6 +238,10 @@ def add_cat_fostering(request):
         if form.is_valid():
             form.save()
             cat = form.cleaned_data.get('cat')
+            if cat.location == "Association" or "Pension":
+                cat.exit_date = datetime.date.today()
+            elif cat.location == "Adoption":
+                cat.return_date = datetime.date.today()
             cat.location = 'Foster'
             cat.save()
             foster = form.cleaned_data.get('foster')
@@ -278,20 +302,26 @@ def report_fostering_URL(request):
 
 
 def download_report(request):
-    response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
-    response['Content-Disposition'] = 'attachment; filename="merkava.csv"'
+    source = requests.get('all_dogs.html').text
+    soup = bs4.BeautifulSoup(source, 'lxml')
+    table = soup.select_one('.table')
+    report = pd.read_html(str(table))[0]
+    report.to_csv('all_dogs.csv', index=False)
 
-    writer = csv.writer(response)
-    writer.writerow(['ימים בעמותה', 'תאריך כניסה לעמותה', 'מספר שבב', 'סוג החיה', 'שם החיה'])
-    dog_data = Dog.objects.all()
-    cat_data = Cat.objects.all()
+    # response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
+    # response['Content-Disposition'] = 'attachment; filename="merkava.csv"'
+    #
+    # writer = csv.writer(response)
+    # writer.writerow(['ימים בעמותה', 'תאריך כניסה לעמותה', 'מספר שבב', 'סוג החיה', 'שם החיה'])
+    # dog_data = Dog.objects.all()
+    # cat_data = Cat.objects.all()
+    #
+    # for dog in dog_data:
+    #     writer.writerow([dog.days_in_the_association, dog.acceptance_date, dog.chip_number, 'כלב', dog.name])
+    # for cat in cat_data:
+    #     writer.writerow([cat.days_in_the_association, cat.acceptance_date, '---', 'חתול', cat.name])
 
-    for dog in dog_data:
-        writer.writerow([dog.days_in_the_association, dog.acceptance_date, dog.chip_number, 'כלב', dog.name])
-    for cat in cat_data:
-        writer.writerow([cat.days_in_the_association, cat.acceptance_date, '---', 'חתול', cat.name])
-
-    return response
+    return report.to_csv('all_dogs.csv', index=False)
 
 
 def reportURL(request):

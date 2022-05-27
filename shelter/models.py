@@ -88,8 +88,8 @@ class Dog(models.Model):
     behaviour_description = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('תיאור התנהגותי'))
     story = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיפור רקע'))
     acceptance_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך קבלה לעמותה'))
-    location = models.CharField(max_length=255, choices=PLACES, blank=True, default='עמותה', null=True, verbose_name=_('מיקום הכלב'))
-    # exit_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך יציאה מעמותה'))
+    location = models.CharField(max_length=255, choices=PLACES, default='עמותה', null=True, verbose_name=_('מיקום הכלב'))
+    exit_date = models.DateField(blank=True, default=None, null=True, verbose_name=_('תאריך יציאה מעמותה'))
     clinic = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('מרפאה וטרינרית'))
     vaccine_book = models.BooleanField(default=False, verbose_name=_('פנקס חיסונים'))
     vaccine_book_link = models.FileField(upload_to='mediaDogs/', blank=True, default=None, null=True, verbose_name=_('קישור לפנקס חיסונים'))
@@ -127,7 +127,7 @@ class Dog(models.Model):
     @property
     def age_months(self):
         if self.birth_date is not None:
-            return datetime.date.today().month - self.birth_date.month
+            return abs(datetime.date.today().month - self.birth_date.month)
         else:
             return 0
 
@@ -135,8 +135,8 @@ class Dog(models.Model):
     def days_in_the_association(self):
         if self.acceptance_date is not None and self.location == 'Association':
             return (datetime.date.today() - self.acceptance_date).days
-        else:
-            return 0
+        elif self.exit_date:
+            return (self.exit_date - self.acceptance_date).days
 
     @property
     def get_adopters(self):
@@ -169,13 +169,14 @@ class Dog(models.Model):
 
 class Cat(models.Model):
     id = models.AutoField(primary_key=True)
-    acceptance_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך כניסה לעמותה'))
-    location = models.CharField(choices=PLACES, blank=True, default='עמותה', null=True, max_length=20, verbose_name=_('מיקום'))
     name = models.CharField(unique=True, max_length=255, verbose_name=_('שם'))
     birth_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך לידה'))
     gender = models.CharField(choices=GENDER_CHOICES, max_length=6, verbose_name=_('מין'))
     physical_description = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('תיאור חיצוני'))
     story = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיפור רקע'))
+    acceptance_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך כניסה לעמותה'))
+    location = models.CharField(choices=PLACES, default='עמותה', null=True, max_length=20, verbose_name=_('מיקום'))
+    exit_date = models.DateField(blank=True, default=None, null=True, verbose_name=_('תאריך יציאה מעמותה'))
     clinic = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('מרפאה וטרינרית'))
     vaccination_book = models.BooleanField(default=False, verbose_name=_('פנקס חיסונים'))
     vaccination_book_link = models.FileField(upload_to='mediaCats/', blank=True, default=None, null=True, verbose_name=_('קישור לפנקס חיסונים'))
@@ -203,7 +204,7 @@ class Cat(models.Model):
 
     def age_months(self):
         if self.birth_date is not None:
-            return datetime.date.today().month-self.birth_date.month
+            return abs(datetime.date.today().month-self.birth_date.month)
         else:
             return 0
 
@@ -211,8 +212,8 @@ class Cat(models.Model):
     def days_in_the_association(self):
         if self.acceptance_date is not None and self.location == 'Association':
             return (datetime.date.today() - self.acceptance_date).days
-        else:
-            return 0
+        elif self.exit_date:
+            return (self.exit_date - self.acceptance_date).days
 
     @property
     def get_adopters(self):
@@ -267,7 +268,7 @@ class DogFostering(models.Model):
     dog = models.ForeignKey(Dog, on_delete=models.CASCADE, verbose_name=_('שם הכלב'))
     foster = models.ForeignKey(Foster, on_delete=models.CASCADE, verbose_name=_('שם האומנה'))
     fostering_date_start = models.DateField(default=datetime.date.today, verbose_name=_('תאריך תחילת האומנה'))
-    fostering_date_end = models.DateField(default=None, verbose_name=_('תאריך סיום האומנה'))
+    fostering_date_end = models.DateField(blank=True, default=None, null=True, verbose_name=_('תאריך סיום האומנה'))
     fostering_comments = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('הערות'))
     fostering_volunteer = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('גורם מטפל בעמותה'))
     fostering_link_text = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('קישור לטופס אומנה'))
@@ -302,7 +303,7 @@ class CatFostering(models.Model):
     cat = models.ForeignKey(Cat, on_delete=models.CASCADE, verbose_name=_('שם החתול'))
     foster = models.ForeignKey(Foster, on_delete=models.CASCADE, verbose_name=_('שם האומנה'))
     fostering_date_start = models.DateField(default=datetime.date.today, verbose_name=_('תאריך תחילת האומנה'))
-    fostering_date_end = models.DateField(default=None, verbose_name=_('תאריך סיום האומנה'))
+    fostering_date_end = models.DateField(blank=True, default=None, null=True, verbose_name=_('תאריך סיום האומנה'))
     fostering_comments = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('הערות האומנה'))
     fostering_volunteer = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('גורם מטפל בעמותה'))
     fostering_link_text = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('קישור לטופס אומנה'))

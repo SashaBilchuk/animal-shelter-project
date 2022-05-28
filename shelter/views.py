@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
 from django.shortcuts import render
 from itertools import chain
+from datetime import datetime as dt
 import datetime
 from django.views.generic import ListView
 import csv
@@ -168,9 +169,9 @@ def add_dog_adoption(request):
             form.save()
             dog = form.cleaned_data.get('dog')
             if dog.location == "Association" or "Pension":
-                dog.exit_date = datetime.date.today()
+                dog.exit_date = dt.date.today()
             elif dog.location == "Foster":
-                dog.fostering_date_end = datetime.date.today()
+                dog.fostering_date_end = dt.date.today()
             dog.location = 'Adoption'
             dog.save()
             adopter = form.cleaned_data.get('adopter')
@@ -192,9 +193,9 @@ def add_dog_fostering(request):
             form.save()
             dog = form.cleaned_data.get('dog')
             if dog.location == "Association" or "Pension":
-                dog.exit_date = datetime.date.today()
+                dog.exit_date = dt.date.today()
             elif dog.location == "Adoption":
-                dog.return_date = datetime.date.today()
+                dog.return_date = dt.date.today()
             dog.location = 'Foster'
             dog.save()
             foster = form.cleaned_data.get('foster')
@@ -216,9 +217,9 @@ def add_cat_adoption(request):
             form.save()
             cat = form.cleaned_data.get('cat')
             if cat.location == "Association" or "Pension":
-                cat.exit_date = datetime.date.today()
+                cat.exit_date = dt.date.today()
             elif cat.location == "Foster":
-                cat.fostering_date_end = datetime.date.today()
+                cat.fostering_date_end = dt.date.today()
             cat.location = 'Adoption'
             cat.save()
             adopter = form.cleaned_data.get('adopter')
@@ -240,9 +241,9 @@ def add_cat_fostering(request):
             form.save()
             cat = form.cleaned_data.get('cat')
             if cat.location == "Association" or "Pension":
-                cat.exit_date = datetime.date.today()
+                cat.exit_date = dt.date.today()
             elif cat.location == "Adoption":
-                cat.return_date = datetime.date.today()
+                cat.return_date = dt.date.today()
             cat.location = 'Foster'
             cat.save()
             foster = form.cleaned_data.get('foster')
@@ -661,25 +662,32 @@ def update_response_model():
 
 def get_recommendation(request):
     hebrew_headers_dict = create_header_dict("recommender")
-    results = grading_response()
-    results.response_date = results.response_date.apply(lambda x: x.date())
+    if len(list(Response.objects.all().values())):
+        results = grading_response()
+        results.response_date = results.response_date.apply(lambda x: x.date())
 
-    not_handled = results.query("status in ('','טרם טופל')") # filter by dates
-    not_handled = not_handled[not_handled.response_date > datetime.today().date() - pd.to_timedelta("15day")]
-
-
-    initial_contact = results.query("status in ('בוצעה שיחה ראשונית', 'ממתינים לוידאו')")
-    initial_contact = initial_contact[initial_contact.response_date > datetime.today().date() - pd.to_timedelta("30day")]
-
-    adoption_approved = results.query("status in ('מאושר לאימוץ')")
+        not_handled = results.query("status in ('','טרם טופל')") # filter by dates
+        not_handled = not_handled[not_handled.response_date > dt.today().date() - pd.to_timedelta("15day")]
 
 
-    context = {
-        'not_handled': not_handled,
-        'initial_contact': initial_contact,
-        'adoption_approved': adoption_approved,
-        'hebrew_headers_dict': hebrew_headers_dict
-    }
+        initial_contact = results.query("status in ('בוצעה שיחה ראשונית', 'ממתינים לוידאו')")
+        initial_contact = initial_contact[initial_contact.response_date > dt.today().date() - pd.to_timedelta("30day")]
+
+        adoption_approved = results.query("status in ('מאושר לאימוץ')")
+
+
+        context = {
+            'not_handled': not_handled,
+            'initial_contact': initial_contact,
+            'adoption_approved': adoption_approved,
+            'hebrew_headers_dict': hebrew_headers_dict
+        }
+    else:
+        context = {
+
+            'hebrew_headers_dict': hebrew_headers_dict
+        }
+
     if (request.GET.get('mybtn')):
         update_response_model()
 

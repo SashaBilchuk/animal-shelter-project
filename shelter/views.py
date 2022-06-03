@@ -1,21 +1,16 @@
 from .models import Dog, Cat, Adopter, Response, DogAdoption, CatAdoption, CatFostering, Foster, DogFostering, BlackList
-from .forms import DogAdoptionsForm, CatAdoptionsForm, DogDeathForm, CatFosteringForm, DogFosteringForm, BlackListForm
+from .forms import DogAdoptionsForm, CatAdoptionsForm, AddDog, CatFosteringForm, DogFosteringForm, BlackListForm
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
 from django.shortcuts import render
 from itertools import chain
-from datetime import datetime as dt
-import datetime
+import datetime as dt
 from django.views.generic import ListView
-import csv
 from django.http import HttpRequest
 from django.core import serializers
 import gspread
 import pandas as pd
-import requests
-import bs4
-
 from oauth2client.service_account import ServiceAccountCredentials
 import numpy as np
 import sklearn
@@ -75,27 +70,29 @@ def home(request):
 
 
 def all_cats(request):
-    return render(request, 'all_cats.html', {'cats': Cat.objects.all()})
+    return render(request, 'all_cats.html', {'cats': Cat.objects.order_by('acceptance_date').all(), 'cat_adoption': CatAdoption.objects.all(),
+                                             'cat_fostering': CatFostering.objects.all()})
 
 
 def all_dogs(request):
-    return render(request, 'all_dogs.html', {'dogs': Dog.objects.all(), 'dog_adoption': DogAdoption.objects.all()})
+    return render(request, 'all_dogs.html', {'dogs': Dog.objects.order_by('acceptance_date').all(), 'dog_adoption': DogAdoption.objects.all(),
+                                             'dog_fostering': DogFostering.objects.all()})
 
 
 def detail_cat(request, cat_id):
     cat = get_object_or_404(Cat, pk=cat_id)
-    if CatAdoption.objects.filter(cat=cat.id):
+    if cat.location == "Adoption":
         return render(request, 'detail_cat.html', {'cat': cat, 'cat_adoption': CatAdoption.objects.get(cat=cat.id)})
-    if CatFostering.objects.filter(cat=cat.id):
+    elif cat.location == "Foster":
         return render(request, 'detail_cat.html', {'cat': cat, 'cat_fostering': CatFostering.objects.get(cat=cat.id)})
     return render(request, 'detail_cat.html', {'cat': cat})
 
 
 def detail_dog(request, dog_id):
     dog = get_object_or_404(Dog, pk=dog_id)
-    if DogAdoption.objects.filter(dog=dog.id):
+    if dog.location == "Adoption":
         return render(request, 'detail_dog.html', {'dog': dog, 'dog_adoption': DogAdoption.objects.get(dog=dog.id)})
-    if DogFostering.objects.filter(dog=dog.id):
+    elif dog.location == "Foster":
         return render(request, 'detail_dog.html', {'dog': dog, 'dog_fostering': DogFostering.objects.get(dog=dog.id)})
     return render(request, 'detail_dog.html', {'dog': dog})
 
@@ -130,6 +127,16 @@ def admin(request):
 def add_cat(request):
     return redirect('admin/shelter/cat/add/')
 
+# def add_dog(request):
+#     if request.method == 'POST':
+#         form = AddDog(request.POST, request.FILES)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('home')
+#     else:
+#         form = AddDog
+#     return render(request, 'add_dog.html', {'form': form})
+
 
 def add_dog(request):
     return redirect('admin/shelter/dog/add/')
@@ -161,8 +168,6 @@ def add_to_black_list_form(request):
 
 
 def add_dog_adoption(request):
-    dogs = Dog.objects.all()
-    adopters = Adopter.objects.all()
     if request.method == 'POST':
         form = DogAdoptionsForm(request.POST, request.FILES)
         if form.is_valid():
@@ -171,7 +176,7 @@ def add_dog_adoption(request):
             if dog.location == "Association" or "Pension":
                 dog.exit_date = dt.date.today()
             elif dog.location == "Foster":
-                dog.fostering_date_end = dt.date.today()
+                dog.fostering_dog.fostering_date_end = dt.date.today()
             dog.location = 'Adoption'
             dog.save()
             adopter = form.cleaned_data.get('adopter')
@@ -181,12 +186,10 @@ def add_dog_adoption(request):
     else:
         form = DogAdoptionsForm
 
-    return render(request, 'add_dog_adoption.html', {'dogs': dogs, 'adopters': adopters, 'form': form})
+    return render(request, 'add_dog_adoption.html', {'form': form})
 
 
 def add_dog_fostering(request):
-    dogs = Dog.objects.all()
-    fosters = Foster.objects.all()
     if request.method == 'POST':
         form = DogFosteringForm(request.POST, request.FILES)
         if form.is_valid():
@@ -195,7 +198,8 @@ def add_dog_fostering(request):
             if dog.location == "Association" or "Pension":
                 dog.exit_date = dt.date.today()
             elif dog.location == "Adoption":
-                dog.return_date = dt.date.today()
+                dog_adoption = DogAdoption.objects.filter(dog=dog.id).update(return_date=dt.date.today())
+                dog_adoption.save()
             dog.location = 'Foster'
             dog.save()
             foster = form.cleaned_data.get('foster')
@@ -205,12 +209,10 @@ def add_dog_fostering(request):
     else:
         form = DogFosteringForm
 
-    return render(request, 'add_dog_fostering.html', {'dogs': dogs, 'fosters': fosters, 'form': form})
+    return render(request, 'add_dog_fostering.html', {'form': form})
 
 
 def add_cat_adoption(request):
-    cats = Cat.objects.all()
-    adopters = Adopter.objects.all()
     if request.method == 'POST':
         form = CatAdoptionsForm(request.POST, request.FILES)
         if form.is_valid():
@@ -229,12 +231,10 @@ def add_cat_adoption(request):
     else:
         form = CatAdoptionsForm
 
-    return render(request, 'add_cat_adoption.html', {'cats': cats, 'adopters': adopters, 'form': form})
+    return render(request, 'add_cat_adoption.html', {'form': form})
 
 
 def add_cat_fostering(request):
-    cats = Cat.objects.all()
-    fosters = Foster.objects.all()
     if request.method == 'POST':
         form = CatFosteringForm(request.POST, request.FILES)
         if form.is_valid():
@@ -253,98 +253,27 @@ def add_cat_fostering(request):
     else:
         form = CatFosteringForm
 
-    return render(request, 'add_cat_fostering.html', {'cats': cats, 'fosters': fosters, 'form': form})
+    return render(request, 'add_cat_fostering.html', {'form': form})
 
 
-# def reportURL(request):
-#     dog_data = serializers.serialize("python", Dog.objects.all())
-#     cat_data = serializers.serialize("python", Cat.objects.all())
-#     context = {'dog_data': dog_data, 'cat_data': cat_data}
-#     return render(request, 'reports.html', context)
+def report_adopters(request):
+    return render(request, "report_adopters.html", {'adopters': Adopter.objects.all()})
 
 
-def report_adopter_URL(request):
-    queryset = Adopter.objects.all()
-    context = {
-        "queryset": queryset,
-    }
-
-    return render(request, "reports_adopters.html", context)
+def report_fosters(request):
+    return render(request, "report_fosters.html", {'fosters': Foster.objects.all()})
 
 
-def report_foster_URL(request):
-    queryset = Foster.objects.all()
-    context = {
-        "queryset": queryset,
-    }
-
-    return render(request, "reports_fosters.html", context)
+def report_adoptions(request):
+    return render(request, "report_adoptions.html", {'cats': CatAdoption.objects.order_by('adoption_date').all(),
+                                                     'dogs': DogAdoption.objects.order_by('adoption_date').all()})
 
 
-def report_adoptions_URL(request):
-    querysetdogs = DogAdoption.objects.all()
-    querysetcats = CatAdoption.objects.all()
-    context = {
-        "querysetdogs": querysetdogs,
-        "querysetcats": querysetcats
-    }
-
-    return render(request, "reports_adoptions.html", context)
+def report_fostering(request):
+    return render(request, "report_fostering.html", {'cats': CatFostering.objects.order_by('fostering_date_start').all(),
+                                                     'dogs': DogFostering.objects.order_by('fostering_date_start').all()})
 
 
-def report_fostering_URL(request):
-    querysetdogs = DogFostering.objects.all()
-    querysetcats = CatFostering.objects.all()
-    context = {
-        "querysetdogs": querysetdogs,
-        "querysetcats": querysetcats
-    }
-
-    return render(request, "reports_fostering.html", context)
-
-
-def download_report(request):
-    source = requests.get('all_dogs.html').text
-    soup = bs4.BeautifulSoup(source, 'lxml')
-    table = soup.select_one('.table')
-    report = pd.read_html(str(table))[0]
-    report.to_csv('all_dogs.csv', index=False)
-
-    # response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
-    # response['Content-Disposition'] = 'attachment; filename="merkava.csv"'
-    #
-    # writer = csv.writer(response)
-    # writer.writerow(['ימים בעמותה', 'תאריך כניסה לעמותה', 'מספר שבב', 'סוג החיה', 'שם החיה'])
-    # dog_data = Dog.objects.all()
-    # cat_data = Cat.objects.all()
-    #
-    # for dog in dog_data:
-    #     writer.writerow([dog.days_in_the_association, dog.acceptance_date, dog.chip_number, 'כלב', dog.name])
-    # for cat in cat_data:
-    #     writer.writerow([cat.days_in_the_association, cat.acceptance_date, '---', 'חתול', cat.name])
-
-    return report.to_csv('all_dogs.csv', index=False)
-
-
-def reportURL(request):
-    header = 'דו"חות מצבת'
-    queryset = Dog.objects.all()
-    form = DogDeathForm(request.POST or None)
-    context = {
-        "header": header,
-        "queryset": queryset,
-        "form": form,
-    }
-    if request.method == 'POST':
-        queryset = Dog.objects.filter(death_date__contains=(form['death_date'].value(), form['death_date'].value()))
-
-        context = {
-            "header": header,
-            "queryset": queryset,
-            "form": form,
-        }
-
-    return render(request, "reports.html", context)
 
 ############################################# Responses ############################################################
 

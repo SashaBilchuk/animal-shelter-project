@@ -1,4 +1,5 @@
 from django import forms
+import datetime
 from .models import Dog, Cat, DogAdoption, CatAdoption, CatFostering, DogFostering,BlackList, Response, STATUS_CHOICES
 from django.utils.translation import gettext_lazy as _
 
@@ -14,30 +15,39 @@ from django.utils.translation import gettext_lazy as _
 # )
 
 
-
-class DogDeathForm(forms.ModelForm):
+class AddDog(forms.ModelForm):
     class Meta:
         model = Dog
-        fields = ['death_date']
-        # fromDate = Dog.acceptance_date
-        # toDate = Dog.acceptance_date
-        widgets = {'death_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})}
+        fields = "__all__"
+        exclude = ['foster_relation_dog', 'adopter_relation_dog']
+        widgets = {'birth_date': forms.DateInput(attrs={'type': 'date'}),
+                   'physical_description': forms.Textarea(attrs={'rows': 3}),
+                   'acceptance_date': forms.DateInput(attrs={'type': 'date'}),
+                   'next_treatment_rabies': forms.DateInput(attrs={'type': 'date'}),
+                   'death_date': forms.DateInput(attrs={'type': 'date'})}
+
+    def clean_acceptance_date(self):
+        date = self.cleaned_data['acceptance_date']
+        if date > datetime.date.today():
+            raise forms.ValidationError("תאריך לא יכול להיות בעתיד")
+        return date
 
 
 class DogAdoptionsForm(forms.ModelForm):
     class Meta:
         model = DogAdoption
-        fields = "__all__"
-        widgets = {'adoption_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-                   'next_followup_call': forms.DateInput(attrs={'class': 'form-control','type': 'date'}),
-                   'return_date': forms.DateInput(attrs={'class': 'form-control','type': 'date'}),
-                   'adoption_comments ': forms.Textarea(attrs={'class': 'form-control','rows': 3})}
+        fields = ['dog', 'adopter', 'adoption_date', 'method_of_payment', 'receipt_number', 'adoption_form_link',
+                  'adoption_comments', 'next_followup_call', 'adoption_volunteer']
+        widgets = {'adoption_date': forms.DateInput(attrs={'type': 'date'}),
+                   'adoption_comments': forms.Textarea(attrs={'rows': 3}),
+                   'next_followup_call': forms.DateInput(attrs={'type': 'date'}),
+                   'adoption_volunteer': forms.Textarea(attrs={'rows': 3})}
 
     def clean_dog(self):
         dog = self.cleaned_data.get('dog')
         for instance in DogAdoption.objects.all():
             if instance.dog == dog:
-                raise forms.ValidationError(dog.name + ' כבר אומצ/ה')
+                raise forms.ValidationError(dog.name + 'כבר אומצ/ה')
         return dog
 
 
@@ -45,9 +55,13 @@ class DogFosteringForm(forms.ModelForm):
     class Meta:
         model = DogFostering
         fields = "__all__"
-        widgets = {'fostering_date_start': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'dir': 'rtl'}),
-                   'fostering_date_end': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'dir': 'rtl'}),
-                   'fostering_comments ': forms.Textarea(attrs={'class': 'form-control', 'rows': 3})}
+        widgets = {'fostering_date_start': forms.DateInput(attrs={'type': 'date'}),
+                   'fostering_date_end': forms.DateInput(attrs={'type': 'date'}),
+                   'fostering_comments': forms.Textarea(attrs={'rows': 3}),
+                   'fostering_volunteer': forms.Textarea(attrs={'rows': 3}),
+                   'fostering_link_text': forms.Textarea(attrs={'rows': 3}),
+                   'fostering_link_for_adoption_text': forms.Textarea(attrs={'rows': 3})
+                   }
 
     def clean_dog(self):
         dog = self.cleaned_data.get('dog')
@@ -60,12 +74,12 @@ class DogFosteringForm(forms.ModelForm):
 class CatAdoptionsForm(forms.ModelForm):
     class Meta:
         model = CatAdoption
-        fields = "__all__"
-
-        widgets = {'adoption_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'dir': 'rtl'}),
+        fields = ['cat', 'adopter', 'adoption_date', 'method_of_payment', 'receipt_number', 'adoption_form_link',
+                  'adoption_comments', 'next_followup_call', 'adoption_volunteer']
+        widgets = {'adoption_date': forms.DateInput(attrs={'type': 'date'}),
+                   'adoption_comments': forms.Textarea(attrs={'rows': 3}),
                    'next_followup_call': forms.DateInput(attrs={'type': 'date'}),
-                   'return_date': forms.DateInput(attrs={'type': 'date'}),
-                   'adoption_comments ': forms.Textarea(attrs={'class': 'form-control', 'rows': 3})}
+                   'adoption_volunteer': forms.Textarea(attrs={'rows': 3})}
 
     def clean_cat(self):
         cat = self.cleaned_data.get('cat')
@@ -79,9 +93,13 @@ class CatFosteringForm(forms.ModelForm):
     class Meta:
         model = CatFostering
         fields = "__all__"
-        widgets = {'fostering_date_start': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'dir': 'rtl'}),
-                   'fostering_date_end': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'dir': 'rtl'}),
-                   'fostering_comments ': forms.Textarea(attrs={'class': 'form-control', 'rows': 3})}
+        widgets = {'fostering_date_start': forms.DateInput(attrs={'type': 'date'}),
+                   'fostering_date_end': forms.DateInput(attrs={'type': 'date'}),
+                   'fostering_comments': forms.Textarea(attrs={'rows': 3}),
+                   'fostering_volunteer': forms.Textarea(attrs={'rows': 3}),
+                   'fostering_link_text': forms.Textarea(attrs={'rows': 3}),
+                   'fostering_link_for_adoption_text': forms.Textarea(attrs={'rows': 3})
+                   }
 
     def clean_cat(self):
         cat = self.cleaned_data.get('cat')

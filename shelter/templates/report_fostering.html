@@ -34,27 +34,23 @@ th {
                 <th> מספר האומנה </th>
                 <th> שם האומנה </th>
                 <th> ת''ז האומנה </th>
-                <th> מס' מזהה של הכלב </th>
-                <th> שם הכלב </th>
+                <th> שם הכלב (מס' מזהה) </th>
                 <th>תאריך תחילת אומנה </th>
                 <th> תאריך סיום האומנה </th>
                 <th> הערות האומנה </th>
-                <th> קישור לטופס האומנה </th>
-                <th> קישור לטופס אומנה למטרת אימוץ </th>
+                <th> גורם מטפל בעמותה </th>
             </tr>
         </thead>
-            {% for instance in querysetdogs %}
+            {% for instance in dogs %}
             <tr>
                 <td> {{instance.id}}</td>
-                <td> {{instance.foster}}</td>
+                <td> {{instance.foster.name}}</td>
                 <td> {{instance.foster.foster_ID}}</td>
-                <td> {{instance.dog.id}}</td>
-                <td> {{instance.dog.name }}</td>
+                <td> {{instance.dog}}</td>
                 <td> {{instance.fostering_date_start}}</td>
                 <td> {% if instance.fostering_date_end %}{{instance.fostering_date_end}} {% else %} - {% endif %}</td>
                 <td> {% if instance.fostering_comments %}{{instance.fostering_comments}} {% else %} - {% endif %}</td>
-                <td> {% if instance.fostering_link_text %}{{instance.fostering_link_text}} {% else %} - {% endif %}</td>
-                <td> {% if instance.fostering_link_for_adoption_text %}{{instance.fostering_link_for_adoption_text}} {% else %} - {% endif %}</td>
+                <td> {% if instance.fostering_volunteer %}{{instance.fostering_volunteer}} {% else %} - {% endif %}</td>
             </tr>
                 {% endfor %}
   </table>
@@ -65,27 +61,23 @@ th {
                 <th> מספר האומנה </th>
                 <th> שם האומנה </th>
                 <th> ת''ז האומנה </th>
-                <th> מס' מזהה של החתול </th>
-                <th> שם החתול </th>
+                <th> שם החתול (מס' מזהה) </th>
                 <th>תאריך תחילת אומנה </th>
                 <th> תאריך סיום האומנה </th>
                 <th> הערות האומנה </th>
-                <th> קישור לטופס האומנה </th>
-                <th> קישור לטופס אומנה למטרת אימוץ </th>
+                <th> גורם מטפל בעמותה </th>
             </tr>
         </thead>
-            {% for instance in querysetcats %}
+            {% for instance in cats %}
             <tr>
                 <td> {{instance.id}}</td>
-                <td> {{instance.foster}}</td>
+                <td> {{instance.foster.name}}</td>
                 <td> {{instance.foster.foster_ID}}</td>
-                <td> {{instance.cat.id}}</td>
-                <td> {{instance.cat.name }}</td>
+                <td> {{instance.cat}}</td>
                 <td> {{instance.fostering_date_start}}</td>
                 <td> {% if instance.fostering_date_end %}{{instance.fostering_date_end}} {% else %} - {% endif %}</td>
                 <td> {% if instance.fostering_comments %}{{instance.fostering_comments}} {% else %} - {% endif %}</td>
-                <td> {% if instance.fostering_link_text %}{{instance.fostering_link_text}} {% else %} - {% endif %}</td>
-                <td> {% if instance.fostering_link_for_adoption_text %}{{instance.fostering_link_for_adoption_text}} {% else %} - {% endif %}</td>
+                <td> {% if instance.fostering_volunteer %}{{instance.fostering_volunteer}} {% else %} - {% endif %}</td>
             </tr>
                 {% endfor %}
   </table>

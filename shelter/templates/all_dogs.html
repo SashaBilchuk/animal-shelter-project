@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load static %}
 
 <style>
 table{
@@ -20,50 +21,82 @@ table tr:nth-child(even){
 
 th {
   background-color: #1b9891;
-  color: white;
-}</style>
+  color: white;}
 
+button {
+  background-color:  white;
+  border: 2px solid #555555;
+  color: black;
+  padding: 16px 32px;
+  text-align: center;
+  font-size: 18px;
+  margin: 4px 2px;
+  opacity: 1;
+  transition: 0.3s;
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+</style>
+
+<script src="{% static 'downloadAllDogs.js' %}"></script>
 
 <h1 class="text-center">רשימת הכלבים</h1><br>
-<body><center>
-    <!--<a class="btn btn-outline-dark" role="button" href="{% url 'download_report' %}" >הורד כ-CSV</a>-->
+<body>
     <div class="jumbotron">
-    <table class="table">
+        <button class="button" onclick="exportData()">הורד ל-Excel</button><br>
+    <table class="table" id="tbl">
         <thead>
             <tr>
-                <th> מס' מזהה של הכלב </th>
-                <th> שם הכלב </th>
+                <th> שם הכלב (מס' מזהה) </th>
                 <th> מספר שבב </th>
                 <th> גיל </th>
                 <th>מין  </th>
                 <th> גודל </th>
                 <th> תיאור חיצוני </th>
-                <th> תיאור התנהגותי </th>
                 <th> תאריך כניסה לעמותה </th>
+                <th> תאריך יציאה מעמותה </th>
                 <th> מיקום </th>
+                <th> תאריך אימוץ או אומנה </th>
+                <th> שם המאמצ/ת או אומנה (ת"ז) </th>
                 <th> נפתר/ה? </th>
             </tr>
         </thead>
             {% for dog in dogs %}
-            <tr>
-                <td><a href="../dog/{{dog.id}}"><div style="color: black; height:100%; width:100%">{{dog.id}}</div></a></td>
-                <td> {{dog.name}}</td>
-                <td> {{dog.chip_number}}</td>
-                <td> {% if dog.age_years == 0 and dog.age_months == 0  %} פחות מחודש {% else %} {{ dog.age_years }} שנים ו-{{ dog.age_months }} חודשים {% endif %}</td>
-                <td> {{dog.get_gender_display}}</td>
-                <td> {% if dog.size %} {{ dog.get_size_display }} {% else %} - {% endif %}</td>
-                <td> {% if dog.physical_description%}{{dog.physical_description}} {% else %} - {% endif %}</td>
-                <td> {% if dog.behaviour_description%}{{dog.behaviour_description}} {% else %} - {% endif %}</td>
-                <td> {{dog.acceptance_date}}</td>
-                <td> {{dog.get_location_display}}</td>
-                <td> {% if dog.died %} כן {% else %} - {% endif %}</td>
+                        <tr>
+                            <td><a href="../dog/{{dog.id}}"><div style="color: black; height:100%; width:100%">{{dog}}</div></a></td>
+                            <td> {{dog.chip_number}}</td>
+                            <td> {% if dog.age_years == 0 and dog.age_months == 0  %} פחות מחודש {% else %} {{ dog.age_years }} שנים ו-{{ dog.age_months }} חודשים {% endif %}</td>
+                            <td> {{dog.get_gender_display}}</td>
+                            <td> {% if dog.size %} {{ dog.get_size_display }} {% else %} - {% endif %}</td>
+                            <td> {% if dog.physical_description%}{{dog.physical_description}} {% else %} - {% endif %}</td>
+                            <td> {{dog.acceptance_date }}</td>
+                            <td> {% if dog.exit_date %} {{ dog.exit_date }} {% else %} - {% endif %}</td>
+                            <td> {{dog.get_location_display}}</td>
+                            {% if dog.location == "Adoption"%}
+                                {% for adoption in dog_adoption %}
+                                    {% if adoption.dog == dog %}
+                                        <td> {{adoption.adoption_date}}</td>
+                                        <td> {{adoption.adopter}}</td>
+                                        {% endif %}{% endfor %}
+                            {% elif dog.location == "Foster"%}
+                                 {% for fostering in dog_fostering %}
+                                        {% if fostering.dog == dog %}
+                                            <td> {{fostering.fostering_date_start}}</td>
+                                            <td> {{fostering.foster}}</td>
+                                            {% endif %}{% endfor %}
+                            {% else%}
+                                <td>-</td>
+                                <td>-</td>
+                            {% endif %}
+                            <td> {% if dog.died %} כן {% else %} - {% endif %}</td>
+                        </tr>
 
-            </tr>
-                {% endfor %}
+            {% endfor %}
   </table>
 </div>
-</center></body>
+</body>
 {% endblock content %}
 
-</body>
-</html>

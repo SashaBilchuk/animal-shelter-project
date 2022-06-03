@@ -2,7 +2,7 @@
 <html lang="he", dir="rtl">
   <head>
     <!-- Required meta tags -->
-    <meta charset="utf-8" />
+    <meta charset="utf-8-sig" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
@@ -19,6 +19,8 @@
       src="https://kit.fontawesome.com/4668da371c.js"
       crossorigin="anonymous"
     ></script>
+
+
 
     <!-- Bootstrap CSS -->
     <link
@@ -37,6 +39,7 @@
 
     <script src="https://unpkg.com/swiper/swiper-bundle.js"></script>
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
 
     <style>
         /* Modify the background color */
@@ -73,86 +76,61 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="{% url 'home' %}">בית</a>
-          </li>
-          <li class="nav-item active">
             <a class="nav-link" href="{% url 'search' %}">חיפוש</a>
           </li>
 
-          <!--<li class="nav-item active">
-          <a class="nav-link" href="{% url 'reports' %}">דו"חות מערכת</a>
-          </li>-->
-
           <div class="dropdown show">
               <a class="btn dropdown-toggle" style="color: white;" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                הוסף חיה
-              </a>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                <a class="dropdown-item" href="{% url 'add_dog' %}">הוסף כלב</a>
-                <a class="dropdown-item" href="{% url 'add_cat' %}">הוסף חתול</a>
-              </div>
-            </div>
-          <div class="dropdown show">
-              <a class="btn dropdown-toggle" style="color: white;" href="#" role="button" id="dropdownMenuLink0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 בע"ח
               </a>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink0">
-                <a class="dropdown-item" href="{% url 'all_dogs' %}">הצגת כלבים</a>
-                <a class="dropdown-item" href="{% url 'all_cats' %}">הצגת חתולים</a>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item" href="{% url 'add_dog' %}">הוספת כלב</a>
+                <a class="dropdown-item" href="{% url 'all_dogs' %}">רשימת כלבים</a>
+                <a class="dropdown-item" href="{% url 'add_cat' %}">הוספת חתול</a>
+                <a class="dropdown-item" href="{% url 'all_cats' %}">רשימת חתולים</a>
               </div>
-          </div>
+            </div>
           <div class="dropdown show">
               <a class="btn dropdown-toggle" style="color: white;" href="#" role="button" id="dropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 שאלונים
               </a>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
-                <a class="dropdown-item" href="{% url 'google-sheet' %}">שאלון מאמצים</a>
-                <a class="dropdown-item" href="{% url 'black_list' %}">רשימה שחורה</a>
-                <a class="dropdown-item" href="{% url 'recommendation' %}">מערכת המלצה</a>
-                <a class="dropdown-item" href="{% url 'add_to_black_list' %}">הוספה לרשימה שחורה</a>
-
+                <a class="dropdown-item" href="{% url 'google-sheet' %}">כלל השאלונים</a>
+                <a class="dropdown-item" href="{% url 'recommendation' %}">תוצאות ההמלצה</a>
               </div>
           </div>
           <div class="dropdown show">
               <a class="btn dropdown-toggle" style="color: white;" href="#" role="button" id="dropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                מאמצים
-              </a>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink2">
-                <a class="dropdown-item" href="{% url 'reports_adopters' %}">טבלת המאמצים</a>
-                <a class="dropdown-item" href="{% url 'add_adopter' %}">הוסף מאמץ</a>
-              </div>
-            </div>
-
-          <div class="dropdown show">
-              <a class="btn dropdown-toggle" style="color: white;" href="#" role="button" id="dropdownMenuLink3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 אימוצים
               </a>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink2">
+                <a class="dropdown-item" href="{% url 'add_adopter' %}">הוספת מאמץ</a>
+                <a class="dropdown-item" href="{% url 'report_adopters' %}">רשימת מאמצים</a>
+                <a class="dropdown-item" href="{% url 'add_dog_adoption' %}">הוספת אימוץ לכלב</a>
+                <a class="dropdown-item" href="{% url 'add_cat_adoption' %}">הוספת אימוץ לחתול</a>
+                <a class="dropdown-item" href="{% url 'report_adoptions' %}">רשימת אימוצים</a>
+              </div>
+            </div>
+          <div class="dropdown show">
+              <a class="btn dropdown-toggle" style="color: white;" href="#" role="button" id="dropdownMenuLink3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                אומנות
+              </a>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink3">
-                <a class="dropdown-item" href="{% url 'reports_adoptions' %}">טבלת אימוצים</a>
-                <a class="dropdown-item" href="{% url 'add_dog_adoption' %}">הוסף אימוץ לכלב</a>
-                <a class="dropdown-item" href="{% url 'add_cat_adoption' %}">הוסף אימוץ לחתול</a>
-             </div>
+                <a class="dropdown-item" href="{% url 'add_foster' %}">הוספת משפחת אומנה</a>
+                <a class="dropdown-item" href="{% url 'report_fosters' %}">רשימת משפחות אומנה</a>
+                <a class="dropdown-item" href="{% url 'add_dog_fostering' %}">הוספת אומנה לכלב</a>
+                <a class="dropdown-item" href="{% url 'add_cat_fostering' %}">הוספת אומנה לחתול</a>
+                <a class="dropdown-item" href="{% url 'report_fostering' %}">רשימת אומנות</a>
+              </div>
             </div>
           <div class="dropdown show">
               <a class="btn dropdown-toggle" style="color: white;" href="#" role="button" id="dropdownMenuLink4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                משפחות אומנה
+                רשימה שחורה
               </a>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink4">
-                <a class="dropdown-item" href="{% url 'reports_fosters' %}">הצגת משפחות אומנה</a>
-                <a class="dropdown-item" href="{% url 'add_foster' %}">הוסף משפחת אומנה</a>
-
-            </div>
-            </div>
-          <div class="dropdown show">
-              <a class="btn dropdown-toggle" style="color: white;" href="#" role="button" id="dropdownMenuLink5" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                היסטורית אומנה
-              </a>
-
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink5">
-                <a class="dropdown-item" href="{% url 'reports_fostering' %}">הצגת היסטוריית אומנה</a>
-                <a class="dropdown-item" href="{% url 'add_dog_fostering' %}">הוסף אומנה לכלב</a>
-                <a class="dropdown-item" href="{% url 'add_cat_fostering' %}">הוסף אומנה לחתול</a>
-            </div>
+                <a class="dropdown-item" href="{% url 'add_to_black_list' %}">הוספה לרשימה</a>
+                <a class="dropdown-item" href="{% url 'black_list' %}">רשימה שחורה</a>
+              </div>
             </div>
         </ul>
         <ul class="navbar-nav mr-auto">

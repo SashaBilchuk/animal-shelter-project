@@ -34,12 +34,11 @@ th {
                 <th> מספר האימוץ </th>
                 <th> שם המאמצ/ת </th>
                 <th> ת''ז המאמצ/ת </th>
-                <th> מס' מזהה של הכלב </th>
-                <th> שם הכלב </th>
+                <th> שם הכלב (מס' מזהה) </th>
                 <th>תאריך האימוץ </th>
                 <th> מספר חשבונית </th>
                 <th> הערות האימוץ </th>
-                <th>שיחת מעכב האחרונה </th>
+                <th>שיחת מעקב האחרונה </th>
                 <th> תאריך שיחת מעקב הבאה </th>
                 <th>גורם מטפל באימוץ </th>
                 <th> הוחזר/ה? </th>
@@ -48,18 +47,17 @@ th {
                 <th>גורם המטפל בהחזרה </th>
             </tr>
         </thead>
-            {% for instance in querysetdogs %}
+            {% for instance in dogs %}
             <tr>
                 <td> {{instance.id}}</td>
                 <td> {{instance.adopter.name}}</td>
                 <td> {{instance.adopter.adopter_ID}}</td>
-                <td> {{instance.dog.id}}</td>
-                <td> {{instance.dog.name }}</td>
-                <td> {{instance.adoption_date}}</td>
+                <td> {{instance.dog}}</td>
+                <td> {% if instance.adoption_date%}{{instance.adoption_date}} {% else %} - {% endif %}</td>
                 <td> {% if instance.receipt_number %}{{instance.receipt_number}} {% else %} - {% endif %}</td>
                 <td> {% if instance.adoption_comments %}{{instance.adoption_comments}} {% else %} - {% endif %}</td>
                 <td> {% if instance.last_followup_call %}{{instance.last_followup_call}} {% else %} - {% endif %}</td>
-                <td> {{instance.next_followup_call}}</td>
+                <td> {% if instance.next_followup_call %}{{instance.next_followup_call}} {% else %} - {% endif %}</td>
                 <td> {% if instance.adoption_volunteer %}{{instance.adoption_volunteer}} {% else %} - {% endif %}</td>
                 <td> {% if instance.returned.died %} כן {% else %} - {% endif %}</td>
                 <td> {% if instance.return_date %}{{instance.return_date }} {% else %} - {% endif %}</td>
@@ -76,12 +74,11 @@ th {
                 <th> מספר האימוץ </th>
                 <th> שם המאמצ/ת </th>
                 <th> ת''ז המאמצ/ת </th>
-                <th> מס' מזהה של החתול </th>
-                <th> שם החתול </th>
+                <th> שם החתול (מס' מזהה) </th>
                 <th>תאריך האימוץ </th>
                 <th> מספר חשבונית </th>
                 <th> הערות האימוץ </th>
-                <th>שיחת מעכב האחרונה </th>
+                <th>שיחת מעקב האחרונה </th>
                 <th> תאריך שיחת מעקב הבאה </th>
                 <th>גורם מטפל באימוץ </th>
                 <th> הוחזר/ה? </th>
@@ -90,18 +87,17 @@ th {
                 <th>גורם המטפל בהחזרה </th>
             </tr>
         </thead>
-            {% for instance in querysetcats %}
+            {% for instance in cats %}
             <tr>
                 <td> {{instance.id}}</td>
                 <td> {{instance.adopter.name}}</td>
                 <td> {{instance.adopter.adopter_ID}}</td>
-                <td> {{instance.cat.id}}</td>
-                <td> {{instance.cat.name}}</td>
-                <td> {{instance.adoption_date}}</td>
+                <td> {{instance.cat}}</td>
+                <td> {% if instance.adoption_date%}{{instance.adoption_date}} {% else %} - {% endif %}</td>
                 <td> {% if instance.receipt_number %}{{instance.receipt_number}} {% else %} - {% endif %}</td>
                 <td> {% if instance.adoption_comments %}{{instance.adoption_comments}} {% else %} - {% endif %}</td>
                 <td> {% if instance.last_followup_call %}{{instance.last_followup_call}} {% else %} - {% endif %}</td>
-                <td> {{instance.next_followup_call}}</td>
+                <td> {% if instance.next_followup_call %}{{instance.next_followup_call}} {% else %} - {% endif %}</td>
                 <td> {% if instance.adoption_volunteer %}{{instance.adoption_volunteer}} {% else %} - {% endif %}</td>
                 <td> {% if instance.returned.died %} כן {% else %} - {% endif %}</td>
                 <td> {% if instance.return_date %}{{instance.return_date }} {% else %} - {% endif %}</td>

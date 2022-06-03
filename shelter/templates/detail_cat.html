@@ -55,8 +55,8 @@
             <div class="card-body">
               <section class="row"><div> <span> מיקום: </span> {{ cat.get_location_display }} </div></section>
               <section class="row"><div><span>תאריך כניסה לעמותה:</span>{{ cat.acceptance_date }}</div></section>
-              <section class="row"><div><span>ימים בעמותה:</span> {{ cat.days_in_the_association }}</div></section>
-              <section class="row"><div> <span> תאריך יציאה מעמותה: </span> {{ cat.exit_date }} </div></section>
+              <section class="row"><div><span>מספר ימים בעמותה:</span> {{ cat.days_in_the_association }}</div></section>
+              <section class="row"><div> <span> תאריך יציאה מעמותה: </span>{% if cat.exit_date  %} {{ cat.exit_date }} {% else %} - {% endif %} </div></section>
             </div>
         </div>
     <div class="card">
@@ -140,9 +140,9 @@
         </div>
         <div id="collapseSix" class="collapse" role="tabpanel" aria-labelledby="headingSix">
             <div class="card-body">
-            <section class="row"><div> <span> האם נפתר/ה: </span> {% if cat.died %} כן {% else %} - {% endif %}</div></section>
-            <section class="row"><div> <span> תאריך הפתירה: </span> {% if cat.death_date %} {{ dog.death_date }} {% else %} - {% endif %}</div></section>
-            <section class="row"><div> <span> סיבת הפתירה: </span> {% if cat.death_reason %} {{ dog.death_reason }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> האם נפטר/ה: </span> {% if cat.died %} כן {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> תאריך הפטירה: </span> {% if cat.death_date %} {{ dog.death_date }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> סיבת הפטירה: </span> {% if cat.death_reason %} {{ dog.death_reason }} {% else %} - {% endif %}</div></section>
             </div>
         </div>
     </div>

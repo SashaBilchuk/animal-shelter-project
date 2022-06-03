@@ -37,7 +37,7 @@
         <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
             <div class="card-body">
               <div class="row"><div> <span> מספר שבב: </span>{% if dog.chip_number %} {{ dog.chip_number }} {% else %} אין {% endif %} </div></div>
-              <div class="row"><div> <span> גיל:</span>{% if dog.age_years == 0 and dog.age_months == 0  %} פחות מחודש {% else %} {{ dog.age_years }} שנים ו-{{ dog.age_months }} חודשים {% endif %} </div></div>
+              <div class="row"><div> <span> גיל: </span>{% if dog.age_years == 0 and dog.age_months == 0  %} פחות מחודש {% else %} {{ dog.age_years }} שנים ו-{{ dog.age_months }} חודשים {% endif %} </div></div>
               <div class="row"><div> <span> תיאור חיצוני: </span> {{ dog.physical_description }} </div></div>
               <div class="row"><div> <span> גודל: </span>{% if dog.size %} {{ dog.get_size_display }} {% else %} - {% endif %}</div></div>
               <div class="row"><div> <span> צבע: </span>{% if dog.color %} {{ dog.color }} {% else %} - {% endif %}</div></div>
@@ -59,8 +59,8 @@
             <div class="card-body">
               <section class="row"><div> <span> מיקום: </span> {{ dog.get_location_display }} </div></section>
               <section class="row"><div><span>תאריך כניסה לעמותה:</span>{{ dog.acceptance_date }}</div></section>
-              <section class="row"><div><span>ימים בעמותה:</span> {{ dog.days_in_the_association }}</div></section>
-              <section class="row"><div> <span> תאריך יציאה מעמותה: </span> {{ dog.exit_date }} </div></section>
+              <section class="row"><div><span>מספר ימים בעמותה:</span> {{ dog.days_in_the_association }}</div></section>
+              <section class="row"><div> <span> תאריך יציאה מעמותה: </span>{% if dog.exit_date  %} {{ dog.exit_date }} {% else %} - {% endif %}</div></section>
             </div>
         </div>
     <div class="card">
@@ -158,9 +158,9 @@
         </div>
         <div id="collapseSix" class="collapse" role="tabpanel" aria-labelledby="headingSix">
             <div class="card-body">
-            <section class="row"><div> <span> האם נפתר/ה: </span> {% if dog.died %} כן {% else %} - {% endif %}</div></section>
-            <section class="row"><div> <span> תאריך הפתירה: </span> {% if dog.death_date %} {{ dog.death_date }} {% else %} - {% endif %}</div></section>
-            <section class="row"><div> <span> סיבת הפתירה: </span> {% if dog.death_reason %} {{ dog.death_reason }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> האם נפטר/ה: </span> {% if dog.died %} כן {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> תאריך הפטירה: </span> {% if dog.death_date %} {{ dog.death_date }} {% else %} - {% endif %}</div></section>
+            <section class="row"><div> <span> סיבת הפטירה: </span> {% if dog.death_reason %} {{ dog.death_reason }} {% else %} - {% endif %}</div></section>
             </div>
         </div>
     </div>

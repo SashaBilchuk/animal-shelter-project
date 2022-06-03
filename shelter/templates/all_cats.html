@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load static %}
 
 <style>
 table{
@@ -20,44 +21,78 @@ table tr:nth-child(even){
 
 th {
   background-color: #1b9891;
-  color: white;
-}</style>
+  color: white;}
 
+button {
+  background-color:  white;
+  border: 2px solid #555555;
+  color: black;
+  padding: 16px 32px;
+  text-align: center;
+  font-size: 18px;
+  margin: 4px 2px;
+  opacity: 1;
+  transition: 0.3s;
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+</style>
+
+<script src="{% static 'downloadAllCats.js' %}"></script>
 
 <h1 class="text-center">רשימת החתולים</h1><br>
-<body><center>
-    <!--<a class="btn btn-outline-dark" role="button" href="{% url 'download_report' %}" >הורד כ-CSV</a>-->
+<body>
     <div class="jumbotron">
-    <table class="table">
+        <button class="button" onclick="exportData()">הורד ל-Excel</button><br>
+    <table class="table" id="tbl">
         <thead>
             <tr>
-                <th> מס' מזהה של החתול </th>
-                <th> שם החתול </th>
+                <th> שם החתול (מס' מזהה) </th>
                 <th> גיל </th>
                 <th> מין </th>
                 <th> תיאור חיצוני </th>
                 <th> תאריך כניסה לעמותה </th>
+                <th> תאריך יציאה מעמותה </th>
                 <th> מיקום </th>
+                <th> תאריך אימוץ או אומנה </th>
+                <th> שם המאמצ/ת או אומנה (ת"ז) </th>
                 <th> נפתר/ה? </th>
             </tr>
         </thead>
             {% for cat in cats %}
-            <tr>
-                <td><a href="../cat/{{cat.id}}"><div style="color: black; height:100%; width:100%">{{cat.id}}</div></a></td>
-                <td> {{cat.name}}</td>
-                <td> {% if cat.age_years == 0 and cat.age_months == 0  %} פחות מחודש {% else %} {{cat.age_years }} שנים ו-{{cat.age_months }} חודשים {% endif %}</td>
-                <td> {{cat.get_gender_display}}</td>
-                <td> {% if cat.physical_description%}{{cat.physical_description}} {% else %} - {% endif %}</td>
-                <td> {{cat.acceptance_date}}</td>
-                <td> {{cat.get_location_display}}</td>
-                <td> {% if cat.died %} כן {% else %} - {% endif %}</td>
+                        <tr>
+                            <td><a href="../cat/{{cat.id}}"><div style="color: black; height:100%; width:100%">{{cat}}</div></a></td>
+                            <td> {% if cat.age_years == 0 and cat.age_months == 0  %} פחות מחודש {% else %} {{cat.age_years }} שנים ו-{{cat.age_months }} חודשים {% endif %}</td>
+                            <td> {{cat.get_gender_display}}</td>
+                            <td> {% if cat.physical_description%}{{cat.physical_description}} {% else %} - {% endif %}</td>
+                            <td> {{cat.acceptance_date }}</td>
+                            <td> {% if cat.exit_date %} {{ cat.exit_date }} {% else %} - {% endif %}</td>
+                            <td> {{cat.get_location_display}}</td>
+                            {% if cat.location == "Adoption"%}
+                                {% for adoption in cat_adoption %}
+                                    {% if adoption.cat == cat %}
+                                        <td> {{adoption.adoption_date}}</td>
+                                        <td> {{adoption.adopter}}</td>
+                                {% endif %}{% endfor %}
+                            {% elif cat.location == "Foster"%}
+                                 {% for fostering in cat_fostering %}
+                                        {% if fostering.cat == cat %}
+                                            <td> {{fostering.fostering_date_start}}</td>
+                                            <td> {{fostering.foster}}</td>
+                                 {% endif %}{% endfor %}
+                            {% else%}
+                                <td>-</td>
+                                <td>-</td>
+                            {% endif %}
+                            <td> {% if cat.died %} כן {% else %} - {% endif %}</td>
+                        </tr>
 
-            </tr>
-                {% endfor %}
+            {% endfor %}
   </table>
 </div>
-</center></body>
+</body>
 {% endblock content %}
 
-</body>
-</html>

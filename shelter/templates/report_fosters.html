@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
 
+{% load static %}
+
 <style>
 table{
 	text-align: center;
@@ -20,15 +22,33 @@ table tr:nth-child(even){
 
 th {
   background-color: #1b9891;
-  color: white;
-}</style>
+  color: white;}
 
+button {
+  background-color:  white;
+  border: 2px solid #555555;
+  color: black;
+  padding: 16px 32px;
+  text-align: center;
+  font-size: 18px;
+  margin: 4px 2px;
+  opacity: 1;
+  transition: 0.3s;
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 12px;
+}
 
+</style>
+
+<script src="{% static 'downloadFosters.js' %}"></script>
 
 <h1 class="text-center">רשימת משפחות האומנה</h1><br>
-<body><center>
+<body>
     <div class="jumbotron">
-    <table class="table">
+    <button class="button" onclick="exportData()">הורד ל-Excel</button><br>
+    <table class="table" id="tbl">
         <thead>
             <tr>
                 <th> ת''ז האומנה </th>
@@ -39,9 +59,9 @@ th {
                 <th>גורם המטפל בעמותה </th>
             </tr>
         </thead>
-            {% for instance in queryset %}
+            {% for instance in fosters %}
             <tr>
-                <td><a href="../admin/shelter/foster/{{instance.id}}/change/"><div> {{instance.foster_ID}} </div></a></td>
+                <td><a href="../admin/shelter/foster/{{instance.id}}/change/" style="color: black; height:100%; width:100%"><div> {{instance.foster_ID}} </div></a></td>
                 <td> {{instance.name}}</td>
                 <td> {{instance.foster_city}}</td>
                 <td> {% if instance.phone_number%}{{instance.phone_number}} {% else %} - {% endif %}</td>
@@ -51,5 +71,5 @@ th {
                 {% endfor %}
   </table>
 </div>
-</center></body>
+</body>
 {% endblock content %}

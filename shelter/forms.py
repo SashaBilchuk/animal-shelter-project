@@ -144,3 +144,14 @@ class EditResponseStatus(forms.ModelForm):
     #         if instance.phone_num == existing_phones:
     #             raise forms.ValidationError(instance.name + ' קיים ברשימה')
     #     return existing_phones
+
+class EditBlackListForm(forms.ModelForm):
+    class Meta:
+        model = BlackList
+        fields = "__all__"
+        # {"status": forms.Select(choices=STATUS_CHOICES, attrs={'class': 'form-control'}),
+        widgets = {'full_name': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
+                   'city': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
+                   'mail ': forms.EmailInput(),
+                   'phone_num ': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
+                   'comments ': forms.Textarea(attrs={'class': 'form-control', 'rows': 3})}

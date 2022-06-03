@@ -1,9 +1,17 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
+
 import datetime
 import uuid
 from django.utils.translation import gettext_lazy as _
+
+
+
+
+def validate_id(value):
+    if len(str(value))!=9:
+        raise ValidationError(_('יש להזין מספר תעודת זהות תקין בן 9 ספרות'))
 
 GENDER_CHOICES = (
     ('Male', 'זכר'),
@@ -47,7 +55,7 @@ def validate_chip(value):
 
 
 class Adopter(models.Model):
-    adopter_ID = models.IntegerField(unique=True, default=None, verbose_name=_('ת"ז'))
+    adopter_ID = models.IntegerField(unique=True, default=None, verbose_name=_('ת"ז'),validators=[validate_id])
     name = models.CharField(max_length=255, default=None, verbose_name=_('שם המאמצ/ת'))
     ID_link = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('קישור לת"ז'))
     birth_date = models.DateField(default=None, blank=True, null=True, verbose_name=_('תאריך לידה'))
@@ -70,7 +78,7 @@ class Adopter(models.Model):
 
 
 class Foster(models.Model):
-    foster_ID = models.IntegerField(unique=True, default=None, verbose_name=_('ת"ז'))
+    foster_ID = models.IntegerField(unique=True, default=None, verbose_name=_('ת"ז'),validators=[validate_id])
     name = models.CharField(max_length=255, default=None, verbose_name=_('שם האומנה'))
     ID_link = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('קישור לת"ז'))
     birth_date = models.DateField(default=None, blank=True, null=True, verbose_name=_('תאריך לידה'))
@@ -323,8 +331,7 @@ class CatFostering(models.Model):
     fostering_link_for_adoption_text = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('קישור לטופס אומנה למטרת אימוץ'))
 
     def __str__(self):
-        return "{}_{}".format(self.cat.__str__(), self.foster.__str__())
-
+        return "{}_{}".format(str(self.cat.__str__()) + "_" + str(self.cat.id), self.foster.__str__())
 
 
 class Volunteer(models.Model):
@@ -357,9 +364,9 @@ class Response(models.Model):
     response_comments =models.CharField(max_length=255, editable=False)
 
     response_date = models.DateTimeField()
-    QID = models.IntegerField(unique=True,editable=False)
+    QID = models.CharField(unique=True, max_length=50,editable=False)
 
-    def __int__(self):
+    def __str__(self):
         return self.QID
 
 

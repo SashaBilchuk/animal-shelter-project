@@ -680,7 +680,6 @@ def get_recommendation(request):
        'otherPets', 'experience',  'allergies', 'own_apartment',
        'rent_agreed', 'residenceType', 'fence', 'dogPlace', 'dogSize',
        'response_comments', 'response_date']]
-
         not_handled = results.query("status in ('','טרם טופל')") # filter by dates
         not_handled = not_handled[not_handled.response_date > dt.today().date() - pd.to_timedelta("15day")]
 

@@ -1,13 +1,25 @@
 {% extends 'base.html' %} {% block content %}
-
-<form action="#" method="get">
-
- <input type="submit" class="btn btn-info"  value="רענן תשובות חדשות" name="mybtn">
-</form>
+{% load staticfiles %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script type="text/javascript" src="{% static 'js/rango-jquery.js' %}"></script>
 
 <style>
+.container {
+  height: 50px;
+  position: relative;
+  border: 3px solid black;
+}
 
-table{
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 122%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+     table{
 	text-align: center;
 	width: 95%;
 	margin: auto;
@@ -15,186 +27,332 @@ table{
 }
 
 /*Make alternating colors for the table rows*/
-table tr:nth-child(odd){
+    table tr:nth-child(odd){
 	background: #8DCBC8
-}
 
-table tr:nth-child(even){
+    }
+
+    table tr:nth-child(even){
 	background: #D1EAE9
-}
+    }
 
-th {
-  background-color: #1b9891;
-  color: white;
-}</style>
+    th {
+    background-color: #1b9891;
+    color: white;
+    }
+
+    .table tr {
+    cursor: pointer;
+    }
+    .table{
+    background-color: #fff !important;
+    }
+    .hedding h1{
+    color:#fff;
+    font-size:25px;
+    }
+    .main-section{
+    margin-top: 120px;
+    }
+
+   .hiddenRow {
+      padding: 0 20px !important;
+      background-color: #eeeeee;
+      font-size: 20px;
+  }
+    .accordian-body span{
+    color:#a2a2a2 !important;
+    }
+
+</style>
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="custom.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+$('.collapse').collapse
+});
+</script>
+
+
+<body>
+
+<div class="container">
+  <div class="center">
+        <form action="#" method="get">
+        <input type="submit" class="btn btn-info"  value="רענן תשובות חדשות"  name="mybtn">
+        </form>  </div>
+</div>
+
 
 <h1 class="display-4 text-center">טבלת לא טופל</h1><br>
 
-    <table class="table">
-        <thead>
+<table class="table table-condensed table-hover" style="border-collapse:collapse;">
+    <thead>
         <tr>
-            {% for key, header in hebrew_headers_dict.items %}
-                <th scope="col">{{ header }}</th>
-            {% endfor %}
+      {% for key, header in header_up_row.items %}
+       <th scope="col">{{ header }}</th>
+      {% endfor %}
         </tr>
-        </thead>
-        <tbody>
-        {% for index, row in not_handled.iterrows %}
-            <tr>
-                {% for cell in row %}
-               <td>
-                    {% if forloop.first %}
-                  <a href="../edit_response/{{cell}}"><div style="color: green; height:100%; width:100%"> {{ cell }} </div></a>
+    </thead>
+    <tbody>
+     {% for index, row in not_handled.iterrows %}
+     {% with y=forloop.counter|stringformat:"s" %}
+     {% with line_id="#demo"|add:y %}
+        <tr data-toggle="collapse" data-target={{line_id}} class="accordion-toggle">
 
-                    {% elif forloop.last %}
-                         <p>
-                            {% if  row.normGrade  >= 1 %}
-                            <i class="fas fa-paw" style="color: yellow;"></i>
-                            {% else %}
-                            <i class="fas fa-paw"></i>
-                            {% endif %} {% if  row.normGrade  >= 2 %}
-                            <i class="fas fa-paw" style="color: yellow;"></i>
-                            {% else %}
-                            <i class="fas fa-paw"></i>
-                            {% endif %} {% if  row.normGrade  >= 3 %}
-                            <i class="fas fa-paw" style="color: yellow;"></i>
-                            {% else %}
-                            <i class="fas fa-paw"></i>
-                            {% endif %} {% if  row.normGrade  >= 4 %}
-                            <i class="fas fa-paw" style="color: yellow;"></i>
-                            {% else %}
-                            <i class="fas fa-paw"></i>
-                            {% endif %} {% if  row.normGrade  >= 5 %}
-                            <i class="fas fa-paw" style="color: yellow;"></i>
-                            {% else %}
-                            <i class="fas fa-paw"></i>
-                            {% endif %}
-                          </p>
-                {%else%}
-                        {{ cell }}
-                {% endif %}
-                    </td>
-                <!--may added-->
-                <form>
+            {% for cell in row %}
+            {% if forloop.counter < 10%}
+            <td>
+                {% if forloop.counter == 1%}
+                <a href="../edit_response/{{cell}}"><div style="color: mediumblue; height:100%; width:100%"> {{ cell }} </div></a>
+                {% elif forloop.counter == 9%}
+                             <p>
+                                {% if  row.normGrade  >= 1 %}
+                                <i class="fas fa-paw" style="color: yellow;"></i>
+                                {% else %}
+                                <i class="fas fa-paw"></i>
+                                {% endif %} {% if  row.normGrade  >= 2 %}
+                                <i class="fas fa-paw" style="color: yellow;"></i>
+                                {% else %}
+                                <i class="fas fa-paw"></i>
+                                {% endif %} {% if  row.normGrade  >= 3 %}
+                                <i class="fas fa-paw" style="color: yellow;"></i>
+                                {% else %}
+                                <i class="fas fa-paw"></i>
+                                {% endif %} {% if  row.normGrade  >= 4 %}
+                                <i class="fas fa-paw" style="color: yellow;"></i>
+                                {% else %}
+                                <i class="fas fa-paw"></i>
+                                {% endif %} {% if  row.normGrade  >= 5 %}
+                                <i class="fas fa-paw" style="color: yellow;"></i>
+                                {% else %}
+                                <i class="fas fa-paw"></i>
+                                {% endif %}
+                              </p>
+                {% else%}
+                {{cell}}
+                {% endif%}
+              </td>
+            {%endif%}
+            {%endfor%}
+            {%endwith%}
+            {%endwith%}
+        </tr>
+          <tr >
+           {% with x=forloop.counter|stringformat:"s" %}
+           {% with line_collapse="demo"|add:x%}
+            <td colspan="9" class="hiddenRow">
+                <div class="accordian-body collapse" id={{line_collapse}}>
+              <div class="card-body">
+              <section class="row"><div> <span> תאריך : </span> {{ row.response_date }} </div></section>
+              <section class="row"><div> <span> טלפון: </span> {{ row.phone_num }} </div></section>
+              <section class="row"><div><span>מייל:</span>{{ row.mail }}</div></section>
+              <section class="row"><div><span>מצב משפחתי:</span> {{ row.maritalStatus }}</div></section>
+              <section class="row"><div> <span> מספר ילדים: </span> {{ row.numChildren }} </div></section>
+              <section class="row"><div> <span> חיות נוספות בגידול: </span> {{ row.otherPets }} </div></section>
+              <section class="row"><div> <span> נסיון: </span> {{ row.experience }} </div></section>
+              <section class="row"><div> <span> אלרגיות: </span> {{ row.allergies }} </div></section>
+              <section class="row"><div> <span> דירה בבעלות: </span> {{ row.own_apartment }} </div></section>
+              <section class="row"><div> <span> הסכמת בעל הדירה: </span> {{ row.rent_agreed }} </div></section>
+              <section class="row"><div> <span> סוג המגורים: </span> {{ row.residenceType }} </div></section>
+              <section class="row"><div> <span> 'יש גדר בגינה/ מרפסת?: </span> {{ row.fence }} </div></section>
+              <section class="row"><div> <span> היכן הכלב ישהה?: </span> {{ row.dogPlace }} </div></section>
+              <section class="row"><div> <span> גודל כלב רצוי: </span> {{ row.dogSize }} </div></section>
+              <section class="row"><div> <span> הערות מהשאלון: </span> {{ row.response_comments }} </div></section>
+                </div>
+                </div>
+            </td>
+           {%endwith%}
+           {%endwith%}
+         </tr>
+            {%endfor%}
 
-                </form>
-             <!--may added-->
+    </tbody>
+</table>
 
-                {% endfor %}
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+
 
 <h1 class="display-4 text-center">טבלת יצרו קשר</h1><br>
 
-    <table class="table">
-        <thead>
+<table class="table table-condensed table-hover" style="border-collapse:collapse;">
+    <thead>
         <tr>
-            {% for key, header in hebrew_headers_dict.items %}
-            {% if forloop.last %}
-                 <th scope="col" style="width:80%" >{{ header }}</th>
-            {%else%}
-                <th scope="col" style="width:80%">{{ header }}</th>
-            {%endif%}
-            {% endfor %}
+      {% for key, header in header_up_row.items %}
+       <th scope="col">{{ header }}</th>
+      {% endfor %}
         </tr>
-        </thead>
-        <tbody>
-        {% for index, row in initial_contact.iterrows %}
-            <tr>
-                {% for cell in row %}
-                <td>
-                    {% if forloop.first %}
-                  <a href="../edit_response/{{cell}}"><div style="color: green; height:100%; width:100%"> {{ cell }} </div></a>
+    </thead>
+    <tbody>
+     {% for index, row in initial_contact.iterrows %}
+     {% with y1=forloop.counter|stringformat:"s" %}
+     {% with line_id1="#demo"|add:y1 %}
+        <tr data-toggle="collapse" data-target={{line_id1}} class="accordion-toggle">
 
-                    {% elif forloop.last %}
-                         <p>
-                            {% if  row.normGrade  >= 1 %}
-                            <i class="fas fa-paw" style="color: yellow;"></i>
-                            {% else %}
-                            <i class="fas fa-paw"></i>
-                            {% endif %} {% if  row.normGrade  >= 2 %}
-                            <i class="fas fa-paw" style="color: yellow;"></i>
-                            {% else %}
-                            <i class="fas fa-paw"></i>
-                            {% endif %} {% if  row.normGrade  >= 3 %}
-                            <i class="fas fa-paw" style="color: yellow;"></i>
-                            {% else %}
-                            <i class="fas fa-paw"></i>
-                            {% endif %} {% if  row.normGrade  >= 4 %}
-                            <i class="fas fa-paw" style="color: yellow;"></i>
-                            {% else %}
-                            <i class="fas fa-paw"></i>
-                            {% endif %} {% if  row.normGrade  >= 5 %}
-                            <i class="fas fa-paw" style="color: yellow;"></i>
-                            {% else %}
-                            <i class="fas fa-paw"></i>
-                            {% endif %}
-                          </p>
-                {%else%}
-                        {{ cell }}
-                {% endif %}
-                    </td>
+            {% for cell in row %}
+            {% if forloop.counter < 10%}
+            <td>
+                {% if forloop.counter == 1%}
+                <a href="../edit_response/{{cell}}"><div style="color: mediumblue; height:100%; width:100%"> {{ cell }} </div></a>
+                {% elif forloop.counter == 9%}
+                             <p>
+                                {% if  row.normGrade  >= 1 %}
+                                <i class="fas fa-paw" style="color: yellow;"></i>
+                                {% else %}
+                                <i class="fas fa-paw"></i>
+                                {% endif %} {% if  row.normGrade  >= 2 %}
+                                <i class="fas fa-paw" style="color: yellow;"></i>
+                                {% else %}
+                                <i class="fas fa-paw"></i>
+                                {% endif %} {% if  row.normGrade  >= 3 %}
+                                <i class="fas fa-paw" style="color: yellow;"></i>
+                                {% else %}
+                                <i class="fas fa-paw"></i>
+                                {% endif %} {% if  row.normGrade  >= 4 %}
+                                <i class="fas fa-paw" style="color: yellow;"></i>
+                                {% else %}
+                                <i class="fas fa-paw"></i>
+                                {% endif %} {% if  row.normGrade  >= 5 %}
+                                <i class="fas fa-paw" style="color: yellow;"></i>
+                                {% else %}
+                                <i class="fas fa-paw"></i>
+                                {% endif %}
+                              </p>
+                {% else%}
+                {{cell}}
+                {% endif%}
+              </td>
+            {%endif%}
+            {%endfor%}
+            {%endwith%}
+            {%endwith%}
+        </tr>
+          <tr >
+           {% with x1=forloop.counter|stringformat:"s" %}
+           {% with line_collapse1="demo"|add:x1%}
+            <td colspan="9" class="hiddenRow">
+                <div class="accordian-body collapse" id={{line_collapse1}}>
+              <div class="card-body">
+              <section class="row"><div> <span> תאריך : </span> {{ row.response_date }} </div></section>
+              <section class="row"><div> <span> טלפון: </span> {{ row.phone_num }} </div></section>
+              <section class="row"><div><span>מייל:</span>{{ row.mail }}</div></section>
+              <section class="row"><div><span>מצב משפחתי:</span> {{ row.maritalStatus }}</div></section>
+              <section class="row"><div> <span> מספר ילדים: </span> {{ row.numChildren }} </div></section>
+              <section class="row"><div> <span> חיות נוספות בגידול: </span> {{ row.otherPets }} </div></section>
+              <section class="row"><div> <span> נסיון: </span> {{ row.experience }} </div></section>
+              <section class="row"><div> <span> אלרגיות: </span> {{ row.allergies }} </div></section>
+              <section class="row"><div> <span> דירה בבעלות: </span> {{ row.own_apartment }} </div></section>
+              <section class="row"><div> <span> הסכמת בעל הדירה: </span> {{ row.rent_agreed }} </div></section>
+              <section class="row"><div> <span> סוג המגורים: </span> {{ row.residenceType }} </div></section>
+              <section class="row"><div> <span> 'יש גדר בגינה/ מרפסת?: </span> {{ row.fence }} </div></section>
+              <section class="row"><div> <span> היכן הכלב ישהה?: </span> {{ row.dogPlace }} </div></section>
+              <section class="row"><div> <span> גודל כלב רצוי: </span> {{ row.dogSize }} </div></section>
+              <section class="row"><div> <span> הערות מהשאלון: </span> {{ row.response_comments }} </div></section>
+                </div>
+                </div>
+            </td>
+           {%endwith%}
+           {%endwith%}
+         </tr>
+            {%endfor%}
 
-                {% endfor %}
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    </tbody>
+</table>
 
 
 
 <h1 class="display-4 text-center">טבלת מאושרים לאימוץ</h1><br>
 
-
-    <table class="table">
-        <thead>
+<table class="table table-condensed table-hover" style="border-collapse:collapse;">
+    <thead>
         <tr>
-            {% for key, header in hebrew_headers_dict.items %}
-                <th scope="col">{{ header }}</th>
-            {% endfor %}
+      {% for key, header in header_up_row.items %}
+       <th scope="col">{{ header }}</th>
+      {% endfor %}
         </tr>
-        </thead>
-        <tbody>
-        {% for index, row in adoption_approved.iterrows %}
-            <tr>
-                {% for cell in row %}
-               <td>
-                    {% if forloop.first %}
-                  <a href="../edit_response/{{cell}}"><div style="color: green; height:100%; width:100%"> {{ cell }} </div></a>
+    </thead>
+    <tbody>
+     {% for index, row in adoption_approved.iterrows %}
+     {% with y2=forloop.counter|stringformat:"s" %}
+     {% with line_id2="#demo"|add:y2 %}
+        <tr data-toggle="collapse" data-target={{line_id2}} class="accordion-toggle">
 
-                    {% elif forloop.last %}
-                         <p>
-                            {% if  row.normGrade  >= 1 %}
-                            <i class="fas fa-paw" style="color: yellow;"></i>
-                            {% else %}
-                            <i class="fas fa-paw"></i>
-                            {% endif %} {% if  row.normGrade  >= 2 %}
-                            <i class="fas fa-paw" style="color: yellow;"></i>
-                            {% else %}
-                            <i class="fas fa-paw"></i>
-                            {% endif %} {% if  row.normGrade  >= 3 %}
-                            <i class="fas fa-paw" style="color: yellow;"></i>
-                            {% else %}
-                            <i class="fas fa-paw"></i>
-                            {% endif %} {% if  row.normGrade  >= 4 %}
-                            <i class="fas fa-paw" style="color: yellow;"></i>
-                            {% else %}
-                            <i class="fas fa-paw"></i>
-                            {% endif %} {% if  row.normGrade  >= 5 %}
-                            <i class="fas fa-paw" style="color: yellow;"></i>
-                            {% else %}
-                            <i class="fas fa-paw"></i>
-                            {% endif %}
-                          </p>
-                {%else%}
-                        {{ cell }}
-                {% endif %}
-                    </td>
-                {% endfor %}
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            {% for cell in row %}
+            {% if forloop.counter < 10%}
+            <td>
+                {% if forloop.counter == 1%}
+                <a href="../edit_response/{{cell}}"><div style="color: mediumblue; height:100%; width:100%"> {{ cell }} </div></a>
+                {% elif forloop.counter == 9%}
+                             <p>
+                                {% if  row.normGrade  >= 1 %}
+                                <i class="fas fa-paw" style="color: yellow;"></i>
+                                {% else %}
+                                <i class="fas fa-paw"></i>
+                                {% endif %} {% if  row.normGrade  >= 2 %}
+                                <i class="fas fa-paw" style="color: yellow;"></i>
+                                {% else %}
+                                <i class="fas fa-paw"></i>
+                                {% endif %} {% if  row.normGrade  >= 3 %}
+                                <i class="fas fa-paw" style="color: yellow;"></i>
+                                {% else %}
+                                <i class="fas fa-paw"></i>
+                                {% endif %} {% if  row.normGrade  >= 4 %}
+                                <i class="fas fa-paw" style="color: yellow;"></i>
+                                {% else %}
+                                <i class="fas fa-paw"></i>
+                                {% endif %} {% if  row.normGrade  >= 5 %}
+                                <i class="fas fa-paw" style="color: yellow;"></i>
+                                {% else %}
+                                <i class="fas fa-paw"></i>
+                                {% endif %}
+                              </p>
+                {% else%}
+                {{cell}}
+                {% endif%}
+              </td>
+            {%endif%}
+            {%endfor%}
+            {%endwith%}
+            {%endwith%}
+        </tr>
+          <tr >
+           {% with x2=forloop.counter|stringformat:"s" %}
+           {% with line_collapse2="demo"|add:x2%}
+            <td colspan="9" class="hiddenRow">
+                <div class="accordian-body collapse" id={{line_collapse2}}>
+              <div class="card-body">
+              <section class="row"><div> <span> תאריך : </span> {{ row.response_date }} </div></section>
+              <section class="row"><div> <span> טלפון: </span> {{ row.phone_num }} </div></section>
+              <section class="row"><div><span>מייל:</span>{{ row.mail }}</div></section>
+              <section class="row"><div><span>מצב משפחתי:</span> {{ row.maritalStatus }}</div></section>
+              <section class="row"><div> <span> מספר ילדים: </span> {{ row.numChildren }} </div></section>
+              <section class="row"><div> <span> חיות נוספות בגידול: </span> {{ row.otherPets }} </div></section>
+              <section class="row"><div> <span> נסיון: </span> {{ row.experience }} </div></section>
+              <section class="row"><div> <span> אלרגיות: </span> {{ row.allergies }} </div></section>
+              <section class="row"><div> <span> דירה בבעלות: </span> {{ row.own_apartment }} </div></section>
+              <section class="row"><div> <span> הסכמת בעל הדירה: </span> {{ row.rent_agreed }} </div></section>
+              <section class="row"><div> <span> סוג המגורים: </span> {{ row.residenceType }} </div></section>
+              <section class="row"><div> <span> 'יש גדר בגינה/ מרפסת?: </span> {{ row.fence }} </div></section>
+              <section class="row"><div> <span> היכן הכלב ישהה?: </span> {{ row.dogPlace }} </div></section>
+              <section class="row"><div> <span> גודל כלב רצוי: </span> {{ row.dogSize }} </div></section>
+              <section class="row"><div> <span> הערות מהשאלון: </span> {{ row.response_comments }} </div></section>
+                </div>
+                </div>
+            </td>
+           {%endwith%}
+           {%endwith%}
+         </tr>
+            {%endfor%}
+
+    </tbody>
+</table>
+
 {% endblock content %}
+
+</body>
+
+
+

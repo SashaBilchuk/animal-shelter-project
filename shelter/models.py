@@ -322,8 +322,7 @@ class CatFostering(models.Model):
     fostering_link_for_adoption_text = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('קישור לטופס אומנה למטרת אימוץ'))
 
     def __str__(self):
-        return "{}_{}".format(self.cat.__str__(), self.foster.__str__())
-
+        return "{}_{}".format(str(self.cat.__str__()) + "_" + str(self.cat.id), self.foster.__str__())
 
 
 class Volunteer(models.Model):
@@ -356,9 +355,9 @@ class Response(models.Model):
     response_comments =models.CharField(max_length=255, editable=False)
 
     response_date = models.DateTimeField()
-    QID = models.IntegerField(unique=True,editable=False)
+    QID = models.CharField(unique=True, max_length=50,editable=False)
 
-    def __int__(self):
+    def __str__(self):
         return self.QID
 
 

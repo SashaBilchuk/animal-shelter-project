@@ -1,0 +1,23 @@
+{% extends 'base.html' %} {% block content %}
+
+<h1 class="display-4 mb-4 text-center"> עריכת רשימה שחורה</h1>
+
+<body><center>
+    <div class = "form-group">
+       <form method="post" >
+    	{% csrf_token %}
+        {{form.as_p}}
+     <!--  <table>{{ form }}
+    </table> -->
+    <input type="submit" value="שמירה" />
+    </form>
+
+    </div>
+
+</center></body>
+
+</div>
+  </div>
+  </div>
+
+{% endblock %}

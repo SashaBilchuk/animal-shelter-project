@@ -37,7 +37,11 @@ th {
             <tr>
                 {% for cell in row %}
                     <td>
-                        {{ cell }}
+                        {% if forloop.first %}
+                         <a href="../edit_black_list/{{cell}}"><div style="color: green; height:100%; width:100%"> {{ cell }} </div></a>
+                        {%else%}
+                            {{ cell }}
+                        {%endif%}
                     </td>
                 {% endfor %}
             </tr>

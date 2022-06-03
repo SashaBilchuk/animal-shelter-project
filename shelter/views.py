@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
 from django.shortcuts import render
 from itertools import chain
+from datetime import datetime as dt
 import datetime
 from django.views.generic import ListView
 import csv
@@ -21,7 +22,7 @@ import sklearn
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 from django.views.generic import UpdateView
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 import numpy as np
 from sklearn.model_selection import train_test_split
 
@@ -168,9 +169,9 @@ def add_dog_adoption(request):
             form.save()
             dog = form.cleaned_data.get('dog')
             if dog.location == "Association" or "Pension":
-                dog.exit_date = datetime.date.today()
+                dog.exit_date = dt.date.today()
             elif dog.location == "Foster":
-                dog.fostering_date_end = datetime.date.today()
+                dog.fostering_date_end = dt.date.today()
             dog.location = 'Adoption'
             dog.save()
             adopter = form.cleaned_data.get('adopter')
@@ -192,9 +193,9 @@ def add_dog_fostering(request):
             form.save()
             dog = form.cleaned_data.get('dog')
             if dog.location == "Association" or "Pension":
-                dog.exit_date = datetime.date.today()
+                dog.exit_date = dt.date.today()
             elif dog.location == "Adoption":
-                dog.return_date = datetime.date.today()
+                dog.return_date = dt.date.today()
             dog.location = 'Foster'
             dog.save()
             foster = form.cleaned_data.get('foster')
@@ -216,9 +217,9 @@ def add_cat_adoption(request):
             form.save()
             cat = form.cleaned_data.get('cat')
             if cat.location == "Association" or "Pension":
-                cat.exit_date = datetime.date.today()
+                cat.exit_date = dt.date.today()
             elif cat.location == "Foster":
-                cat.fostering_date_end = datetime.date.today()
+                cat.fostering_date_end = dt.date.today()
             cat.location = 'Adoption'
             cat.save()
             adopter = form.cleaned_data.get('adopter')
@@ -240,9 +241,9 @@ def add_cat_fostering(request):
             form.save()
             cat = form.cleaned_data.get('cat')
             if cat.location == "Association" or "Pension":
-                cat.exit_date = datetime.date.today()
+                cat.exit_date = dt.date.today()
             elif cat.location == "Adoption":
-                cat.return_date = datetime.date.today()
+                cat.return_date = dt.date.today()
             cat.location = 'Foster'
             cat.save()
             foster = form.cleaned_data.get('foster')
@@ -465,8 +466,8 @@ def grading_response():
     df = pd.DataFrame(list(Response.objects.all().values()))
     Nlabeled, labeled, data = prepare_data(df)
     data_no_labels = data.drop(['y'], axis=1)
-    X = data_no_labels.values[:, 0:len(data_no_labels.columns)]
-    grading_vec = np.array([0,0,0,0,0,0,1,1,1,0.5,1,0.5,2,1,1,-15,2,1,2,-10,2,-0.2,-1])
+    X = data_no_labels.values[:, 1:len(data_no_labels.columns)]
+    grading_vec = np.array([0,0,0,0,0,1,1,1,0.5,1,0.5,2,1,1,-15,2,1,2,-10,2,-0.2,-1])
     grades = X@grading_vec
 
     data_no_labels['grade'] = grades.tolist() # add grade column to df without labels
@@ -475,8 +476,9 @@ def grading_response():
     df_aux = df_aux.set_index('QID')
     df = df.set_index('QID')
     sorted_df = df.merge(df_aux, left_index=True, right_index=True)
-    # TODO: check if can remove reset index
     sorted_df.reset_index(inplace=True)
+
+    # insert grade by KNN score
     KNN_dict = KNN(labeled, data)
 
 
@@ -522,45 +524,48 @@ def grading_response():
     sorted_df = sorted_df.drop(['grade'], axis=1)
     # sorted_df = sorted_df.drop(['id'], axis=1)
 
-
+    print(sorted_df.columns)
     return sorted_df
 
 
 
 def create_header_dict(tablename):
-    if tablename == "recommender":
+    if tablename == "row_up":
         map_dict = {
             'id': 'מזהה שאלון',
-            'response_owner': 'מי מטפלת? ',
-            'status': 'סטטוס',
-            'comments':'הערות עמותה',
             'full_name': 'שם',
+            'dog_name': 'שם הכלב לפנייה',
             'age': 'גיל',
             'city': 'עיר',
-            'phone_num': 'טלפון',
-            'mail': 'מייל',
-            'maritalStatus': 'מצב משפחתי',
-            'numChildren': 'מספר ילדים',
-            'otherPets': 'חיות נוספות',
-            'experience': 'נסיון',
-            'dog_name': 'שם הכלב לפנייה',
-            'allergies': 'אלרגיות?',
-            'own_apartment': 'דירה בבעלותו',
-            'rent_agreed': 'הסכמת בעל הדירה',
-            'residenceType': 'סוג ממגורים',
-            'fence': 'יש גדר?',
-            'dogPlace': 'היכן הכלב ישהה?',
-            'dogSize': 'גודל כלב רצוי',
-            'response_comments': 'הערות מהשאלון',
-            'response_date': 'תאריך',
+            'response_owner': 'מי מטפלת? ',
+            'status': 'סטטוס',
+            'comments': 'הערות עמותה',
             'normGrade': 'ציון מנורמל',
+
         }
+    elif tablename == "row_expended":
+        map_dict = {
+        'phone_num': 'טלפון',
+        'mail': 'מייל',
+        'maritalStatus': 'מצב משפחתי',
+        'numChildren': 'מספר ילדים',
+        'otherPets': 'חיות נוספות',
+        'experience': 'נסיון',
+        'allergies': 'אלרגיות?',
+        'own_apartment': 'דירה בבעלותו',
+        'rent_agreed': 'הסכמת בעל הדירה',
+        'residenceType': 'סוג מגורים',
+        'fence': 'יש גדר?',
+        'dogPlace': 'היכן הכלב ישהה?',
+        'dogSize': 'גודל כלב רצוי',
+        'response_comments': 'הערות מהשאלון',
+        'response_date': 'תאריך'}
+
     else:
         map_dict = {
-            'id': 'מזהה שאלון',
+            'id': 'מזהה רשומה',
             'name': 'שם',
             'city': 'עיר',
-            'email_address': 'מייל',
             'phone_num': 'טלפון',
             'comments': 'הערות עמותה'
         }
@@ -612,8 +617,10 @@ def update_response_model():
     records_df = records_df[records_df['Timestamp'] != ""]
     records_df = convert_headers(records_df)
     records_df['convertedTimestamp'] = pd.to_datetime(records_df['Timestamp']).astype(np.int64)
-    records_df = records_df.assign(QID=lambda x: (x['convertedTimestamp'] + x['age']))
-    records_df = records_df[records_df['QID'] > 0]
+    records_df = records_df.assign(QID=lambda x: ((x['convertedTimestamp']) + (x['age'])))
+    records_df['QID'] = records_df.QID.apply(str)
+
+    # records_df = records_df[records_df['QID'][0] != '0']
     context = {
         'df': records_df
     }
@@ -622,9 +629,11 @@ def update_response_model():
     for index, row in records_df.iterrows():
         response_model = Response.objects.values_list('QID', flat=True)
         black_list_phones = BlackList.objects.values_list('phone_num', flat=True)
-        cur_QID = row['QID']
+        cur_QID = str(row['QID'])
 
         if cur_QID not in response_model:
+            types = [type(QID) for QID in response_model]
+            cur_type = type(cur_QID)
             add_to_Response(row)
             cur_phone = "0" + str(row['phone_num'])
             # ITERATES ON ALL RAWS, IF FOUND NEW ROW -> ADD TO RESPONSE MODEL
@@ -659,29 +668,48 @@ def update_response_model():
             response.save()
 
 
+
 def get_recommendation(request):
-    hebrew_headers_dict = create_header_dict("recommender")
-    results = grading_response()
-    results.response_date = results.response_date.apply(lambda x: x.date())
+    header_up_row = create_header_dict("row_up")
+    headers_expended = create_header_dict("row_expended")
+    if len(list(Response.objects.all().values())):
+        results = grading_response()
+        results.response_date = results.response_date.apply(lambda x: x.date())
+        results = results[['id', 'response_owner', 'status', 'comments', 'full_name', 'dog_name', 'age',
+       'city', 'normGrade', 'phone_num', 'mail', 'maritalStatus', 'numChildren',
+       'otherPets', 'experience',  'allergies', 'own_apartment',
+       'rent_agreed', 'residenceType', 'fence', 'dogPlace', 'dogSize',
+       'response_comments', 'response_date']]
 
-    not_handled = results.query("status in ('','טרם טופל')") # filter by dates
-    not_handled = not_handled[not_handled.response_date > datetime.today().date() - pd.to_timedelta("15day")]
+        not_handled = results.query("status in ('','טרם טופל')") # filter by dates
+        not_handled = not_handled[not_handled.response_date > dt.today().date() - pd.to_timedelta("15day")]
 
 
-    initial_contact = results.query("status in ('בוצעה שיחה ראשונית', 'ממתינים לוידאו')")
-    initial_contact = initial_contact[initial_contact.response_date > datetime.today().date() - pd.to_timedelta("30day")]
+        initial_contact = results.query("status in ('בוצעה שיחה ראשונית', 'ממתינים לוידאו')")
+        initial_contact = initial_contact[initial_contact.response_date > dt.today().date() - pd.to_timedelta("30day")]
 
-    adoption_approved = results.query("status in ('מאושר לאימוץ')")
+        adoption_approved = results.query("status in ('מאושר לאימוץ')")
 
 
-    context = {
-        'not_handled': not_handled,
-        'initial_contact': initial_contact,
-        'adoption_approved': adoption_approved,
-        'hebrew_headers_dict': hebrew_headers_dict
-    }
+        context = {
+            'not_handled': not_handled,
+            'initial_contact': initial_contact,
+            'adoption_approved': adoption_approved,
+            'header_up_row': header_up_row,
+            'headers_expended': headers_expended
+        }
+    else:
+        context = {
+
+            'hebrew_headers_dict': hebrew_headers_dict
+        }
+
     if (request.GET.get('mybtn')):
+        # try:
         update_response_model()
+        # except:
+        #     print("An exception occurred in update_response_model")
+        return HttpResponseRedirect('/recommendation_system')
 
     return render(request, 'Recommender.html', context)
 
@@ -729,7 +757,9 @@ def convert_headers(df):
 
 
 def fetch_black_list_from_sheet(request):
-    records_df =  pd.DataFrame(list(BlackList.objects.all().values()))
+    records_df = pd.DataFrame(list(BlackList.objects.all().values()))
+    records_df = records_df.drop(['mail'], axis=1)
+    records_df = records_df.sort_values('full_name', ascending=True)
     headers = create_header_dict("blacklist")
     context = {
         'df': records_df,
@@ -757,13 +787,13 @@ def fetch_from_sheet(request):
     records_df = records_df[records_df['Timestamp'] != ""]
     records_df = convert_headers(records_df)
     records_df['convertedTimestamp'] = pd.to_datetime(records_df['Timestamp']).astype(np.int64)
-    records_df = records_df.assign(QID=lambda x: (x['convertedTimestamp'] + x['age']))
-    records_df = records_df[records_df['QID'] > 0]
+    records_df = records_df.assign(QID=lambda x: ((x['convertedTimestamp']) + (x['age'])))
+    records_df['QID'] = records_df.QID.apply(str)
+    # records_df = records_df[records_df['QID'][0] != '0']
     context = {
         'df': records_df
     }
     response_model = Response.objects.values_list('QID', flat=True)
-    print(response_model)
     # ITERATES ON ALL RAWS, IF FOUND NEW ROW -> ADD TO RESPONSE MODEL
     for index, row in records_df.iterrows():
         if row['QID'] not in response_model:
@@ -812,6 +842,13 @@ class UpdateResponseView(UpdateView):
     template_name = 'edit_response.html'
     fields = ['response_owner', 'status', 'comments']
     success_url = '/recommendation_system/'
+
+
+class UpdateBlackList(UpdateView):
+    model = BlackList
+    template_name = 'edit_black_list.html'
+    fields = ['full_name', 'city', 'mail', 'phone_num', 'comments']
+    success_url = '/fetch_black_list_from_sheet/'
 
     # def get_success_url(self):
     #     pk = self.kwargs["pk"]

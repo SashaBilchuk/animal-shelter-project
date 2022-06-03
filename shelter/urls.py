@@ -4,6 +4,7 @@ from . import views
 from .views import UpdateResponseView, UpdateBlackList
 
 
+
 urlpatterns = [
     path('', views.home, name='home'),
     path('dog/<int:dog_id>/', views.detail_dog, name='detail_dog'),

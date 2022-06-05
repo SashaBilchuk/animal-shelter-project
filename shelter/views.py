@@ -462,13 +462,13 @@ def create_header_dict(tablename):
     if tablename == "row_up":
         map_dict = {
             'id': 'מזהה שאלון',
+            'response_owner': 'מי מטפלת? ',
+            'status': 'סטטוס',
+            'comments': 'הערות עמותה',
             'full_name': 'שם',
             'dog_name': 'שם הכלב לפנייה',
             'age': 'גיל',
             'city': 'עיר',
-            'response_owner': 'מי מטפלת? ',
-            'status': 'סטטוס',
-            'comments': 'הערות עמותה',
             'normGrade': 'ציון מנורמל',
 
         }
@@ -545,14 +545,12 @@ def update_response_model():
     records_df = pd.DataFrame.from_dict(records_data)
     records_df = records_df[records_df['Timestamp'] != ""]
     records_df = convert_headers(records_df)
-    records_df['convertedTimestamp'] = pd.to_datetime(records_df['Timestamp']).astype(np.int64)
-    records_df = records_df.assign(QID=lambda x: ((x['convertedTimestamp']) + (x['age'])))
+    # records_df['convertedTimestamp'] = pd.to_datetime(records_df['Timestamp']).astype(np.int32)
+    records_df['convertedTimestamp'] = pd.to_datetime(records_df['Timestamp'])
+    records_df['convertedTimestamp'] = records_df['convertedTimestamp'].dt.strftime("%m/%d/%Y, %H:%M:%S")
+    # records_df = records_df.assign(QID=lambda x: ((x['convertedTimestamp']) + (x['age'])))
+    records_df = records_df.assign(QID=lambda x: (x['convertedTimestamp']))
     records_df['QID'] = records_df.QID.apply(str)
-
-    # records_df = records_df[records_df['QID'][0] != '0']
-    context = {
-        'df': records_df
-    }
 
     # ITERATES ON ALL RAWS, IF FOUND NEW ROW -> ADD TO RESPONSE MODEL
     for index, row in records_df.iterrows():
@@ -629,7 +627,7 @@ def get_recommendation(request):
     else:
         context = {
 
-            'hebrew_headers_dict': hebrew_headers_dict
+            'header_up_row': header_up_row
         }
 
     if (request.GET.get('mybtn')):
@@ -714,10 +712,10 @@ def fetch_from_sheet(request):
     records_df = pd.DataFrame.from_dict(records_data)
     records_df = records_df[records_df['Timestamp'] != ""]
     records_df = convert_headers(records_df)
-    records_df['convertedTimestamp'] = pd.to_datetime(records_df['Timestamp']).astype(np.int64)
-    records_df = records_df.assign(QID=lambda x: ((x['convertedTimestamp']) + (x['age'])))
+    records_df['convertedTimestamp'] = pd.to_datetime(records_df['Timestamp'])
+    records_df['convertedTimestamp'] = records_df['convertedTimestamp'].dt.strftime("%m/%d/%Y, %H:%M:%S")
+    records_df = records_df.assign(QID=lambda x: (x['convertedTimestamp']))
     records_df['QID'] = records_df.QID.apply(str)
-    # records_df = records_df[records_df['QID'][0] != '0']
     context = {
         'df': records_df
     }

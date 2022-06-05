@@ -105,6 +105,8 @@ class Dog(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('שם'))
     birth_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך לידה'))
     gender = models.CharField(max_length=255, choices=GENDER_CHOICES, verbose_name=_('מין'))
+    image = models.ImageField(upload_to='mediaDogs/', default='media/generic_dog.png', blank=True,
+                              verbose_name=_('הוסף תמונה'))
     physical_description = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('תיאור חיצוני'))
     size = models.CharField(choices=SIZE_CHOICES, max_length=255, blank=True, default=None, null=True, verbose_name=_('גודל'))
     color = models.CharField(max_length=255, blank=True, default=None, null=True, verbose_name=_('צבע'))
@@ -196,6 +198,8 @@ class Cat(models.Model):
     birth_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך לידה'))
     gender = models.CharField(choices=GENDER_CHOICES, max_length=6, verbose_name=_('מין'))
     physical_description = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('תיאור חיצוני'))
+    image = models.ImageField(upload_to='mediaCats/', default='media/generic_cat.png', blank=True,
+                              verbose_name=_('הוסף תמונה'))
     story = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיפור רקע'))
     acceptance_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך כניסה לעמותה'))
     location = models.CharField(choices=PLACES, default='עמותה', null=True, max_length=20, verbose_name=_('מיקום'))

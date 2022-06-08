@@ -5,7 +5,8 @@ from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
 from django.shortcuts import render
 from itertools import chain
-import datetime as dt
+import datetime
+from datetime import datetime as dt
 from django.views.generic import ListView
 from django.http import HttpRequest
 from django.core import serializers
@@ -20,6 +21,7 @@ from django.views.generic import UpdateView
 from django.http import HttpResponseRedirect, HttpResponse
 import numpy as np
 from sklearn.model_selection import train_test_split
+import time
 
 MAXGRADE = 5
 MINGRADE = 1
@@ -297,7 +299,9 @@ def KNN(labeled, all_data):
 
 def get_sheet():
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-    creds = ServiceAccountCredentials.from_json_keyfile_name('./pbpython-345313-70ce25d6b97c.json', scope)
+    # creds = ServiceAccountCredentials.from_json_keyfile_name('./pbpython-345313-70ce25d6b97c.json', scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name('./final-project-98653-e0d93d9d971e.json', scope)
+
     client = gspread.authorize(creds)
     sheet = client.open('שאלון מועמדות לאימוץ (Responses)')
     sheet_instance = sheet.get_worksheet(0)
@@ -378,7 +382,6 @@ def prepare_data(df):
                          'HasAllergies', 'specificRequest', 'newAge', 'numChildrenAbove5']]
 
     labeled = data[data['y'] >= 0]
-    # print(Nlabeled)
     grades = []
     return Nlabeled, labeled, data
 
@@ -392,6 +395,7 @@ def grading_response():
     takes Response from models and calculates the grade for each instance
     :return: merged dataFrame, with original data, sorted by grade (Descending) - headers still in english
     """
+    start_time = time.time()
     df = pd.DataFrame(list(Response.objects.all().values()))
     Nlabeled, labeled, data = prepare_data(df)
     data_no_labels = data.drop(['y'], axis=1)
@@ -453,7 +457,7 @@ def grading_response():
     sorted_df = sorted_df.drop(['grade'], axis=1)
     # sorted_df = sorted_df.drop(['id'], axis=1)
 
-    print(sorted_df.columns)
+    print(f'grading response took {time.time()- start_time}')
     return sorted_df
 
 
@@ -462,13 +466,13 @@ def create_header_dict(tablename):
     if tablename == "row_up":
         map_dict = {
             'id': 'מזהה שאלון',
+            'response_owner': 'מי מטפלת? ',
+            'status': 'סטטוס',
+            'comments': 'הערות עמותה',
             'full_name': 'שם',
             'dog_name': 'שם הכלב לפנייה',
             'age': 'גיל',
             'city': 'עיר',
-            'response_owner': 'מי מטפלת? ',
-            'status': 'סטטוס',
-            'comments': 'הערות עמותה',
             'normGrade': 'ציון מנורמל',
 
         }
@@ -504,6 +508,7 @@ def create_header_dict(tablename):
 
 
 def add_to_Response(row):
+    start_time = time.time()
     response_owner = row['response_owner']
     status = row['status']
     comments = row['comments']
@@ -534,13 +539,16 @@ def add_to_Response(row):
                             allergies=allergies, own_apartment=own_apartment, rent_agreed=rent_agreed,
                             residenceType=residenceType, fence=fence, dogPlace=dogPlace, dogSize=dogSize,
                             response_comments=response_comments, response_date=response_date, QID=QID)
+    print(f'add to  response took {time.time()- start_time}')
+
 
 def add_to_black_list(full_name,city,mail, phone_num, comments ):
     BlackList.objects.create(full_name=full_name,  city=city, mail=mail, phone_num=phone_num,  comments=comments)
 
 def update_response_model():
+    start_time = time.time()
     sheet_instance = get_sheet()
-    print("in update response model")
+    print(f'got records from google sheet, took: {time.time() - start_time}')
     records_data = sheet_instance.get_all_records()
     records_df = pd.DataFrame.from_dict(records_data)
     records_df = records_df[records_df['Timestamp'] != ""]
@@ -553,49 +561,53 @@ def update_response_model():
     context = {
         'df': records_df
     }
+    QID_list = list(Response.objects.values_list('QID', flat=True))
+    Response_status_dict = dict(Response.objects.all().values_list("QID", "status"))
+    Response_phone_dict = dict(Response.objects.all().values_list("QID", "phone_num"))
+    black_list_phones = list(BlackList.objects.values_list('phone_num', flat=True))
 
+    # print(f'type response_list {type(Response_list_new)}')
+    # print(Response_list_new)
     # ITERATES ON ALL RAWS, IF FOUND NEW ROW -> ADD TO RESPONSE MODEL
     for index, row in records_df.iterrows():
-        response_model = Response.objects.values_list('QID', flat=True)
-        black_list_phones = BlackList.objects.values_list('phone_num', flat=True)
+        # response_model = Response.objects.values_list('QID', flat=True)
+        # black_list_phones = BlackList.objects.values_list('phone_num', flat=True)
         cur_QID = str(row['QID'])
 
-        if cur_QID not in response_model:
-            types = [type(QID) for QID in response_model]
-            cur_type = type(cur_QID)
+        if cur_QID not in QID_list:
+            QID_list.append(cur_QID)
             add_to_Response(row)
             cur_phone = "0" + str(row['phone_num'])
             # ITERATES ON ALL RAWS, IF FOUND NEW ROW -> ADD TO RESPONSE MODEL
             if str(cur_phone) not in black_list_phones and (row['status'] == 'רשימה שחורה'):
+                black_list_phones.append(cur_phone)
                 full_name = row['full_name']
                 city = row['city']
                 phone_num = "0" + str(row['phone_num'])
                 mail = row['mail']
                 comments = row['comments']
                 add_to_black_list(full_name,city, mail, phone_num, comments)
-                print(BlackList.objects.values_list('phone_num', flat=True))
 
         else:
-            response = Response.objects.get(QID = cur_QID)
-            print(response)
-
-            if response.phone_num not in black_list_phones and response.status == 'רשימה שחורה':
+            if Response_phone_dict[cur_QID] not in black_list_phones and Response_status_dict[cur_QID] == 'רשימה שחורה':
+                response = Response.objects.get(QID = cur_QID)
+                black_list_phones.append(response.phone_num)
                 # black_df = pd.DataFrame.from_records(response.to_dict())
-                # print(black_df)
                 full_name = response.full_name
                 city = response.city
                 mail = response.mail
                 phone_num = response.phone_num
                 comments = response.comments
                 add_to_black_list(full_name, city, mail, phone_num, comments)
+                response.save()
+
             # response_owner_row = row['response_owner']
             # status_row = row['status']
             # comments_row = row['comments']
             # response.response_owner = response_owner_row
             # response.status = status_row
             # response.comments = comments_row
-            response.save()
-
+    print(f"still in update response, took total of: {time.time() - start_time}")
 
 
 def get_recommendation(request):
@@ -629,14 +641,13 @@ def get_recommendation(request):
     else:
         context = {
 
-            'hebrew_headers_dict': hebrew_headers_dict
+            'header_up_row': header_up_row
         }
 
     if (request.GET.get('mybtn')):
-        # try:
+        start_time = time.time()
         update_response_model()
-        # except:
-        #     print("An exception occurred in update_response_model")
+        print(f'all updation took{time.time() -start_time } secs')
         return HttpResponseRedirect('/recommendation_system')
 
     return render(request, 'Recommender.html', context)
@@ -698,7 +709,9 @@ def fetch_black_list_from_sheet(request):
 
 def get_test_sheet():
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-    creds = ServiceAccountCredentials.from_json_keyfile_name('./pbpython-345313-70ce25d6b97c.json', scope)
+    # creds = ServiceAccountCredentials.from_json_keyfile_name('./pbpython-345313-70ce25d6b97c.json', scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name('./final-project-98653-e0d93d9d971e.json', scope)
+
     client = gspread.authorize(creds)
     sheet = client.open('test sheet')
     sheet_instance = sheet.get_worksheet(0)
@@ -756,7 +769,6 @@ def add_to_sheet(request):
         '''
         form = AddToSheet(request.POST)
         if form.is_valid():
-            print("Hi")
             new_df = pd.DataFrame(data={'מי מטפלת?': ['אנה']})
             sheet_instance = get_test_sheet()
             sheet_instance.append_rows(new_df.values.tolist())  # it will save the data to your sheet.

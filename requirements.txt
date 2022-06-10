@@ -10,3 +10,5 @@ whitenoise
 sklearn
 django-crispy-forms
 bs4
+django-storages
+boto3

@@ -553,8 +553,11 @@ def update_response_model():
     records_df = pd.DataFrame.from_dict(records_data)
     records_df = records_df[records_df['Timestamp'] != ""]
     records_df = convert_headers(records_df)
-    records_df['convertedTimestamp'] = pd.to_datetime(records_df['Timestamp']).astype(np.int64)
-    records_df = records_df.assign(QID=lambda x: ((x['convertedTimestamp']) + (x['age'])))
+    # records_df['convertedTimestamp'] = pd.to_datetime(records_df['Timestamp']).astype(np.int32)
+    records_df['convertedTimestamp'] = pd.to_datetime(records_df['Timestamp'])
+    records_df['convertedTimestamp'] = records_df['convertedTimestamp'].dt.strftime("%m/%d/%Y, %H:%M:%S")
+    # records_df = records_df.assign(QID=lambda x: ((x['convertedTimestamp']) + (x['age'])))
+    records_df = records_df.assign(QID=lambda x: (x['convertedTimestamp']))
     records_df['QID'] = records_df.QID.apply(str)
 
     # records_df = records_df[records_df['QID'][0] != '0']
@@ -566,8 +569,6 @@ def update_response_model():
     Response_phone_dict = dict(Response.objects.all().values_list("QID", "phone_num"))
     black_list_phones = list(BlackList.objects.values_list('phone_num', flat=True))
 
-    # print(f'type response_list {type(Response_list_new)}')
-    # print(Response_list_new)
     # ITERATES ON ALL RAWS, IF FOUND NEW ROW -> ADD TO RESPONSE MODEL
     for index, row in records_df.iterrows():
         # response_model = Response.objects.values_list('QID', flat=True)
@@ -727,10 +728,10 @@ def fetch_from_sheet(request):
     records_df = pd.DataFrame.from_dict(records_data)
     records_df = records_df[records_df['Timestamp'] != ""]
     records_df = convert_headers(records_df)
-    records_df['convertedTimestamp'] = pd.to_datetime(records_df['Timestamp']).astype(np.int64)
-    records_df = records_df.assign(QID=lambda x: ((x['convertedTimestamp']) + (x['age'])))
+    records_df['convertedTimestamp'] = pd.to_datetime(records_df['Timestamp'])
+    records_df['convertedTimestamp'] = records_df['convertedTimestamp'].dt.strftime("%m/%d/%Y, %H:%M:%S")
+    records_df = records_df.assign(QID=lambda x: (x['convertedTimestamp']))
     records_df['QID'] = records_df.QID.apply(str)
-    # records_df = records_df[records_df['QID'][0] != '0']
     context = {
         'df': records_df
     }

@@ -43,7 +43,7 @@ button {
 
 <script src="{% static 'downloadAllDogs.js' %}"></script>
 
-<h1 class="text-center">רשימת הכלבים</h1><br>
+<br><h1 class="text-center">רשימת הכלבים</h1><br>
 <body>
     <div class="jumbotron">
         <button class="button" onclick="exportData()">הורד ל-Excel</button><br>
@@ -56,22 +56,26 @@ button {
                 <th>מין  </th>
                 <th> גודל </th>
                 <th> תיאור חיצוני </th>
+                <th> סירוס/עיקור </th>
                 <th> תאריך כניסה לעמותה </th>
                 <th> תאריך יציאה מעמותה </th>
                 <th> מיקום </th>
                 <th> תאריך אימוץ או אומנה </th>
                 <th> שם המאמצ/ת או אומנה (ת"ז) </th>
-                <th> נפתר/ה? </th>
+                <th> נפטר/ה? </th>
+                <th> תאריך הפטירה </th>
+                <th> סיבת הפטירה </th>
             </tr>
         </thead>
             {% for dog in dogs %}
                         <tr>
                             <td><a href="../dog/{{dog.id}}"><div style="color: black; height:100%; width:100%">{{dog}}</div></a></td>
-                            <td> {{dog.chip_number}}</td>
+                            <td> {% if dog.chip_number %} {{ dog.chip_number }} {% else %} - {% endif %}</td>
                             <td> {% if dog.age_years == 0 and dog.age_months == 0  %} פחות מחודש {% else %} {{ dog.age_years }} שנים ו-{{ dog.age_months }} חודשים {% endif %}</td>
                             <td> {{dog.get_gender_display}}</td>
                             <td> {% if dog.size %} {{ dog.get_size_display }} {% else %} - {% endif %}</td>
                             <td> {% if dog.physical_description%}{{dog.physical_description}} {% else %} - {% endif %}</td>
+                            <td> {% if dog.sterilization%}{{dog.sterilization}} {% else %} - {% endif %}</td>
                             <td> {{dog.acceptance_date }}</td>
                             <td> {% if dog.exit_date %} {{ dog.exit_date }} {% else %} - {% endif %}</td>
                             <td> {{dog.get_location_display}}</td>
@@ -92,6 +96,8 @@ button {
                                 <td>-</td>
                             {% endif %}
                             <td> {% if dog.died %} כן {% else %} - {% endif %}</td>
+                            <td> {% if dog.death_date %} {{ dog.death_date }} {% else %} - {% endif %}</td>
+                            <td> {% if dog.death_reason %} {{ dog.death_reason }} {% else %} - {% endif %}</td>
                         </tr>
 
             {% endfor %}

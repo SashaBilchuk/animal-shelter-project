@@ -1,6 +1,6 @@
 from django import forms
 import datetime
-from .models import Dog, Cat, DogAdoption, CatAdoption, CatFostering, DogFostering,BlackList, Response, STATUS_CHOICES
+from .models import Dog, Cat, DogAdoption, CatAdoption, CatFostering, DogFostering, BlackList, Response, STATUS_CHOICES
 from django.utils.translation import gettext_lazy as _
 
 
@@ -21,10 +21,24 @@ class AddDog(forms.ModelForm):
         fields = "__all__"
         exclude = ['foster_relation_dog', 'adopter_relation_dog']
         widgets = {'birth_date': forms.DateInput(attrs={'type': 'date'}),
-                   'physical_description': forms.Textarea(attrs={'rows': 3}),
                    'acceptance_date': forms.DateInput(attrs={'type': 'date'}),
+                   'exit_date': forms.DateInput(attrs={'type': 'date'}),
+                   'physical_description': forms.Textarea(attrs={'rows': 3}),
+                   'behaviour_description': forms.Textarea(attrs={'rows': 3}),
+                   'story': forms.Textarea(attrs={'rows': 3}),
+                   'clinic': forms.Textarea(attrs={'rows': 3}),
+                   'worming_1': forms.DateInput(attrs={'type': 'date'}),
+                   'worming_2': forms.DateInput(attrs={'type': 'date'}),
+                   'hexagonal_vaccine': forms.DateInput(attrs={'type': 'date'}),
+                   'next_treatment_hexagonal': forms.DateInput(attrs={'type': 'date'}),
+                   'rabies_vaccine': forms.DateInput(attrs={'type': 'date'}),
                    'next_treatment_rabies': forms.DateInput(attrs={'type': 'date'}),
-                   'death_date': forms.DateInput(attrs={'type': 'date'})}
+                   'ticks_fleas_treatment': forms.DateInput(attrs={'type': 'date'}),
+                   'next_ticks_fleas_treatment': forms.DateInput(attrs={'type': 'date'}),
+                   'sterilization': forms.DateInput(attrs={'type': 'date'}),
+                   'medical_comments': forms.Textarea(attrs={'rows': 3}),
+                   'death_date': forms.DateInput(attrs={'type': 'date'}),
+                   'death_reason': forms.Textarea(attrs={'rows': 3}),}
 
     def clean_acceptance_date(self):
         date = self.cleaned_data['acceptance_date']
@@ -144,6 +158,7 @@ class EditResponseStatus(forms.ModelForm):
     #         if instance.phone_num == existing_phones:
     #             raise forms.ValidationError(instance.name + ' קיים ברשימה')
     #     return existing_phones
+
 
 class EditBlackListForm(forms.ModelForm):
     class Meta:

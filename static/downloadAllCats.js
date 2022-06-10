@@ -20,6 +20,8 @@ function exportData(){
         column9 = row.cells[8].innerText;
         column10 = row.cells[9].innerText;
         column11 = row.cells[10].innerText;
+        column12 = row.cells[11].innerText;
+        column13 = row.cells[12].innerText;
 
     /* add a new records in the array */
         rows.push(
@@ -34,7 +36,9 @@ function exportData(){
                 column8,
                 column9,
                 column10,
-                column11
+                column11,
+                column12,
+                column13
             ]
         );
 

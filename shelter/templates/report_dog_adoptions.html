@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<style>
+table{
+	text-align: center;
+	width: 95%;
+	margin: auto;
+	text-align: center;
+}
+
+/*Make alternating colors for the table rows*/
+table tr:nth-child(odd){
+	background: #8DCBC8
+}
+
+table tr:nth-child(even){
+	background: #D1EAE9
+}
+
+th {
+  background-color: #1b9891;
+  color: white;}
+
+button {
+  background-color:  white;
+  border: 2px solid #555555;
+  color: black;
+  padding: 16px 32px;
+  text-align: center;
+  font-size: 18px;
+  margin: 4px 2px;
+  opacity: 1;
+  transition: 0.3s;
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 12px;}
+</style>
+
+<script src="{% static 'downloadDogAdoptions.js' %}"></script>
+
+<br><h1 class="text-center">רשימת האימוצים לכלבים</h1><br>
+<body>
+    <div class="jumbotron">
+         <button class="button" onclick="exportData()">הורד ל-Excel</button><br>
+    <table class="table" id="tbl_dogs_adoptions">
+        <thead>
+            <tr>
+                <th> מספר האימוץ </th>
+                <th> שם המאמצ/ת </th>
+                <th> ת''ז המאמצ/ת </th>
+                <th> עיר מגורים </th>
+                <th> מס' טלפון </th>
+                <th> שם הכלב (מס' מזהה) </th>
+                <th> מספר שבב </th>
+                <th> גיל </th>
+                <th> מין </th>
+                <th> תאריך כניסה לעמותה </th>
+                <th>תאריך האימוץ </th>
+                <th> הערות האימוץ </th>
+                <th>גורם מטפל באימוץ </th>
+                <th> תאריך ההחזרה </th>
+
+            </tr>
+        </thead>
+            {% for instance in dogs %}
+            <tr>
+                <td><a href="../admin/shelter/dogadoption/{{instance.id}}/change/" style="color: black; height:100%; width:100%"><div> {{instance.id}} </div></a></td>
+                <td> {{instance.adopter.name}}</td>
+                <td> {{instance.adopter.adopter_ID}}</td>
+                <td> {% if instance.adopter.adopter_city %}{{instance.adopter.adopter_city}} {% else %} - {% endif %}</td>
+                <td> {% if instance.adopter.phone_number %}{{instance.adopter.phone_number}} {% else %} - {% endif %}</td>
+                <td> {{instance.dog}}</td>
+                <td> {% if instance.dog.chip_number%}{{instance.dog.chip_number}} {% else %} - {% endif %}</td>
+                <td> {% if instance.dog.age_years == 0 and instance.dog.age_months == 0  %} פחות מחודש {% else %} {{ instance.dog.age_years }} שנים ו-{{ instance.dog.age_months }} חודשים {% endif %}</td>
+                <td> {{instance.dog.get_gender_display}}</td>
+                <td> {{instance.dog.acceptance_date }}</td>
+                <td> {% if instance.adoption_date%}{{instance.adoption_date}} {% else %} - {% endif %}</td>
+                <td> {% if instance.adoption_comments %}{{instance.adoption_comments}} {% else %} - {% endif %}</td>
+                <td> {% if instance.adoption_volunteer %}{{instance.adoption_volunteer}} {% else %} - {% endif %}</td>
+                <td> {% if instance.return_date %}{{instance.return_date }} {% else %} - {% endif %}</td>
+
+            </tr>
+                {% endfor %}
+
+  </table>
+</div>
+</body>
+{% endblock content %}

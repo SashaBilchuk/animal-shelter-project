@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from . import views
-from .views import UpdateResponseView, UpdateBlackList
+from .views import UpdateResponseView, UpdateBlackList, UpdateDog
 
 
 
@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/shelter/cat/add/', views.add_cat, name='add_cat'),
     #path('admin/shelter/dog/add/', views.add_dog, name='add_dog'),
     path('add_dog/', views.add_dog, name='add_dog'),
+    path('dog/<int:pk>/edit_dog/', UpdateDog.as_view(), name='edit_dog'),
     path('admin/shelter/adopter/add/', views.add_adopter, name='add_adopter'),
     path('admin/shelter/foster/add/', views.add_foster, name='add_foster'),
     path('report_adopters/', views.report_adopters, name='report_adopters'),

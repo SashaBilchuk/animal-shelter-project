@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<style>
+table{
+	text-align: center;
+	width: 95%;
+	margin: auto;
+	text-align: center;
+}
+
+/*Make alternating colors for the table rows*/
+table tr:nth-child(odd){
+	background: #8DCBC8
+}
+
+table tr:nth-child(even){
+	background: #D1EAE9
+}
+
+th {
+  background-color: #1b9891;
+  color: white;
+}
+button {
+  background-color:  white;
+  border: 2px solid #555555;
+  color: black;
+  padding: 16px 32px;
+  text-align: center;
+  font-size: 18px;
+  margin: 4px 2px;
+  opacity: 1;
+  transition: 0.3s;
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 12px;}
+</style>
+
+<script src="{% static 'downloadCatFostering.js' %}"></script>
+
+<br><h1 class="text-center">רשימת האומנות לחתולים</h1><br>
+<body>
+    <div class="jumbotron">
+        <button class="button" onclick="exportData()">הורד ל-Excel</button><br>
+  <table class="table" id="tbl_cats_fostering">
+        <thead>
+            <tr>
+                <th> מספר האומנה </th>
+                <th> שם האומנה </th>
+                <th> ת''ז האומנה </th>
+                <th> עיר מגורים </th>
+                <th> מס' טלפון </th>
+                <th> שם החתול (מס' מזהה) </th>
+                <th>תאריך תחילת אומנה </th>
+                <th> תאריך סיום האומנה </th>
+                <th> הערות האומנה </th>
+                <th> גורם מטפל בעמותה </th>
+            </tr>
+        </thead>
+            {% for instance in cats %}
+            <tr>
+                <td><a href="../admin/shelter/catfostering/{{instance.id}}/change/" style="color: black; height:100%; width:100%"><div> {{instance.id}} </div></a></td>
+                <td> {{instance.foster.name}}</td>
+                <td> {{instance.foster.foster_ID}}</td>
+                <td> {% if instance.foster.foster_city %}{{instance.foster.foster_city}} {% else %} - {% endif %}</td>
+                <td> {% if instance.foster.phone_number %}{{instance.foster.phone_number}} {% else %} - {% endif %}</td>
+                <td> {{instance.cat}}</td>
+                <td> {{instance.fostering_date_start}}</td>
+                <td> {% if instance.fostering_date_end %}{{instance.fostering_date_end}} {% else %} - {% endif %}</td>
+                <td> {% if instance.fostering_comments %}{{instance.fostering_comments}} {% else %} - {% endif %}</td>
+                <td> {% if instance.fostering_volunteer %}{{instance.fostering_volunteer}} {% else %} - {% endif %}</td>
+            </tr>
+                {% endfor %}
+  </table>
+
+</div>
+</body>
+{% endblock content %}

@@ -7,11 +7,10 @@ import uuid
 from django.utils.translation import gettext_lazy as _
 
 
-
-
 def validate_id(value):
-    if len(str(value))!=9:
+    if len(str(value)) != 9:
         raise ValidationError(_('יש להזין מספר תעודת זהות תקין בן 9 ספרות'))
+
 
 GENDER_CHOICES = (
     ('Male', 'זכר'),
@@ -30,11 +29,11 @@ PLACES = (
 )
 
 STATUS_ADOPTER = (
-    ('אימצ/ה', 'אימצ/ה',), ('החזיר/ה', 'החזיר/ה')
+    ('Adopted', 'אימצ/ה',), ('Returned', 'החזיר/ה')
      )
 
 STATUS_FOSTER = (
-    ('פעיל עם חיה', 'פעיל עם חיה'), ('פעיל ללא חיה', 'פעיל ללא חיה'), ('לא פעיל', 'לא פעיל')
+    ('Active', 'פעיל עם חיה'), ('Active with no dog', 'פעיל ללא חיה'), ('Inactive', 'לא פעיל')
      )
 
 STATUS_CHOICES = (
@@ -51,11 +50,11 @@ STATUS_CHOICES = (
 
 def validate_chip(value):
     if len(str(value)) != 15:
-        raise ValidationError(_('מספר שבב צריך להיות בן 15 ספרות בדיוק'))
+        raise ValidationError(_('יש להזין מספר שבב תקין בן 15 ספרות'))
 
 
 class Adopter(models.Model):
-    adopter_ID = models.IntegerField(unique=True, default=None, verbose_name=_('ת"ז'),validators=[validate_id])
+    adopter_ID = models.IntegerField(unique=True, default=None, verbose_name=_('ת"ז'), validators=[validate_id])
     name = models.CharField(max_length=255, default=None, verbose_name=_('שם המאמצ/ת'))
     ID_link = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('קישור לת"ז'))
     birth_date = models.DateField(default=None, blank=True, null=True, verbose_name=_('תאריך לידה'))
@@ -105,16 +104,15 @@ class Dog(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('שם'))
     birth_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך לידה'))
     gender = models.CharField(max_length=255, choices=GENDER_CHOICES, verbose_name=_('מין'))
-    image = models.ImageField(upload_to='mediaDogs/', default='media/generic_dog.png', blank=True,
-                              verbose_name=_('הוסף תמונה'))
+    acceptance_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך קבלה לעמותה'))
+    location = models.CharField(max_length=255, choices=PLACES, default='עמותה', null=True, verbose_name=_('מיקום הכלב'))
+    exit_date = models.DateField(blank=True, default=None, null=True, verbose_name=_('תאריך יציאה מעמותה'))
+    #image = models.ImageField(upload_to='mediaDogs/', default='media/generic_dog.png', blank=True,verbose_name=_('הוסף תמונה'))
     physical_description = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('תיאור חיצוני'))
     size = models.CharField(choices=SIZE_CHOICES, max_length=255, blank=True, default=None, null=True, verbose_name=_('גודל'))
     color = models.CharField(max_length=255, blank=True, default=None, null=True, verbose_name=_('צבע'))
     behaviour_description = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('תיאור התנהגותי'))
     story = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיפור רקע'))
-    acceptance_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך קבלה לעמותה'))
-    location = models.CharField(max_length=255, choices=PLACES, default='עמותה', null=True, verbose_name=_('מיקום הכלב'))
-    exit_date = models.DateField(blank=True, default=None, null=True, verbose_name=_('תאריך יציאה מעמותה'))
     clinic = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('מרפאה וטרינרית'))
     vaccine_book = models.BooleanField(default=False, verbose_name=_('פנקס חיסונים'))
     vaccine_book_link = models.FileField(upload_to='mediaDogs/', blank=True, default=None, null=True, verbose_name=_('קישור לפנקס חיסונים'))
@@ -197,13 +195,13 @@ class Cat(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('שם'))
     birth_date = models.DateField(default=datetime.date.today, verbose_name=_('תאריך לידה'))
     gender = models.CharField(choices=GENDER_CHOICES, max_length=6, verbose_name=_('מין'))
-    physical_description = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('תיאור חיצוני'))
-    image = models.ImageField(upload_to='mediaCats/', default='media/generic_cat.png', blank=True,
-                              verbose_name=_('הוסף תמונה'))
-    story = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיפור רקע'))
-    acceptance_date = models.DateField(default=datetime.date.today, blank=True, null=True, verbose_name=_('תאריך כניסה לעמותה'))
+    acceptance_date = models.DateField(default=datetime.date.today, blank=True, null=True,
+                                       verbose_name=_('תאריך כניסה לעמותה'))
     location = models.CharField(choices=PLACES, default='עמותה', null=True, max_length=20, verbose_name=_('מיקום'))
     exit_date = models.DateField(blank=True, default=None, null=True, verbose_name=_('תאריך יציאה מעמותה'))
+    physical_description = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('תיאור חיצוני'))
+    #image = models.ImageField(upload_to='mediaCats/', default='media/generic_cat.png', blank=True, verbose_name=_('הוסף תמונה'))
+    story = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיפור רקע'))
     clinic = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('מרפאה וטרינרית'))
     vaccination_book = models.BooleanField(default=False, verbose_name=_('פנקס חיסונים'))
     vaccination_book_link = models.FileField(upload_to='mediaCats/', blank=True, default=None, null=True, verbose_name=_('קישור לפנקס חיסונים'))

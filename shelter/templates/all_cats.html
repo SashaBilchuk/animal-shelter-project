@@ -43,7 +43,7 @@ button {
 
 <script src="{% static 'downloadAllCats.js' %}"></script>
 
-<h1 class="text-center">רשימת החתולים</h1><br>
+<br><h1 class="text-center">רשימת החתולים</h1><br>
 <body>
     <div class="jumbotron">
         <button class="button" onclick="exportData()">הורד ל-Excel</button><br>
@@ -54,20 +54,24 @@ button {
                 <th> גיל </th>
                 <th> מין </th>
                 <th> תיאור חיצוני </th>
+                <th> סירוס/עיקור </th>
                 <th> תאריך כניסה לעמותה </th>
                 <th> תאריך יציאה מעמותה </th>
                 <th> מיקום </th>
                 <th> תאריך אימוץ או אומנה </th>
                 <th> שם המאמצ/ת או אומנה (ת"ז) </th>
-                <th> נפתר/ה? </th>
+                <th> נפטר/ה? </th>
+                <th> תאריך הפטירה </th>
+                <th> סיבת הפטירה </th>
             </tr>
         </thead>
             {% for cat in cats %}
                         <tr>
                             <td><a href="../cat/{{cat.id}}"><div style="color: black; height:100%; width:100%">{{cat}}</div></a></td>
-                            <td> {% if cat.age_years == 0 and cat.age_months == 0  %} פחות מחודש {% else %} {{cat.age_years }} שנים ו-{{cat.age_months }} חודשים {% endif %}</td>
+                            <td> {% if cat.age_years == 0 and cat.age_months == 0  %} פחות מחודש {% else %} {{ cat.age_years }} שנים ו-{{ cat.age_months }} חודשים {% endif %}</td>
                             <td> {{cat.get_gender_display}}</td>
                             <td> {% if cat.physical_description%}{{cat.physical_description}} {% else %} - {% endif %}</td>
+                            <td> {% if cat.sterilization%}{{cat.sterilization}} {% else %} - {% endif %}</td>
                             <td> {{cat.acceptance_date }}</td>
                             <td> {% if cat.exit_date %} {{ cat.exit_date }} {% else %} - {% endif %}</td>
                             <td> {{cat.get_location_display}}</td>
@@ -76,18 +80,20 @@ button {
                                     {% if adoption.cat == cat %}
                                         <td> {{adoption.adoption_date}}</td>
                                         <td> {{adoption.adopter}}</td>
-                                {% endif %}{% endfor %}
+                                        {% endif %}{% endfor %}
                             {% elif cat.location == "Foster"%}
                                  {% for fostering in cat_fostering %}
                                         {% if fostering.cat == cat %}
                                             <td> {{fostering.fostering_date_start}}</td>
                                             <td> {{fostering.foster}}</td>
-                                 {% endif %}{% endfor %}
+                                            {% endif %}{% endfor %}
                             {% else%}
                                 <td>-</td>
                                 <td>-</td>
                             {% endif %}
                             <td> {% if cat.died %} כן {% else %} - {% endif %}</td>
+                            <td> {% if cat.death_date %} {{ cat.death_date }} {% else %} - {% endif %}</td>
+                            <td> {% if cat.death_reason %} {{ cat.death_reason }} {% else %} - {% endif %}</td>
                         </tr>
 
             {% endfor %}

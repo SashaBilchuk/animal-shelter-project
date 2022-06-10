@@ -127,19 +127,20 @@ def admin(request):
 def add_cat(request):
     return redirect('admin/shelter/cat/add/')
 
-# def add_dog(request):
-#     if request.method == 'POST':
-#         form = AddDog(request.POST, request.FILES)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('home')
-#     else:
-#         form = AddDog
-#     return render(request, 'add_dog.html', {'form': form})
-
 
 def add_dog(request):
-    return redirect('admin/shelter/dog/add/')
+    if request.method == 'POST':
+        form = AddDog(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = AddDog
+    return render(request, 'add_dog.html', {'form': form})
+
+
+# def add_dog(request):
+#     return redirect('admin/shelter/dog/add/')
 
 
 def add_adopter(request):
@@ -176,7 +177,9 @@ def add_dog_adoption(request):
             if dog.location == "Association" or "Pension":
                 dog.exit_date = dt.date.today()
             elif dog.location == "Foster":
-                dog.fostering_dog.fostering_date_end = dt.date.today()
+                dog_fostering = DogFostering.objects.get(dog=dog.id)
+                dog_fostering.fostering_date_end = dt.date.today()
+                dog_fostering.save()
             dog.location = 'Adoption'
             dog.save()
             adopter = form.cleaned_data.get('adopter')
@@ -195,9 +198,7 @@ def add_dog_fostering(request):
         if form.is_valid():
             form.save()
             dog = form.cleaned_data.get('dog')
-            if dog.location == "Association" or "Pension":
-                dog.exit_date = dt.date.today()
-            elif dog.location == "Adoption":
+            if dog.location == "Adoption":
                 dog_adoption = DogAdoption.objects.filter(dog=dog.id).update(return_date=dt.date.today())
                 dog_adoption.save()
             dog.location = 'Foster'
@@ -240,9 +241,7 @@ def add_cat_fostering(request):
         if form.is_valid():
             form.save()
             cat = form.cleaned_data.get('cat')
-            if cat.location == "Association" or "Pension":
-                cat.exit_date = dt.date.today()
-            elif cat.location == "Adoption":
+            if cat.location == "Adoption":
                 cat.return_date = dt.date.today()
             cat.location = 'Foster'
             cat.save()
@@ -257,21 +256,27 @@ def add_cat_fostering(request):
 
 
 def report_adopters(request):
-    return render(request, "report_adopters.html", {'adopters': Adopter.objects.all()})
+    return render(request, "report_adopters.html", {'adopters': Adopter.objects.order_by('activity_status').all()})
 
 
 def report_fosters(request):
-    return render(request, "report_fosters.html", {'fosters': Foster.objects.all()})
+    return render(request, "report_fosters.html", {'fosters': Foster.objects.order_by('activity_status').all()})
 
 
-def report_adoptions(request):
-    return render(request, "report_adoptions.html", {'cats': CatAdoption.objects.order_by('adoption_date').all(),
-                                                     'dogs': DogAdoption.objects.order_by('adoption_date').all()})
+def report_dog_adoptions(request):
+    return render(request, "report_dog_adoptions.html", {'dogs': DogAdoption.objects.order_by('adoption_date').all()})
 
 
-def report_fostering(request):
-    return render(request, "report_fostering.html", {'cats': CatFostering.objects.order_by('fostering_date_start').all(),
-                                                     'dogs': DogFostering.objects.order_by('fostering_date_start').all()})
+def report_cat_adoptions(request):
+    return render(request, "report_cat_adoptions.html", {'cats': CatAdoption.objects.order_by('adoption_date').all()})
+
+
+def report_dog_fostering(request):
+    return render(request, "report_dog_fostering.html", {'dogs': DogFostering.objects.order_by('fostering_date_start').all()})
+
+
+def report_cat_fostering(request):
+    return render(request, "report_cat_fostering.html", {'cats': CatFostering.objects.order_by('fostering_date_start').all()})
 
 
 
@@ -457,7 +462,6 @@ def grading_response():
     return sorted_df
 
 
-
 def create_header_dict(tablename):
     if tablename == "row_up":
         map_dict = {
@@ -502,7 +506,6 @@ def create_header_dict(tablename):
     return map_dict
 
 
-
 def add_to_Response(row):
     response_owner = row['response_owner']
     status = row['status']
@@ -535,8 +538,10 @@ def add_to_Response(row):
                             residenceType=residenceType, fence=fence, dogPlace=dogPlace, dogSize=dogSize,
                             response_comments=response_comments, response_date=response_date, QID=QID)
 
-def add_to_black_list(full_name,city,mail, phone_num, comments ):
+
+def add_to_black_list(full_name,city,mail, phone_num, comments):
     BlackList.objects.create(full_name=full_name,  city=city, mail=mail, phone_num=phone_num,  comments=comments)
+
 
 def update_response_model():
     sheet_instance = get_sheet()
@@ -595,7 +600,6 @@ def update_response_model():
             response.save()
 
 
-
 def get_recommendation(request):
     header_up_row = create_header_dict("row_up")
     headers_expended = create_header_dict("row_expended")
@@ -638,7 +642,6 @@ def get_recommendation(request):
         return HttpResponseRedirect('/recommendation_system')
 
     return render(request, 'Recommender.html', context)
-
 
 
 def convert_headers(df):
@@ -727,8 +730,6 @@ def fetch_from_sheet(request):
     return render(request, 'google-sheet-date.html', context)
 
 
-
-
 def add_to_adopter(row):
     name = row['שם מלא']
     city = row['עיר מגורים']
@@ -744,7 +745,6 @@ def convert_ascii_sum(word):  # Convert city names to ascii value
     for val in ascii_values:
         number += val
     return number
-
 
 
 def add_to_sheet(request):

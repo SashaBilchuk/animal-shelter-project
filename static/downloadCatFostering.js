@@ -1,7 +1,6 @@
 function exportData(){
     /* Get the HTML data using Element by Id */
-    var table = document.getElementById("tbl");
-
+    var table = document.getElementById("tbl_cats_fostering");
     /* Declaring array variable */
     var rows =[];
 
@@ -19,8 +18,7 @@ function exportData(){
         column8 = row.cells[7].innerText;
         column9 = row.cells[8].innerText;
         column10 = row.cells[9].innerText;
-        column11 = row.cells[10].innerText;
-        column12 = row.cells[11].innerText;
+;
 
     /* add a new records in the array */
         rows.push(
@@ -34,9 +32,7 @@ function exportData(){
                 column7,
                 column8,
                 column9,
-                column10,
-                column11,
-                column12
+                column10
             ]
         );
 
@@ -47,14 +43,13 @@ function exportData(){
         rows.forEach(function(rowArray){
             row = rowArray.join(",");
             csvContent += row + "\r\n";
-//
         });
 
-//       create a hidden <a> DOM node and set its download attribute
+        //       create a hidden <a> DOM node and set its download attribute
         var encodedUri = encodeURI(csvContent);
         var link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "All_Dogs.csv");
+        link.setAttribute("download", "All_Cats_Fostering.csv");
         document.body.appendChild(link);
         link.click();
 }

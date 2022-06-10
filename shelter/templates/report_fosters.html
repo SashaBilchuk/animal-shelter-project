@@ -44,7 +44,7 @@ button {
 
 <script src="{% static 'downloadFosters.js' %}"></script>
 
-<h1 class="text-center">רשימת משפחות האומנה</h1><br>
+<br><h1 class="text-center">רשימת משפחות האומנה</h1><br>
 <body>
     <div class="jumbotron">
     <button class="button" onclick="exportData()">הורד ל-Excel</button><br>
@@ -65,7 +65,7 @@ button {
                 <td> {{instance.name}}</td>
                 <td> {{instance.foster_city}}</td>
                 <td> {% if instance.phone_number%}{{instance.phone_number}} {% else %} - {% endif %}</td>
-                <td> {{instance.activity_status }}</td>
+                <td> {{instance.get_activity_status_display }}</td>
                 <td> {% if instance.foster_comments %}{{instance.foster_comments}} {% else %} - {% endif %}</td>
             </tr>
                 {% endfor %}

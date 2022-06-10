@@ -1,5 +1,5 @@
 {% if user.is_authenticated %}
-<!DOCTYPE html>
+
 <html lang="he", dir="rtl">
   <head>
     <!-- Required meta tags -->
@@ -116,8 +116,9 @@
                 <a class="dropdown-item" href="{% url 'add_adopter' %}">הוספת מאמץ</a>
                 <a class="dropdown-item" href="{% url 'report_adopters' %}">רשימת מאמצים</a>
                 <a class="dropdown-item" href="{% url 'add_dog_adoption' %}">הוספת אימוץ לכלב</a>
+                <a class="dropdown-item" href="{% url 'report_dog_adoptions' %}">רשימת אימוצים לכלבים</a>
                 <a class="dropdown-item" href="{% url 'add_cat_adoption' %}">הוספת אימוץ לחתול</a>
-                <a class="dropdown-item" href="{% url 'report_adoptions' %}">רשימת אימוצים</a>
+                <a class="dropdown-item" href="{% url 'report_cat_adoptions' %}">רשימת אימוצים לחתולים</a>
               </div>
             </div>
           <div class="dropdown show">
@@ -128,8 +129,9 @@
                 <a class="dropdown-item" href="{% url 'add_foster' %}">הוספת משפחת אומנה</a>
                 <a class="dropdown-item" href="{% url 'report_fosters' %}">רשימת משפחות אומנה</a>
                 <a class="dropdown-item" href="{% url 'add_dog_fostering' %}">הוספת אומנה לכלב</a>
+                <a class="dropdown-item" href="{% url 'report_dog_fostering' %}"> רשימת אומנות לכלבים</a>
                 <a class="dropdown-item" href="{% url 'add_cat_fostering' %}">הוספת אומנה לחתול</a>
-                <a class="dropdown-item" href="{% url 'report_fostering' %}">רשימת אומנות</a>
+                <a class="dropdown-item" href="{% url 'report_cat_fostering' %}">רשימת אומנות לחתולים</a>
               </div>
             </div>
           <div class="dropdown show">
@@ -320,14 +322,12 @@
         },
     });
 </script>
-
-
     <h4 class="text-center mt-3 mb-3" style="color: #1b9891;">
         אינך מחובר
         <br>
         <a href="{% url 'login' %}">Log In</a>
     </h4>
 
-
+</body>
 </html>
 {% endif %}

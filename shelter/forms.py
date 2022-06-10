@@ -47,38 +47,6 @@ class AddDog(forms.ModelForm):
         return date
 
 
-class EditDog(forms.ModelForm):
-    class Meta:
-        model = Dog
-        fields = "__all__"
-        exclude = ['foster_relation_dog', 'adopter_relation_dog']
-        widgets = {'birth_date': forms.DateInput(attrs={'type': 'date'}),
-                   'acceptance_date': forms.DateInput(attrs={'type': 'date'}),
-                   'exit_date': forms.DateInput(attrs={'type': 'date'}),
-                   'physical_description': forms.Textarea(attrs={'rows': 3}),
-                   'behaviour_description': forms.Textarea(attrs={'rows': 3}),
-                   'story': forms.Textarea(attrs={'rows': 3}),
-                   'clinic': forms.Textarea(attrs={'rows': 3}),
-                   'worming_1': forms.DateInput(attrs={'type': 'date'}),
-                   'worming_2': forms.DateInput(attrs={'type': 'date'}),
-                   'hexagonal_vaccine': forms.DateInput(attrs={'type': 'date'}),
-                   'next_treatment_hexagonal': forms.DateInput(attrs={'type': 'date'}),
-                   'rabies_vaccine': forms.DateInput(attrs={'type': 'date'}),
-                   'next_treatment_rabies': forms.DateInput(attrs={'type': 'date'}),
-                   'ticks_fleas_treatment': forms.DateInput(attrs={'type': 'date'}),
-                   'next_ticks_fleas_treatment': forms.DateInput(attrs={'type': 'date'}),
-                   'sterilization': forms.DateInput(attrs={'type': 'date'}),
-                   'medical_comments': forms.Textarea(attrs={'rows': 3}),
-                   'death_date': forms.DateInput(attrs={'type': 'date'}),
-                   'death_reason': forms.Textarea(attrs={'rows': 3})}
-
-    def clean_acceptance_date(self):
-        date = self.cleaned_data['acceptance_date']
-        if date > datetime.date.today():
-            raise forms.ValidationError("לא ניתן להזין תאריך עתידי")
-        return date
-
-
 class DogAdoptionsForm(forms.ModelForm):
     class Meta:
         model = DogAdoption

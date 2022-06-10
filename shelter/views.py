@@ -1,5 +1,5 @@
 from .models import Dog, Cat, Adopter, Response, DogAdoption, CatAdoption, CatFostering, Foster, DogFostering, BlackList
-from .forms import DogAdoptionsForm, CatAdoptionsForm, AddDog, EditDog, CatFosteringForm, DogFosteringForm, BlackListForm
+from .forms import DogAdoptionsForm, CatAdoptionsForm, AddDog, CatFosteringForm, DogFosteringForm, BlackListForm
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
@@ -141,12 +141,16 @@ def add_dog(request):
     return render(request, 'add_dog.html', {'form': form})
 
 
-class UpdateDog(UpdateView):
-    model = Dog
-    form_class = EditDog
-    template_name = 'edit_dog.html'
-    success_url = reverse_lazy('home')
-
+def edit_dog(request, dog_id):
+    dog = Dog.objects.get(id=dog_id)
+    if request.method == 'POST':
+        form = AddDog(request.POST, request.FILES, instance=dog)
+        if form.is_valid():
+            form.save()
+            return redirect('detail_dog', dog.id)
+    else:
+        form = AddDog(instance=dog)
+    return render(request, 'edit_dog.html', {'form': form})
 
 
 def add_adopter(request):

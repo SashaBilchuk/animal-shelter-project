@@ -1,5 +1,5 @@
 from .models import Dog, Cat, Adopter, Response, DogAdoption, CatAdoption, CatFostering, Foster, DogFostering, BlackList
-from .forms import DogAdoptionsForm, CatAdoptionsForm, AddDog, CatFosteringForm, DogFosteringForm, BlackListForm
+from .forms import DogAdoptionsForm, CatAdoptionsForm, AddDog,AddCat,AddAdopter,AddFoster, CatFosteringForm, DogFosteringForm, BlackListForm
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
@@ -126,10 +126,6 @@ def admin(request):
     return redirect('/admin')
 
 
-def add_cat(request):
-    return redirect('admin/shelter/cat/add/')
-
-
 def add_dog(request):
     if request.method == 'POST':
         form = AddDog(request.POST, request.FILES)
@@ -139,6 +135,39 @@ def add_dog(request):
     else:
         form = AddDog
     return render(request, 'add_dog.html', {'form': form})
+
+
+def add_cat(request):
+    if request.method == 'POST':
+        form = AddCat(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = AddCat
+    return render(request, 'add_cat.html', {'form': form})
+
+
+def add_adopter(request):
+    if request.method == 'POST':
+        form = AddAdopter(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = AddAdopter
+    return render(request, 'add_adopter.html', {'form': form})
+
+
+def add_foster(request):
+    if request.method == 'POST':
+        form = AddFoster(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = AddFoster
+    return render(request, 'add_foster.html', {'form': form})
 
 
 def edit_dog(request, dog_id):
@@ -153,12 +182,16 @@ def edit_dog(request, dog_id):
     return render(request, 'edit_dog.html', {'form': form})
 
 
-def add_adopter(request):
-    return redirect('admin/shelter/adopter/add/')
-
-
-def add_foster(request):
-    return redirect('admin/shelter/foster/add/')
+def edit_cat(request, cat_id):
+    cat = Cat.objects.get(id=cat_id)
+    if request.method == 'POST':
+        form = AddCat(request.POST, request.FILES, instance=cat)
+        if form.is_valid():
+            form.save()
+            return redirect('detail_cat', cat.id)
+    else:
+        form = AddCat(instance=cat)
+    return render(request, 'edit_cat.html', {'form': form})
 
 
 def logout(request):

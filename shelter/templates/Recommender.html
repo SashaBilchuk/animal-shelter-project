@@ -7,7 +7,8 @@
 .container {
   height: 50px;
   position: relative;
-  border: 3px solid black;
+  color: white;
+
 }
 
 .center {
@@ -64,6 +65,30 @@
     color:#a2a2a2 !important;
     }
 
+      #loader {
+            border: 12px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 12px solid #444444;
+            width: 70px;
+            height: 70px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .center1 {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+
 </style>
 
 
@@ -71,6 +96,7 @@
 <link rel="stylesheet" type="text/css" href="custom.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 <script type="text/javascript">
 $(document).ready(function () {
 $('.collapse').collapse
@@ -78,16 +104,56 @@ $('.collapse').collapse
 </script>
 
 
+
 <body>
 
 <div class="container">
   <div class="center">
         <form action="#" method="get">
-        <input type="submit" class="btn btn-info"  value="רענן תשובות חדשות"  name="mybtn">
+       <input type="submit" class="btn btn-info"  value="רענן תשובות חדשות" name="mybtn">
+           <!--  <button type="submit">class="btn btn-info"  </button> -->
         </form>  </div>
 </div>
 
+<script>
+const button = document.querySelector('input');
+const paragraph = document.querySelector('p');
 
+button.addEventListener('click', updateButton);
+
+function updateButton() {
+    button.value = 'עוד רגע...';
+}
+</script>
+
+
+<div id="loader" class="center1"></div>
+
+<script>
+    document.onreadystatechange = function() {
+    if (document.readyState === "interactive") {
+        document.querySelector("body").style.visibility = "hidden";
+        document.querySelector("#loader").style.visibility = "visible";
+    } else {
+        document.querySelector("#loader").style.display = "none";
+        document.querySelector("body").style.visibility = "visible";
+    }
+};
+</script>
+
+
+
+
+<!--
+<script>
+    $(function(){
+        $('form').on('submit', function(e){
+            $('body').append('<div id="loader">Loading...</div>')
+        });
+    })
+</script>
+
+-->
 <h1 class="display-4 text-center">טבלת לא טופל</h1><br>
 
 <table class="table table-condensed table-hover" style="border-collapse:collapse;">
@@ -103,12 +169,15 @@ $('.collapse').collapse
      {% with y=forloop.counter|stringformat:"s" %}
      {% with line_id="#demo"|add:y %}
         <tr data-toggle="collapse" data-target={{line_id}} class="accordion-toggle">
-
             {% for cell in row %}
             {% if forloop.counter < 10%}
             <td>
                 {% if forloop.counter == 1%}
-                <a href="../edit_response/{{cell}}"><div style="color: mediumblue; height:100%; width:100%"> {{ cell }} </div></a>
+                <!--<div class="row"><div><a href="../edit_response/{{cell}}"><i class="fas fa-edit fa-lg" style="color: #1b9891;"></i></a></div></div> -->
+              <!--  <button type="button" class="btn btn-primary info"><i class="icon-edit"></i> {{ cell }}</button> -->
+               <a href="../edit_response/{{cell}}"><div style="color: mediumblue; height:100%; width:100%"> {{ cell }} </div></a>
+
+               <!-- <a href="../edit_response/{{cell}}"><div style="color: mediumblue; height:100%; width:100%"> {{ cell }} </div></a> -->
                 {% elif forloop.counter == 9%}
                              <p>
                                 {% if  row.normGrade  >= 1 %}

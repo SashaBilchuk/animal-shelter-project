@@ -104,12 +104,12 @@ class DogAdoptionsForm(forms.ModelForm):
                    'next_followup_call': forms.DateInput(attrs={'type': 'date'}),
                    'adoption_volunteer': forms.Textarea(attrs={'rows': 3})}
 
-    def clean_dog(self):
-        dog = self.cleaned_data.get('dog')
-        for instance in DogAdoption.objects.all():
-            if instance.dog == dog:
-                raise forms.ValidationError(dog.name + 'כבר אומצ/ה')
-        return dog
+    # def clean_dog(self):
+    #     dog = self.cleaned_data.get('dog')
+    #     for instance in DogAdoption.objects.all():
+    #         if instance.dog == dog:
+    #             raise forms.ValidationError(dog.name + 'כבר אומצ/ה')
+    #     return dog
 
 
 class DogFosteringForm(forms.ModelForm):
@@ -124,12 +124,12 @@ class DogFosteringForm(forms.ModelForm):
                    'fostering_link_for_adoption_text': forms.Textarea(attrs={'rows': 3})
                    }
 
-    def clean_dog(self):
-        dog = self.cleaned_data.get('dog')
-        for instance in DogFostering.objects.all():
-            if instance.dog == dog:
-                raise forms.ValidationError(dog.name + ' כבר באומנה')
-        return dog
+    # def clean_dog(self):
+    #     dog = self.cleaned_data.get('dog')
+    #     for instance in DogFostering.objects.all():
+    #         if instance.dog == dog:
+    #             raise forms.ValidationError(dog.name + ' כבר באומנה')
+    #     return dog
 
 
 class CatAdoptionsForm(forms.ModelForm):
@@ -142,12 +142,12 @@ class CatAdoptionsForm(forms.ModelForm):
                    'next_followup_call': forms.DateInput(attrs={'type': 'date'}),
                    'adoption_volunteer': forms.Textarea(attrs={'rows': 3})}
 
-    def clean_cat(self):
-        cat = self.cleaned_data.get('cat')
-        for instance in CatAdoption.objects.all():
-            if instance.cat == cat:
-                raise forms.ValidationError(cat.name + ' כבר אומצ/ה')
-        return cat
+    # def clean_cat(self):
+    #     cat = self.cleaned_data.get('cat')
+    #     for instance in CatAdoption.objects.all():
+    #         if instance.cat == cat:
+    #             raise forms.ValidationError(cat.name + ' כבר אומצ/ה')
+    #     return cat
 
 
 class CatFosteringForm(forms.ModelForm):
@@ -162,12 +162,12 @@ class CatFosteringForm(forms.ModelForm):
                    'fostering_link_for_adoption_text': forms.Textarea(attrs={'rows': 3})
                    }
 
-    def clean_cat(self):
-        cat = self.cleaned_data.get('cat')
-        for instance in CatFostering.objects.all():
-            if instance.cat == cat:
-                raise forms.ValidationError(cat.name + ' כבר באומנה')
-        return cat
+    # def clean_cat(self):
+    #     cat = self.cleaned_data.get('cat')
+    #     for instance in CatFostering.objects.all():
+    #         if instance.cat == cat:
+    #             raise forms.ValidationError(cat.name + ' כבר באומנה')
+    #     return cat
 
 
 class BlackListForm(forms.ModelForm):

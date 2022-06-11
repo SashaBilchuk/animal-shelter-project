@@ -38,12 +38,12 @@ class AddDog(forms.ModelForm):
                    'sterilization': forms.DateInput(attrs={'type': 'date'}),
                    'medical_comments': forms.Textarea(attrs={'rows': 3}),
                    'death_date': forms.DateInput(attrs={'type': 'date'}),
-                   'death_reason': forms.Textarea(attrs={'rows': 3}),}
+                   'death_reason': forms.Textarea(attrs={'rows': 3})}
 
     def clean_acceptance_date(self):
         date = self.cleaned_data['acceptance_date']
         if date > datetime.date.today():
-            raise forms.ValidationError("תאריך לא יכול להיות בעתיד")
+            raise forms.ValidationError("לא ניתן להזין תאריך עתידי")
         return date
 
 

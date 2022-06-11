@@ -4,7 +4,6 @@ from . import views
 from .views import UpdateResponseView, UpdateBlackList
 
 
-
 urlpatterns = [
     path('', views.home, name='home'),
     path('dog/<int:dog_id>/', views.detail_dog, name='detail_dog'),
@@ -19,8 +18,8 @@ urlpatterns = [
     path('admin/logout/', views.logout, name='logout'),
     path('admin/', views.admin, name='add_animal'),
     path('admin/shelter/cat/add/', views.add_cat, name='add_cat'),
-    #path('admin/shelter/dog/add/', views.add_dog, name='add_dog'),
     path('add_dog/', views.add_dog, name='add_dog'),
+    path('dog/<int:dog_id>/edit_dog/', views.edit_dog, name='edit_dog'),
     path('admin/shelter/adopter/add/', views.add_adopter, name='add_adopter'),
     path('admin/shelter/foster/add/', views.add_foster, name='add_foster'),
     path('report_adopters/', views.report_adopters, name='report_adopters'),

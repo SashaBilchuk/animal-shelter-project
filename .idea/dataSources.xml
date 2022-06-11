@@ -15,5 +15,12 @@
       <jdbc-url>jdbc:sqlite:C:\Users\mshore\Final_Projects\Animal-Shelter-master\db.sqlite3</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="db [3]" uuid="fc7375dd-abc5-4f0a-bdea-4669dd75cd1c">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:C:\Users\mshore\Final_Projects\Git_versioin_10_6\animal-shelter-project\db.sqlite3</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

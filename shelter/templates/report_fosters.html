@@ -61,7 +61,7 @@ button {
         </thead>
             {% for instance in fosters %}
             <tr>
-                <td><a href="../admin/shelter/foster/{{instance.id}}/change/" style="color: black; height:100%; width:100%"><div> {{instance.foster_ID}} </div></a></td>
+                <td><a href="../foster/{{instance.id}}/edit_foster" style="color: black; height:100%; width:100%"><div> {{instance.foster_ID}} </div></a></td>
                 <td> {{instance.name}}</td>
                 <td> {{instance.foster_city}}</td>
                 <td> {% if instance.phone_number%}{{instance.phone_number}} {% else %} - {% endif %}</td>

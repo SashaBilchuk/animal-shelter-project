@@ -1,5 +1,5 @@
 from .models import Dog, Cat, Adopter, Response, DogAdoption, CatAdoption, CatFostering, Foster, DogFostering, BlackList
-from .forms import DogAdoptionsForm, CatAdoptionsForm, AddDog, CatFosteringForm, DogFosteringForm, BlackListForm
+from .forms import DogAdoptionsForm, CatAdoptionsForm, AddDog,AddCat,AddAdopter,AddFoster, CatFosteringForm, DogFosteringForm, BlackListForm
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
@@ -126,10 +126,6 @@ def admin(request):
     return redirect('/admin')
 
 
-def add_cat(request):
-    return redirect('admin/shelter/cat/add/')
-
-
 def add_dog(request):
     if request.method == 'POST':
         form = AddDog(request.POST, request.FILES)
@@ -139,6 +135,39 @@ def add_dog(request):
     else:
         form = AddDog
     return render(request, 'add_dog.html', {'form': form})
+
+
+def add_cat(request):
+    if request.method == 'POST':
+        form = AddCat(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = AddCat
+    return render(request, 'add_cat.html', {'form': form})
+
+
+def add_adopter(request):
+    if request.method == 'POST':
+        form = AddAdopter(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = AddAdopter
+    return render(request, 'add_adopter.html', {'form': form})
+
+
+def add_foster(request):
+    if request.method == 'POST':
+        form = AddFoster(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = AddFoster
+    return render(request, 'add_foster.html', {'form': form})
 
 
 def edit_dog(request, dog_id):
@@ -153,12 +182,38 @@ def edit_dog(request, dog_id):
     return render(request, 'edit_dog.html', {'form': form})
 
 
-def add_adopter(request):
-    return redirect('admin/shelter/adopter/add/')
+def edit_cat(request, cat_id):
+    cat = Cat.objects.get(id=cat_id)
+    if request.method == 'POST':
+        form = AddCat(request.POST, request.FILES, instance=cat)
+        if form.is_valid():
+            form.save()
+            return redirect('detail_cat', cat.id)
+    else:
+        form = AddCat(instance=cat)
+    return render(request, 'edit_cat.html', {'form': form})
 
+def edit_adopter(request, adopter_id):
+    adopter = Adopter.objects.get(id=adopter_id)
+    if request.method == 'POST':
+        form = AddAdopter(request.POST, request.FILES, instance=adopter)
+        if form.is_valid():
+            form.save()
+            return redirect('report_adopters')
+    else:
+        form = AddAdopter(instance=adopter)
+    return render(request, 'edit_adopter.html', {'form': form})
 
-def add_foster(request):
-    return redirect('admin/shelter/foster/add/')
+def edit_foster(request, foster_id):
+    foster = Foster.objects.get(id=foster_id)
+    if request.method == 'POST':
+        form = AddFoster(request.POST, request.FILES, instance=foster)
+        if form.is_valid():
+            form.save()
+            return redirect('report_fosters')
+    else:
+        form = AddFoster(instance=foster)
+    return render(request, 'edit_foster.html', {'form': form})
 
 
 def logout(request):
@@ -260,6 +315,57 @@ def add_cat_fostering(request):
         form = CatFosteringForm
 
     return render(request, 'add_cat_fostering.html', {'form': form})
+
+
+def edit_dog_adoption(request, dogadoption_id):
+    dogadoption = DogAdoption.objects.get(id=dogadoption_id)
+    if request.method == 'POST':
+        form = DogAdoptionsForm(request.POST, request.FILES, instance=dogadoption)
+        if form.is_valid():
+            form.save()
+            return redirect('report_dog_adoptions')
+    else:
+        form = DogAdoptionsForm(instance=dogadoption)
+    return render(request, 'edit_dog_adoption.html', {'form': form})
+
+def edit_cat_adoption(request, catadoption_id):
+    catadoption = CatAdoption.objects.get(id=catadoption_id)
+    if request.method == 'POST':
+        form = CatAdoptionsForm(request.POST, request.FILES, instance=catadoption)
+        if form.is_valid():
+            form.save()
+            return redirect('report_cat_adoptions')
+    else:
+        form = CatAdoptionsForm(instance=catadoption)
+    return render(request, 'edit_cat_adoption.html', {'form': form})
+
+
+def edit_dog_fostering(request, dogfostering_id):
+    dogfostering = DogFostering.objects.get(id=dogfostering_id)
+    if request.method == 'POST':
+        form = DogFosteringForm(request.POST, request.FILES, instance=dogfostering)
+        if form.is_valid():
+            form.save()
+            return redirect('report_dog_fostering')
+    else:
+        form = DogFosteringForm(instance=dogfostering)
+    return render(request, 'edit_dog_fostering.html', {'form': form})
+
+
+def edit_cat_fostering(request, catfostering_id):
+    catfostering = CatFostering.objects.get(id=catfostering_id)
+    if request.method == 'POST':
+        form = CatFosteringForm(request.POST, request.FILES, instance=catfostering)
+        if form.is_valid():
+            form.save()
+            return redirect('report_cat_fostering')
+    else:
+        form = CatFosteringForm(instance=catfostering)
+    return render(request, 'edit_cat_fostering.html', {'form': form})
+
+
+
+
 
 
 def report_adopters(request):

@@ -5,7 +5,8 @@ from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
 from django.shortcuts import render
 from itertools import chain
-import datetime as dt
+from datetime import datetime as dt
+import datetime
 from django.views.generic import ListView
 from django.http import HttpRequest
 from django.core import serializers

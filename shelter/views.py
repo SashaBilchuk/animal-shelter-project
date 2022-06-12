@@ -1,12 +1,11 @@
 from .models import Dog, Cat, Adopter, Response, DogAdoption, CatAdoption, CatFostering, Foster, DogFostering, BlackList
-from .forms import DogAdoptionsForm, CatAdoptionsForm, AddDog, CatFosteringForm, DogFosteringForm, BlackListForm
+from .forms import DogAdoptionsForm, CatAdoptionsForm, AddDog,AddCat,AddAdopter,AddFoster, CatFosteringForm, DogFosteringForm, BlackListForm
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
 from django.shortcuts import render
 from itertools import chain
-import datetime
-from datetime import datetime as dt
+import datetime as dt
 from django.views.generic import ListView
 from django.http import HttpRequest
 from django.core import serializers
@@ -22,8 +21,10 @@ from django.http import HttpResponseRedirect, HttpResponse
 import numpy as np
 from sklearn.model_selection import train_test_split
 import time
+
 from .algo_func import KNN, prepare_data, normalize_grades, get_black_list, get_sheet, grading_response,\
     create_header_dict, add_to_Response,update_response_model, add_to_black_list, convert_headers, get_test_sheet, add_to_adopter, convert_ascii_sum
+
 # from .forms import AddToSheet
 
 def home(request):
@@ -122,10 +123,6 @@ def admin(request):
     return redirect('/admin')
 
 
-def add_cat(request):
-    return redirect('admin/shelter/cat/add/')
-
-
 def add_dog(request):
     if request.method == 'POST':
         form = AddDog(request.POST, request.FILES)
@@ -137,16 +134,83 @@ def add_dog(request):
     return render(request, 'add_dog.html', {'form': form})
 
 
-# def add_dog(request):
-#     return redirect('admin/shelter/dog/add/')
+def add_cat(request):
+    if request.method == 'POST':
+        form = AddCat(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = AddCat
+    return render(request, 'add_cat.html', {'form': form})
 
 
 def add_adopter(request):
-    return redirect('admin/shelter/adopter/add/')
+    if request.method == 'POST':
+        form = AddAdopter(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = AddAdopter
+    return render(request, 'add_adopter.html', {'form': form})
 
 
 def add_foster(request):
-    return redirect('admin/shelter/foster/add/')
+    if request.method == 'POST':
+        form = AddFoster(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = AddFoster
+    return render(request, 'add_foster.html', {'form': form})
+
+
+def edit_dog(request, dog_id):
+    dog = Dog.objects.get(id=dog_id)
+    if request.method == 'POST':
+        form = AddDog(request.POST, request.FILES, instance=dog)
+        if form.is_valid():
+            form.save()
+            return redirect('detail_dog', dog.id)
+    else:
+        form = AddDog(instance=dog)
+    return render(request, 'edit_dog.html', {'form': form})
+
+
+def edit_cat(request, cat_id):
+    cat = Cat.objects.get(id=cat_id)
+    if request.method == 'POST':
+        form = AddCat(request.POST, request.FILES, instance=cat)
+        if form.is_valid():
+            form.save()
+            return redirect('detail_cat', cat.id)
+    else:
+        form = AddCat(instance=cat)
+    return render(request, 'edit_cat.html', {'form': form})
+
+def edit_adopter(request, adopter_id):
+    adopter = Adopter.objects.get(id=adopter_id)
+    if request.method == 'POST':
+        form = AddAdopter(request.POST, request.FILES, instance=adopter)
+        if form.is_valid():
+            form.save()
+            return redirect('report_adopters')
+    else:
+        form = AddAdopter(instance=adopter)
+    return render(request, 'edit_adopter.html', {'form': form})
+
+def edit_foster(request, foster_id):
+    foster = Foster.objects.get(id=foster_id)
+    if request.method == 'POST':
+        form = AddFoster(request.POST, request.FILES, instance=foster)
+        if form.is_valid():
+            form.save()
+            return redirect('report_fosters')
+    else:
+        form = AddFoster(instance=foster)
+    return render(request, 'edit_foster.html', {'form': form})
 
 
 def logout(request):
@@ -174,14 +238,12 @@ def add_dog_adoption(request):
             dog = form.cleaned_data.get('dog')
             if dog.location == "Association" or "Pension":
                 dog.exit_date = dt.date.today()
-            elif dog.location == "Foster":
-                dog_fostering = DogFostering.objects.get(dog=dog.id)
-                dog_fostering.fostering_date_end = dt.date.today()
-                dog_fostering.save()
+            # elif dog.location == "Foster":
+                #להוסיף שגיאה שלא ניתן לעבור מאומנה ישירות לאימוץ (קודם לסגור אומנה )
             dog.location = 'Adoption'
             dog.save()
             adopter = form.cleaned_data.get('adopter')
-            adopter.activity_status = 'אימצ/ה'
+            adopter.activity_status = 'Adopted'
             adopter.save()
             return redirect('home')
     else:
@@ -196,13 +258,12 @@ def add_dog_fostering(request):
         if form.is_valid():
             form.save()
             dog = form.cleaned_data.get('dog')
-            if dog.location == "Adoption":
-                dog_adoption = DogAdoption.objects.filter(dog=dog.id).update(return_date=dt.date.today())
-                dog_adoption.save()
+           # if dog.location == "Adoption":
+           # להוסיף שגיאה שלא ניתן לעבור מאימוץ ישירות לאומנה (קודם לסגור אימוץ )
             dog.location = 'Foster'
             dog.save()
             foster = form.cleaned_data.get('foster')
-            foster.activity_status = 'פעיל עם חיה'
+            foster.activity_status = 'Active'
             foster.save()
             return redirect('home')
     else:
@@ -219,12 +280,12 @@ def add_cat_adoption(request):
             cat = form.cleaned_data.get('cat')
             if cat.location == "Association" or "Pension":
                 cat.exit_date = dt.date.today()
-            elif cat.location == "Foster":
-                cat.fostering_date_end = dt.date.today()
+            # elif cat.location == "Foster":
+            # להוסיף שגיאה שלא ניתן לעבור מאומנה ישירות לאימוץ (קודם לסגור אומנה )
             cat.location = 'Adoption'
             cat.save()
             adopter = form.cleaned_data.get('adopter')
-            adopter.activity_status = 'אימצ/ה'
+            adopter.activity_status = 'Adopted'
             adopter.save()
             return redirect('home')
     else:
@@ -239,18 +300,69 @@ def add_cat_fostering(request):
         if form.is_valid():
             form.save()
             cat = form.cleaned_data.get('cat')
-            if cat.location == "Adoption":
-                cat.return_date = dt.date.today()
+            # if cat.location == "Adoption":
+            # # להוסיף שגיאה שלא ניתן לעבור מאימוץ ישירות לאומנה (קודם לסגור אימוץ )
             cat.location = 'Foster'
             cat.save()
             foster = form.cleaned_data.get('foster')
-            foster.activity_status = 'פעיל עם חיה'
+            foster.activity_status = 'Active'
             foster.save()
             return redirect('home')
     else:
         form = CatFosteringForm
 
     return render(request, 'add_cat_fostering.html', {'form': form})
+
+
+def edit_dog_adoption(request, dogadoption_id):
+    dogadoption = DogAdoption.objects.get(id=dogadoption_id)
+    if request.method == 'POST':
+        form = DogAdoptionsForm(request.POST, request.FILES, instance=dogadoption)
+        if form.is_valid():
+            form.save()
+            return redirect('report_dog_adoptions')
+    else:
+        form = DogAdoptionsForm(instance=dogadoption)
+    return render(request, 'edit_dog_adoption.html', {'form': form})
+
+def edit_cat_adoption(request, catadoption_id):
+    catadoption = CatAdoption.objects.get(id=catadoption_id)
+    if request.method == 'POST':
+        form = CatAdoptionsForm(request.POST, request.FILES, instance=catadoption)
+        if form.is_valid():
+            form.save()
+            return redirect('report_cat_adoptions')
+    else:
+        form = CatAdoptionsForm(instance=catadoption)
+    return render(request, 'edit_cat_adoption.html', {'form': form})
+
+
+def edit_dog_fostering(request, dogfostering_id):
+    dogfostering = DogFostering.objects.get(id=dogfostering_id)
+    if request.method == 'POST':
+        form = DogFosteringForm(request.POST, request.FILES, instance=dogfostering)
+        if form.is_valid():
+            form.save()
+            return redirect('report_dog_fostering')
+    else:
+        form = DogFosteringForm(instance=dogfostering)
+    return render(request, 'edit_dog_fostering.html', {'form': form})
+
+
+def edit_cat_fostering(request, catfostering_id):
+    catfostering = CatFostering.objects.get(id=catfostering_id)
+    if request.method == 'POST':
+        form = CatFosteringForm(request.POST, request.FILES, instance=catfostering)
+        if form.is_valid():
+            form.save()
+            return redirect('report_cat_fostering')
+    else:
+        form = CatFosteringForm(instance=catfostering)
+    return render(request, 'edit_cat_fostering.html', {'form': form})
+
+
+
+
 
 
 def report_adopters(request):

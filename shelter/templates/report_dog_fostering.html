@@ -63,7 +63,7 @@ button {
         </thead>
             {% for instance in dogs %}
             <tr>
-                <td><a href="../admin/shelter/dogfostering/{{instance.id}}/change/" style="color: black; height:100%; width:100%"><div> {{instance.id}} </div></a></td>
+                <td><a href="../dogfostering/{{instance.id}}/edit_dog_fostering" style="color: black; height:100%; width:100%"><div> {{instance.id}} </div></a></td>
                 <td> {{instance.foster.name}}</td>
                 <td> {{instance.foster.foster_ID}}</td>
                 <td> {% if instance.foster.foster_city %}{{instance.foster.foster_city}} {% else %} - {% endif %}</td>

@@ -1,5 +1,6 @@
 from .models import Dog, Cat, Adopter, Response, DogAdoption, CatAdoption, CatFostering, Foster, DogFostering, BlackList
-from .forms import DogAdoptionsForm, CatAdoptionsForm, AddDog,AddCat,AddAdopter,AddFoster, CatFosteringForm, DogFosteringForm, BlackListForm
+from .forms import DogAdoptionsForm, CatAdoptionsForm, AddDog, AddCat, AddAdopter, AddFoster, CatFosteringForm, \
+                   DogFosteringForm, BlackListForm, EditResponseStatus, EditBlackListForm
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
@@ -70,12 +71,12 @@ def home(request):
 
 
 def all_cats(request):
-    return render(request, 'all_cats.html', {'cats': Cat.objects.order_by('acceptance_date').all(), 'cat_adoption': CatAdoption.objects.all(),
+    return render(request, 'all_cats.html', {'cats': Cat.objects.order_by('-exit_date', '-acceptance_date').all(), 'cat_adoption': CatAdoption.objects.all(),
                                              'cat_fostering': CatFostering.objects.all()})
 
 
 def all_dogs(request):
-    return render(request, 'all_dogs.html', {'dogs': Dog.objects.order_by('acceptance_date').all(), 'dog_adoption': DogAdoption.objects.all(),
+    return render(request, 'all_dogs.html', {'dogs': Dog.objects.order_by('-exit_date', '-acceptance_date').all(), 'dog_adoption': DogAdoption.objects.all(),
                                              'dog_fostering': DogFostering.objects.all()})
 
 
@@ -191,6 +192,7 @@ def edit_cat(request, cat_id):
         form = AddCat(instance=cat)
     return render(request, 'edit_cat.html', {'form': form})
 
+
 def edit_adopter(request, adopter_id):
     adopter = Adopter.objects.get(id=adopter_id)
     if request.method == 'POST':
@@ -201,6 +203,7 @@ def edit_adopter(request, adopter_id):
     else:
         form = AddAdopter(instance=adopter)
     return render(request, 'edit_adopter.html', {'form': form})
+
 
 def edit_foster(request, foster_id):
     foster = Foster.objects.get(id=foster_id)
@@ -326,6 +329,7 @@ def edit_dog_adoption(request, dogadoption_id):
         form = DogAdoptionsForm(instance=dogadoption)
     return render(request, 'edit_dog_adoption.html', {'form': form})
 
+
 def edit_cat_adoption(request, catadoption_id):
     catadoption = CatAdoption.objects.get(id=catadoption_id)
     if request.method == 'POST':
@@ -362,10 +366,6 @@ def edit_cat_fostering(request, catfostering_id):
     return render(request, 'edit_cat_fostering.html', {'form': form})
 
 
-
-
-
-
 def report_adopters(request):
     return render(request, "report_adopters.html", {'adopters': Adopter.objects.order_by('activity_status').all()})
 
@@ -375,19 +375,19 @@ def report_fosters(request):
 
 
 def report_dog_adoptions(request):
-    return render(request, "report_dog_adoptions.html", {'dogs': DogAdoption.objects.order_by('adoption_date').all()})
+    return render(request, "report_dog_adoptions.html", {'dogs': DogAdoption.objects.order_by('-adoption_date').all()})
 
 
 def report_cat_adoptions(request):
-    return render(request, "report_cat_adoptions.html", {'cats': CatAdoption.objects.order_by('adoption_date').all()})
+    return render(request, "report_cat_adoptions.html", {'cats': CatAdoption.objects.order_by('-adoption_date').all()})
 
 
 def report_dog_fostering(request):
-    return render(request, "report_dog_fostering.html", {'dogs': DogFostering.objects.order_by('fostering_date_start').all()})
+    return render(request, "report_dog_fostering.html", {'dogs': DogFostering.objects.order_by('-fostering_date_start').all()})
 
 
 def report_cat_fostering(request):
-    return render(request, "report_cat_fostering.html", {'cats': CatFostering.objects.order_by('fostering_date_start').all()})
+    return render(request, "report_cat_fostering.html", {'cats': CatFostering.objects.order_by('-fostering_date_start').all()})
 
 
 
@@ -485,13 +485,13 @@ def add_to_sheet(request):
 
 class UpdateResponseView(UpdateView):
     model = Response
+    form_class = EditResponseStatus
     template_name = 'edit_response.html'
-    fields = ['response_owner', 'status', 'comments']
     success_url = '/recommendation_system/'
 
 
 class UpdateBlackList(UpdateView):
     model = BlackList
+    form_class = EditBlackListForm
     template_name = 'edit_black_list.html'
-    fields = ['full_name', 'city', 'mail', 'phone_num', 'comments']
     success_url = '/fetch_black_list_from_sheet/'

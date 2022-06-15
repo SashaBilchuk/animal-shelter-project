@@ -1,9 +1,25 @@
 {% extends 'base.html' %} {% block content %}
 {% load static %}
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script type="text/javascript" src="{% static 'js/rango-jquery.js' %}"></script>
 
 <style>
+button {
+  background-color:  white;
+  border: 2px solid #555555;
+  color: black;
+  padding: 16px 32px;
+  text-align: center;
+  font-size: 18px;
+  margin: 4px 2px;
+  opacity: 1;
+  transition: 0.3s;
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 12px;}
+
 .container {
   height: 50px;
   position: relative;
@@ -27,7 +43,6 @@
 	text-align: center;
 }
 
-/*Make alternating colors for the table rows*/
     table tr:nth-child(odd){
 	background: #8DCBC8
 
@@ -62,7 +77,8 @@
       font-size: 20px;
   }
     .accordian-body span{
-    color:#a2a2a2 !important;
+    color:#1b9891 !important;
+    font-weight: bold;
     }
 
       #loader {
@@ -110,7 +126,7 @@ $('.collapse').collapse
 <div class="container">
   <div class="center">
         <form action="#" method="get">
-       <input type="submit" class="btn btn-info"  value="רענן תשובות חדשות" name="mybtn">
+        <br><br><input type="submit" class="button" value="רענן תשובות חדשות" name="mybtn">
            <!--  <button type="submit">class="btn btn-info"  </button> -->
         </form>  </div>
 </div>
@@ -154,8 +170,9 @@ function updateButton() {
 </script>
 
 -->
-<h1 class="display-4 text-center">טבלת לא טופל</h1><br>
+<br><h1 class="text-center">טבלת לא טופל</h1><br>
 
+    <div class="jumbotron">
 <table class="table table-condensed table-hover" style="border-collapse:collapse;">
     <thead>
         <tr>
@@ -175,7 +192,7 @@ function updateButton() {
                 {% if forloop.counter == 1%}
                 <!--<div class="row"><div><a href="../edit_response/{{cell}}"><i class="fas fa-edit fa-lg" style="color: #1b9891;"></i></a></div></div> -->
               <!--  <button type="button" class="btn btn-primary info"><i class="icon-edit"></i> {{ cell }}</button> -->
-               <a href="../edit_response/{{cell}}"><div style="color: mediumblue; height:100%; width:100%"> {{ cell }} </div></a>
+               <a href="../edit_response/{{cell}}"><div style="color: black; height:100%; width:100%"> {{ cell }} </div></a>
 
                <!-- <a href="../edit_response/{{cell}}"><div style="color: mediumblue; height:100%; width:100%"> {{ cell }} </div></a> -->
                 {% elif forloop.counter == 9%}
@@ -228,7 +245,7 @@ function updateButton() {
               <section class="row"><div> <span> דירה בבעלות: </span> {{ row.own_apartment }} </div></section>
               <section class="row"><div> <span> הסכמת בעל הדירה: </span> {{ row.rent_agreed }} </div></section>
               <section class="row"><div> <span> סוג המגורים: </span> {{ row.residenceType }} </div></section>
-              <section class="row"><div> <span> 'יש גדר בגינה/ מרפסת?: </span> {{ row.fence }} </div></section>
+              <section class="row"><div> <span> יש גדר בגינה/מרפסת?: </span> {{ row.fence }} </div></section>
               <section class="row"><div> <span> היכן הכלב ישהה?: </span> {{ row.dogPlace }} </div></section>
               <section class="row"><div> <span> גודל כלב רצוי: </span> {{ row.dogSize }} </div></section>
               <section class="row"><div> <span> הערות מהשאלון: </span> {{ row.response_comments }} </div></section>
@@ -242,11 +259,11 @@ function updateButton() {
 
     </tbody>
 </table>
+</div>
 
 
-
-<h1 class="display-4 text-center">טבלת יצרו קשר</h1><br>
-
+<br><h1 class="text-center">טבלת יצרו קשר</h1><br>
+    <div class="jumbotron">
 <table class="table table-condensed table-hover" style="border-collapse:collapse;">
     <thead>
         <tr>
@@ -265,7 +282,7 @@ function updateButton() {
             {% if forloop.counter < 10%}
             <td>
                 {% if forloop.counter == 1%}
-                <a href="../edit_response/{{cell}}"><div style="color: mediumblue; height:100%; width:100%"> {{ cell }} </div></a>
+                <a href="../edit_response/{{cell}}"><div style="color: black; height:100%; width:100%"> {{ cell }} </div></a>
                 {% elif forloop.counter == 9%}
                              <p>
                                 {% if  row.normGrade  >= 1 %}
@@ -290,6 +307,7 @@ function updateButton() {
                                 <i class="fas fa-paw"></i>
                                 {% endif %}
                               </p>
+
                 {% else%}
                 {{cell}}
                 {% endif%}
@@ -316,7 +334,7 @@ function updateButton() {
               <section class="row"><div> <span> דירה בבעלות: </span> {{ row.own_apartment }} </div></section>
               <section class="row"><div> <span> הסכמת בעל הדירה: </span> {{ row.rent_agreed }} </div></section>
               <section class="row"><div> <span> סוג המגורים: </span> {{ row.residenceType }} </div></section>
-              <section class="row"><div> <span> 'יש גדר בגינה/ מרפסת?: </span> {{ row.fence }} </div></section>
+              <section class="row"><div> <span> יש גדר בגינה/מרפסת?: </span> {{ row.fence }} </div></section>
               <section class="row"><div> <span> היכן הכלב ישהה?: </span> {{ row.dogPlace }} </div></section>
               <section class="row"><div> <span> גודל כלב רצוי: </span> {{ row.dogSize }} </div></section>
               <section class="row"><div> <span> הערות מהשאלון: </span> {{ row.response_comments }} </div></section>
@@ -330,11 +348,10 @@ function updateButton() {
 
     </tbody>
 </table>
+</div>
 
-
-
-<h1 class="display-4 text-center">טבלת מאושרים לאימוץ</h1><br>
-
+<br><h1 class="text-center">טבלת מאושרים לאימוץ</h1><br>
+<div class="jumbotron">
 <table class="table table-condensed table-hover" style="border-collapse:collapse;">
     <thead>
         <tr>
@@ -353,7 +370,7 @@ function updateButton() {
             {% if forloop.counter < 10%}
             <td>
                 {% if forloop.counter == 1%}
-                <a href="../edit_response/{{cell}}"><div style="color: mediumblue; height:100%; width:100%"> {{ cell }} </div></a>
+                <a href="../edit_response/{{cell}}"><div style="color: black; height:100%; width:100%"> {{ cell }} </div></a>
                 {% elif forloop.counter == 9%}
                              <p>
                                 {% if  row.normGrade  >= 1 %}
@@ -404,7 +421,7 @@ function updateButton() {
               <section class="row"><div> <span> דירה בבעלות: </span> {{ row.own_apartment }} </div></section>
               <section class="row"><div> <span> הסכמת בעל הדירה: </span> {{ row.rent_agreed }} </div></section>
               <section class="row"><div> <span> סוג המגורים: </span> {{ row.residenceType }} </div></section>
-              <section class="row"><div> <span> 'יש גדר בגינה/ מרפסת?: </span> {{ row.fence }} </div></section>
+              <section class="row"><div> <span> יש גדר בגינה/מרפסת?: </span> {{ row.fence }} </div></section>
               <section class="row"><div> <span> היכן הכלב ישהה?: </span> {{ row.dogPlace }} </div></section>
               <section class="row"><div> <span> גודל כלב רצוי: </span> {{ row.dogSize }} </div></section>
               <section class="row"><div> <span> הערות מהשאלון: </span> {{ row.response_comments }} </div></section>
@@ -418,7 +435,7 @@ function updateButton() {
 
     </tbody>
 </table>
-
+</div>
 {% endblock content %}
 
 </body>

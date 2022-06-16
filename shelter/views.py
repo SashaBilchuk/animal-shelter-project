@@ -1,6 +1,6 @@
 from .models import Dog, Cat, Adopter, Response, DogAdoption, CatAdoption, CatFostering, Foster, DogFostering, BlackList
-from .forms import DogAdoptionsForm, CatAdoptionsForm, AddDog, AddCat, AddAdopter, AddFoster, CatFosteringForm, \
-                   DogFosteringForm, BlackListForm, EditResponseStatus, EditBlackListForm
+from .forms import DogAdoptionsForm, CatAdoptionsForm, AddDog, AddCat, AddAdopter, AddFoster, CatFosteringForm,\
+                DogFosteringForm, BlackListForm, DogAdoptionsEdit, DogFosteringEdit, CatAdoptionsEdit, CatFosteringEdit
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
@@ -241,9 +241,8 @@ def add_dog_adoption(request):
             form.save()
             dog = form.cleaned_data.get('dog')
             if dog.location == "Association" or "Pension":
-                dog.exit_date = dt.date.today()
-            # elif dog.location == "Foster":
-                #להוסיף שגיאה שלא ניתן לעבור מאומנה ישירות לאימוץ (קודם לסגור אומנה )
+                dog.exit_date = form.cleaned_data.get('adoption_date')
+                dog.save()
             dog.location = 'Adoption'
             dog.save()
             adopter = form.cleaned_data.get('adopter')
@@ -262,8 +261,6 @@ def add_dog_fostering(request):
         if form.is_valid():
             form.save()
             dog = form.cleaned_data.get('dog')
-           # if dog.location == "Adoption":
-           # להוסיף שגיאה שלא ניתן לעבור מאימוץ ישירות לאומנה (קודם לסגור אימוץ )
             dog.location = 'Foster'
             dog.save()
             foster = form.cleaned_data.get('foster')
@@ -283,9 +280,8 @@ def add_cat_adoption(request):
             form.save()
             cat = form.cleaned_data.get('cat')
             if cat.location == "Association" or "Pension":
-                cat.exit_date = dt.date.today()
-            # elif cat.location == "Foster":
-            # להוסיף שגיאה שלא ניתן לעבור מאומנה ישירות לאימוץ (קודם לסגור אומנה )
+                cat.exit_date = form.cleaned_data.get('adoption_date')
+                cat.save()
             cat.location = 'Adoption'
             cat.save()
             adopter = form.cleaned_data.get('adopter')
@@ -304,8 +300,6 @@ def add_cat_fostering(request):
         if form.is_valid():
             form.save()
             cat = form.cleaned_data.get('cat')
-            # if cat.location == "Adoption":
-            # # להוסיף שגיאה שלא ניתן לעבור מאימוץ ישירות לאומנה (קודם לסגור אימוץ )
             cat.location = 'Foster'
             cat.save()
             foster = form.cleaned_data.get('foster')
@@ -321,48 +315,66 @@ def add_cat_fostering(request):
 def edit_dog_adoption(request, dogadoption_id):
     dogadoption = DogAdoption.objects.get(id=dogadoption_id)
     if request.method == 'POST':
-        form = DogAdoptionsForm(request.POST, request.FILES, instance=dogadoption)
+        form = DogAdoptionsEdit(request.POST, request.FILES, instance=dogadoption)
         if form.is_valid():
             form.save()
+            if dogadoption.return_date:
+                dogadoption.dog.location = 'Association'
+                dogadoption.dog.acceptance_date = dogadoption.return_date
+                dogadoption.dog.save()
+                dogadoption.adopter.activity_status = 'Returned'
+                dogadoption.adopter.save()
             return redirect('report_dog_adoptions')
     else:
-        form = DogAdoptionsForm(instance=dogadoption)
+        form = DogAdoptionsEdit(instance=dogadoption)
     return render(request, 'edit_dog_adoption.html', {'form': form})
 
 
 def edit_cat_adoption(request, catadoption_id):
     catadoption = CatAdoption.objects.get(id=catadoption_id)
     if request.method == 'POST':
-        form = CatAdoptionsForm(request.POST, request.FILES, instance=catadoption)
+        form = CatAdoptionsEdit(request.POST, request.FILES, instance=catadoption)
         if form.is_valid():
             form.save()
+            if catadoption.return_date:
+                catadoption.cat.location = 'Association'
+                catadoption.cat.acceptance_date = catadoption.return_date
+                catadoption.cat.save()
+                catadoption.adopter.activity_status = 'Returned'
+                catadoption.adopter.save()
             return redirect('report_cat_adoptions')
     else:
-        form = CatAdoptionsForm(instance=catadoption)
+        form = CatAdoptionsEdit(instance=catadoption)
     return render(request, 'edit_cat_adoption.html', {'form': form})
 
 
 def edit_dog_fostering(request, dogfostering_id):
     dogfostering = DogFostering.objects.get(id=dogfostering_id)
     if request.method == 'POST':
-        form = DogFosteringForm(request.POST, request.FILES, instance=dogfostering)
+        form = DogFosteringEdit(request.POST, request.FILES, instance=dogfostering)
         if form.is_valid():
             form.save()
+            if dogfostering.fostering_date_end:
+                dogfostering.dog.location = 'Association'
+                dogfostering.dog.save()
             return redirect('report_dog_fostering')
     else:
-        form = DogFosteringForm(instance=dogfostering)
+        form = DogFosteringEdit(instance=dogfostering)
     return render(request, 'edit_dog_fostering.html', {'form': form})
 
 
 def edit_cat_fostering(request, catfostering_id):
     catfostering = CatFostering.objects.get(id=catfostering_id)
     if request.method == 'POST':
-        form = CatFosteringForm(request.POST, request.FILES, instance=catfostering)
+        form = CatFosteringEdit(request.POST, request.FILES, instance=catfostering)
         if form.is_valid():
             form.save()
+            if catfostering.fostering_date_end:
+                catfostering.cat.location = 'Association'
+                catfostering.cat.save()
             return redirect('report_cat_fostering')
     else:
-        form = CatFosteringForm(instance=catfostering)
+        form = CatFosteringEdit(instance=catfostering)
     return render(request, 'edit_cat_fostering.html', {'form': form})
 
 

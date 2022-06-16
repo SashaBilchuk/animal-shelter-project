@@ -22,7 +22,7 @@ th {
   color: white;
 }</style>
 
-<h1 class="display-4 text-center" > רשימה שחורה <i class="fas fa-user-secret"></i></i></h1><br>
+<br><h1 class="text-center"> רשימה שחורה <i class="fas fa-user-secret"></i></h1><br>
 
 <div class="jumbotron">
     <table class="table">
@@ -39,7 +39,7 @@ th {
                 {% for cell in row %}
                     <td>
                         {% if forloop.first %}
-                         <a href="../edit_black_list/{{cell}}"><div style="color: green; height:100%; width:100%"> {{ cell }} </div></a>
+                         <a href="../edit_black_list/{{cell}}"><div style="color: black; height:100%; width:100%"> {{ cell }} </div></a>
                         {%else%}
                             {{ cell }}
                         {%endif%}
@@ -48,6 +48,6 @@ th {
             </tr>
         {% endfor %}
         </tbody>
-    </table>
+    </table><br>
 </div>
 {% endblock content %}

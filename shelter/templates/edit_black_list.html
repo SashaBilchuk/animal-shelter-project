@@ -4,21 +4,16 @@
 <br><h1 class="text-center">עריכת רשימה שחורה</h1><br>
 
 <body><center>
-    <div class = "form-group">
+    <div class="jumbotron">
        <form method="post" >
     	{% csrf_token %}
-        {{form.as_p}}
-     <!--  <table>{{ form }}
-    </table> -->
+        <table>{{ form }}</table><br>
     <input type="submit" value="שמירה" />
     </form>
-
     </div>
-
 </center></body>
 
-</div>
-  </div>
-  </div>
 
 {% endblock %}
+
+

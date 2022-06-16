@@ -6,8 +6,8 @@ from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
 from django.shortcuts import render
 from itertools import chain
-from datetime import datetime as dt
 import datetime
+from datetime import datetime as dt
 from django.views.generic import ListView
 from django.http import HttpRequest
 from django.core import serializers
@@ -71,12 +71,12 @@ def home(request):
 
 
 def all_cats(request):
-    return render(request, 'all_cats.html', {'cats': Cat.objects.order_by('acceptance_date').all(), 'cat_adoption': CatAdoption.objects.all(),
+    return render(request, 'all_cats.html', {'cats': Cat.objects.order_by('-exit_date', '-acceptance_date').all(), 'cat_adoption': CatAdoption.objects.all(),
                                              'cat_fostering': CatFostering.objects.all()})
 
 
 def all_dogs(request):
-    return render(request, 'all_dogs.html', {'dogs': Dog.objects.order_by('acceptance_date').all(), 'dog_adoption': DogAdoption.objects.all(),
+    return render(request, 'all_dogs.html', {'dogs': Dog.objects.order_by('-exit_date', '-acceptance_date').all(), 'dog_adoption': DogAdoption.objects.all(),
                                              'dog_fostering': DogFostering.objects.all()})
 
 
@@ -387,19 +387,19 @@ def report_fosters(request):
 
 
 def report_dog_adoptions(request):
-    return render(request, "report_dog_adoptions.html", {'dogs': DogAdoption.objects.order_by('adoption_date').all()})
+    return render(request, "report_dog_adoptions.html", {'dogs': DogAdoption.objects.order_by('-adoption_date').all()})
 
 
 def report_cat_adoptions(request):
-    return render(request, "report_cat_adoptions.html", {'cats': CatAdoption.objects.order_by('adoption_date').all()})
+    return render(request, "report_cat_adoptions.html", {'cats': CatAdoption.objects.order_by('-adoption_date').all()})
 
 
 def report_dog_fostering(request):
-    return render(request, "report_dog_fostering.html", {'dogs': DogFostering.objects.order_by('fostering_date_start').all()})
+    return render(request, "report_dog_fostering.html", {'dogs': DogFostering.objects.order_by('-fostering_date_start').all()})
 
 
 def report_cat_fostering(request):
-    return render(request, "report_cat_fostering.html", {'cats': CatFostering.objects.order_by('fostering_date_start').all()})
+    return render(request, "report_cat_fostering.html", {'cats': CatFostering.objects.order_by('-fostering_date_start').all()})
 
 
 
@@ -411,11 +411,12 @@ def get_recommendation(request):
     if len(list(Response.objects.all().values())):
         results = grading_response()
         results.response_date = results.response_date.apply(lambda x: x.date())
-        results = results[['id', 'response_owner', 'status', 'comments', 'full_name', 'dog_name', 'age',
+        results = results[['id', 'response_owner', 'status', 'response_date', 'comments', 'full_name', 'dog_name', 'age',
        'city', 'normGrade', 'phone_num', 'mail', 'maritalStatus', 'numChildren',
        'otherPets', 'experience',  'allergies', 'own_apartment',
        'rent_agreed', 'residenceType', 'fence', 'dogPlace', 'dogSize',
-       'response_comments', 'response_date']]
+       'response_comments', 'black_list_aux']]
+
         not_handled = results.query("status in ('','טרם טופל')") # filter by dates
         not_handled = not_handled[not_handled.response_date > dt.today().date() - pd.to_timedelta("15day")]
 
@@ -447,19 +448,9 @@ def get_recommendation(request):
     return render(request, 'Recommender.html', context)
 
 
-def fetch_black_list_from_sheet(request):
-    records_df = pd.DataFrame(list(BlackList.objects.all().values()))
-    records_df = records_df.drop(['mail'], axis=1)
-    records_df = records_df.sort_values('full_name', ascending=True)
-    headers = create_header_dict("blacklist")
-    context = {
-        'df': records_df,
-        'headers': headers
-    }
-    return render(request, 'black_list.html', context)
-
-
 def fetch_from_sheet(request):
+    header_up_row = create_header_dict("raw_data_header")
+    headers_expended = create_header_dict("raw_data_expended")
     sheet_instance = get_sheet()
     records_data = sheet_instance.get_all_records()
     records_df = pd.DataFrame.from_dict(records_data)
@@ -469,15 +460,45 @@ def fetch_from_sheet(request):
     records_df['convertedTimestamp'] = records_df['convertedTimestamp'].dt.strftime("%m/%d/%Y, %H:%M:%S")
     records_df = records_df.assign(QID=lambda x: (x['convertedTimestamp']))
     records_df['QID'] = records_df.QID.apply(str)
-    context = {
-        'df': records_df
-    }
     response_model = Response.objects.values_list('QID', flat=True)
+
     # ITERATES ON ALL RAWS, IF FOUND NEW ROW -> ADD TO RESPONSE MODEL
     for index, row in records_df.iterrows():
         if row['QID'] not in response_model:
             add_to_Response(row)
+
+    records_df = records_df[['response_owner', 'status', 'comments', 'full_name', 'dog_name', 'age',
+       'city', 'Timestamp', 'phone_num', 'mail', 'maritalStatus', 'numChildren',
+       'otherPets', 'experience',  'allergies', 'own_apartment',
+       'rent_agreed', 'residenceType', 'fence', 'dogPlace', 'dogSize',
+       'response_comments']]
+
+    context = {
+        'df': records_df,
+        'header_up_row': header_up_row,
+        'headers_expended': headers_expended
+    }
     return render(request, 'google-sheet-date.html', context)
+
+
+def fetch_black_list_from_sheet(request):
+    records_df = pd.DataFrame(list(BlackList.objects.all().values()))
+    headers = create_header_dict("blacklist")
+
+    if len(records_df):
+        records_df = records_df.drop(['mail'], axis=1)
+        records_df = records_df.sort_values('full_name', ascending=True)
+        context = {
+            'df': records_df,
+            'headers': headers
+        }
+    else:
+        context = {
+            'headers': headers
+        }
+    return render(request, 'black_list.html', context)
+
+
 
 
 def add_to_sheet(request):
@@ -497,13 +518,13 @@ def add_to_sheet(request):
 
 class UpdateResponseView(UpdateView):
     model = Response
+    form_class = EditResponseStatus
     template_name = 'edit_response.html'
-    fields = ['response_owner', 'status', 'comments']
     success_url = '/recommendation_system/'
 
 
 class UpdateBlackList(UpdateView):
     model = BlackList
+    form_class = EditBlackListForm
     template_name = 'edit_black_list.html'
-    fields = ['full_name', 'city', 'mail', 'phone_num', 'comments']
     success_url = '/fetch_black_list_from_sheet/'

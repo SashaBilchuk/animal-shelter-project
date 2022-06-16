@@ -4,17 +4,6 @@ from .models import Dog, Cat, Adopter, Foster, DogAdoption, CatAdoption, CatFost
                     Response, STATUS_CHOICES
 
 
-# STATUS_CHOICES = (
-#     ('adopted', 'אימץ מהעמותה'),
-#     ('adoption_approved', 'מאושר לאימוץ'),
-#     ('first_call', 'בוצעה שיחה ראשונית'),
-#     ('video_call_wait', 'ממתינים לוידאו'),
-#     ('pending', 'טרם טופל'),
-#     ('not_approved', 'לא מתאים לאימוץ'),
-#     ('black_list', 'רשימה שחורה')
-# )
-
-
 class AddDog(forms.ModelForm):
     class Meta:
         model = Dog
@@ -53,6 +42,7 @@ class AddDog(forms.ModelForm):
     #         if exit_date < acceptance_date:
     #             raise forms.ValidationError("תאריך יציאה מעמותה לא יכול להיות לפני תאריך הכניסה - נא להזין תאריך תקין")
     #     return datetime.date.today()
+
 
 
 class AddCat(forms.ModelForm):
@@ -115,6 +105,7 @@ class DogAdoptionsForm(forms.ModelForm):
         fields = "__all__"
         widgets = {'adoption_date': forms.DateInput(attrs={'type': 'date'}),
                    'adoption_comments': forms.Textarea(attrs={'rows': 3}),
+                   'last_followup_call': forms.Textarea(attrs={'rows': 3}),
                    'next_followup_call': forms.DateInput(attrs={'type': 'date'}),
                    'adoption_volunteer': forms.Textarea(attrs={'rows': 3}),
                    'return_date': forms.DateInput(attrs={'type': 'date'})}
@@ -137,6 +128,7 @@ class DogAdoptionsForm(forms.ModelForm):
     #         if return_date < adoption_date:
     #             raise forms.ValidationError("תאריך החזרה לא יכול להיות לפני תאריך האימוץ - נא להזין תאריך תקין")
     #     return datetime.date.today()
+
 
     # def clean_dog(self):
     #     dog = self.cleaned_data.get('dog')
@@ -220,8 +212,12 @@ class CatAdoptionsForm(forms.ModelForm):
         fields = "__all__"
         widgets = {'adoption_date': forms.DateInput(attrs={'type': 'date'}),
                    'adoption_comments': forms.Textarea(attrs={'rows': 3}),
+                   'last_followup_call': forms.Textarea(attrs={'rows': 3}),
                    'next_followup_call': forms.DateInput(attrs={'type': 'date'}),
-                   'adoption_volunteer': forms.Textarea(attrs={'rows': 3})}
+                   'adoption_volunteer': forms.Textarea(attrs={'rows': 3}),
+                   'return_date': forms.DateInput(attrs={'type': 'date'}),
+                   'return_reason': forms.Textarea(attrs={'rows': 3}),
+                   'return_volunteer': forms.Textarea(attrs={'rows': 3})}
 
     def __init__(self, *args, **kargs):
         super().__init__(*args, **kargs)
@@ -321,11 +317,11 @@ class BlackListForm(forms.ModelForm):
     class Meta:
         model = BlackList
         fields = "__all__"
-        widgets = {'full_name': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
-                   'city': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
+        widgets = {'full_name': forms.Textarea(attrs={'rows': 1}),
+                   'city': forms.Textarea(attrs={'rows': 1}),
                    'mail ': forms.EmailInput(),
-                   'phone_num ': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
-                   'comments ': forms.Textarea(attrs={'class': 'form-control', 'rows': 3})}
+                   'phone_num ': forms.Textarea(attrs={'rows': 1}),
+                   'comments ': forms.Textarea(attrs={'rows': 3})}
 
     def clean_response(self):
         existing_phones = self.cleaned_data.get('phone_num')
@@ -340,11 +336,7 @@ class EditResponseStatus(forms.ModelForm):
     class Meta:
         model = Response
         fields = ("response_owner", "status",  "comments")
-        # {"status": forms.Select(choices=STATUS_CHOICES, attrs={'class': 'form-control'}),
-        widgets = {"status": forms.ChoiceField(choices=STATUS_CHOICES),
-                    "response_owner": forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
-                   "comments": forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
-                   }
+        widgets = {"comments": forms.Textarea(attrs={'rows': 3})}
 
     # def clean_response(self):
     #     existing_phones = self.cleaned_data.get('phone_num')
@@ -358,9 +350,6 @@ class EditBlackListForm(forms.ModelForm):
     class Meta:
         model = BlackList
         fields = "__all__"
-        # {"status": forms.Select(choices=STATUS_CHOICES, attrs={'class': 'form-control'}),
-        widgets = {'full_name': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
-                   'city': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
+        widgets = {'city': forms.Textarea(attrs={'rows': 1}),
                    'mail ': forms.EmailInput(),
-                   'phone_num ': forms.Textarea(attrs={'class': 'form-control', 'rows': 1}),
-                   'comments ': forms.Textarea(attrs={'class': 'form-control', 'rows': 3})}
+                   "comments": forms.Textarea(attrs={'rows': 3})}

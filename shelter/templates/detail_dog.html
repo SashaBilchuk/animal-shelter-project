@@ -1,6 +1,25 @@
 {% extends 'base.html' %} {% block content %}
 
-<style>a {color: black;}</style>
+<style>
+a {color: black;}
+
+button {
+  background-color:  white;
+  border: 2px solid #555555;
+  color: black;
+  padding: 16px 32px;
+  text-align: center;
+  font-size: 18px;
+  margin: 4px 2px;
+  opacity: 1;
+  transition: 0.3s;
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 12px;
+}
+</style>
+
 <style>span {color: #1b9891;font-weight: bold;}</style>
 
 <div class="container" dir="rtl">
@@ -13,16 +32,15 @@
         alt="/images/media/generic_cat.png" />
     </div>
     <div class="col-5 mt-5">
-      <div class="row"><div><a href="../{{dog.id}}/edit_dog"><i class="fas fa-edit fa-lg" style="color: #1b9891;"></i></a></div></div>
-      <div class="row">
-        <h5 class="mt-3 display-4" style="color: #1b9891;">
+      <div><a class="btn btn-outline-secondary" href="../{{dog.id}}/edit_dog"><i class="fas fa-edit fa-lg" style="color: secondary"></i> עריכה</a>
+      <a class="btn btn-outline-secondary" href="../{{dog.id}}/edit_dog"><i class="fa fa-trash-o fa-lg" style="color: secondary"></i> מחיקה</a></div>
+        <h1 class="text-right" style="color: #1b9891; font-size:50px">
         {{ dog.name }} {% if dog.gender == 'Male' %}
         <i class="fas fa-mars" style="color: #0275d8;"></i>
         {% elif dog.gender == 'Female' %}
         <i class="fas fa-venus" style="color: #d9534f;"></i>
         {% endif %}
-        </h5>
-      </div>
+        </h1>
       <div id="accordion" aria-multiselectable="true">
       <div class="card">
         <div class="card-header" role="tab" id="headingOne">

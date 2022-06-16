@@ -156,7 +156,7 @@ class Dog(models.Model):
 
     @property
     def days_in_the_association(self):
-        if self.acceptance_date is not None and self.location == 'Association':
+        if self.acceptance_date and self.location == 'Association' or 'Foster' or 'Pension':
             return (datetime.date.today() - self.acceptance_date).days
         elif self.exit_date:
             return (self.exit_date - self.acceptance_date).days
@@ -204,12 +204,12 @@ class Cat(models.Model):
     story = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיפור רקע'))
     clinic = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('מרפאה וטרינרית'))
     vaccination_book = models.BooleanField(default=False, verbose_name=_('פנקס חיסונים'))
-    vaccination_book_link = models.FileField(upload_to='mediaCats/', blank=True, default=None, null=True, verbose_name=_('קישור לפנקס חיסונים'))
+    vaccination_book_link = models.FileField(blank=True, default=None, null=True, verbose_name=_('קישור לפנקס חיסונים'))
     square_vaccine = models.BooleanField(default=False, verbose_name=_('חיסון מרובע'))
     ticks_fleas_treatment = models.DateField(default=None, blank=True, null=True, verbose_name=_('טיפול קרציות ופרעושים'))
     next_ticks_fleas_treatment = models.DateField(blank=True, null=True, verbose_name=_('קרציות ופרעושים - תאריך הטיפול הבא'))
     sterilization = models.DateField(default=None, blank=True, null=True, verbose_name=_('סירוס/עיקור'))
-    sterilization_link = models.FileField(upload_to='mediaCats/', blank=True, default=None, null=True, verbose_name=_('אישור סירוס/עיקור'))
+    sterilization_link = models.FileField(blank=True, default=None, null=True, verbose_name=_('אישור סירוס/עיקור'))
     medical_comments = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('הערות רפואיות'))
     died = models.BooleanField(default=False, verbose_name=_('נפטר/ה'))
     death_reason = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('סיבת הפטירה'))
@@ -233,7 +233,7 @@ class Cat(models.Model):
 
     @property
     def days_in_the_association(self):
-        if self.acceptance_date is not None and self.location == 'Association':
+        if self.acceptance_date and self.location == 'Association' or 'Foster' or 'Pension':
             return (datetime.date.today() - self.acceptance_date).days
         elif self.exit_date:
             return (self.exit_date-self.acceptance_date).days
@@ -275,7 +275,7 @@ class DogAdoption(models.Model):
     adoption_form_link = models.FileField(upload_to='mediaDogs/', blank=True, default=None, null=True, verbose_name=_('קישור למסמך האימוץ'))
     adoption_comments = models.TextField(blank=True, default=None, null=True, verbose_name=_('הערות האימוץ'))
     last_followup_call = models.TextField(blank=True, default=None, null=True, verbose_name=_('שיחת מעקב אחרונה'))
-    next_followup_call = models.DateField(default=None, blank=True, null=True,verbose_name=_('תאריך שיחת מעקב הבאה'))
+    next_followup_call = models.DateField(default=None, blank=True, null=True, verbose_name=_('תאריך שיחת מעקב הבאה'))
     adoption_volunteer = models.TextField(blank=True, default=None, null=True, verbose_name=_('גורם מטפל באימוץ'))
     returned = models.BooleanField(default=False, verbose_name=_('החזרה'))
     return_date = models.DateField(default=None, blank=True, null=True, verbose_name=_('תאריך החזרה'))
@@ -294,8 +294,8 @@ class DogFostering(models.Model):
     fostering_date_end = models.DateField(blank=True, default=None, null=True, verbose_name=_('תאריך סיום האומנה'))
     fostering_comments = models.TextField(blank=True, default=None, null=True, verbose_name=_('הערות האומנה'))
     fostering_volunteer = models.TextField(blank=True, default=None, null=True, verbose_name=_('גורם מטפל בעמותה'))
-    fostering_link_text = models.TextField(blank=True, default=None, null=True, verbose_name=_('קישור לטופס אומנה'))
-    fostering_link_for_adoption_text = models.TextField(blank=True, default=None, null=True, verbose_name=_('קישור לטופס אומנה למטרת אימוץ'))
+    fostering_link_text = models.FileField(blank=True, default=None, null=True, verbose_name=_('קישור לטופס אומנה'))
+    fostering_link_for_adoption_text = models.FileField(blank=True, default=None, null=True, verbose_name=_('קישור לטופס אומנה למטרת אימוץ'))
 
     def __str__(self):
         return "{}_{}".format(self.dog.__str__(), self.foster.__str__())
@@ -329,8 +329,8 @@ class CatFostering(models.Model):
     fostering_date_end = models.DateField(blank=True, default=None, null=True, verbose_name=_('תאריך סיום האומנה'))
     fostering_comments = models.TextField(blank=True, default=None, null=True, verbose_name=_('הערות האומנה'))
     fostering_volunteer = models.TextField(blank=True, default=None, null=True, verbose_name=_('גורם מטפל בעמותה'))
-    fostering_link_text = models.TextField(blank=True, default=None, null=True, verbose_name=_('קישור לטופס אומנה'))
-    fostering_link_for_adoption_text = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('קישור לטופס אומנה למטרת אימוץ'))
+    fostering_link_text = models.FileField(blank=True, default=None, null=True, verbose_name=_('קישור לטופס אומנה'))
+    fostering_link_for_adoption_text = models.FileField(max_length=255, blank=True, default=None, null=True, verbose_name=_('קישור לטופס אומנה למטרת אימוץ'))
 
     def __str__(self):
         return "{}_{}".format(str(self.cat.__str__()) + "_" + str(self.cat.id), self.foster.__str__())

@@ -4,17 +4,14 @@
 <br><h1 class="text-center"> פרטי אומנה לחתול</h1><br>
 
 <body><center>
+    <div class="jumbotron">
    <form method="post" >
     	{% csrf_token %}
        <table>{{ form }}
     </table><br>
     <input type="submit" value="שמירה" />
     </form>
-
-</center></body>
-
 </div>
-  </div>
-  </div>
+</center></body>
 
 {% endblock %}

@@ -54,6 +54,7 @@ button {
                 <th> גיל </th>
                 <th> מין </th>
                 <th> תיאור חיצוני </th>
+                <th> מרפאה וטרינרית </th>
                 <th> סירוס/עיקור </th>
                 <th> תאריך כניסה לעמותה </th>
                 <th> תאריך יציאה מעמותה </th>
@@ -71,6 +72,7 @@ button {
                             <td> {% if cat.age_years == 0 and cat.age_months == 0  %} פחות מחודש {% else %} {{ cat.age_years }} שנים ו-{{ cat.age_months }} חודשים {% endif %}</td>
                             <td> {{cat.get_gender_display}}</td>
                             <td> {% if cat.physical_description%}{{cat.physical_description}} {% else %} - {% endif %}</td>
+                            <td> {% if cat.clinic%}{{cat.clinic}} {% else %} - {% endif %}</td>
                             <td> {% if cat.sterilization%}{{cat.sterilization}} {% else %} - {% endif %}</td>
                             <td> {{cat.acceptance_date }}</td>
                             <td> {% if cat.exit_date %} {{ cat.exit_date }} {% else %} - {% endif %}</td>

@@ -56,6 +56,7 @@ button {
                 <th>מין  </th>
                 <th> גודל </th>
                 <th> תיאור חיצוני </th>
+                <th> מרפאה וטרינרית </th>
                 <th> סירוס/עיקור </th>
                 <th> תאריך כניסה לעמותה </th>
                 <th> תאריך יציאה מעמותה </th>
@@ -75,6 +76,7 @@ button {
                             <td> {{dog.get_gender_display}}</td>
                             <td> {% if dog.size %} {{ dog.get_size_display }} {% else %} - {% endif %}</td>
                             <td> {% if dog.physical_description%}{{dog.physical_description}} {% else %} - {% endif %}</td>
+                            <td> {% if dog.clinic%}{{dog.clinic}} {% else %} - {% endif %}</td>
                             <td> {% if dog.sterilization%}{{dog.sterilization}} {% else %} - {% endif %}</td>
                             <td> {{dog.acceptance_date }}</td>
                             <td> {% if dog.exit_date %} {{ dog.exit_date }} {% else %} - {% endif %}</td>

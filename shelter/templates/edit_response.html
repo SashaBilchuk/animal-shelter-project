@@ -1,14 +1,12 @@
 {% extends 'base.html' %} {% block content %}
 
-<h1 class="display-4 mb-4 text-center"> עריכת סטטוס שאלון</h1>
+<br><h1 class="text-center">עריכת סטטוס שאלון</h1><br>
 
 <body><center>
-    <div class = "form-group">
+        <div class="jumbotron">
        <form method="post" >
     	{% csrf_token %}
-        {{form.as_p}}
-     <!--  <table>{{ form }}
-    </table> -->
+       <table>{{ form }}</table><br>
     <input type="submit" value="שמירה" />
     </form>
 
@@ -16,8 +14,6 @@
 
 </center></body>
 
-</div>
-  </div>
-  </div>
 
 {% endblock %}
+

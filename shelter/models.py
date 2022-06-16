@@ -343,7 +343,7 @@ class Volunteer(models.Model):
 
 
 class Response(models.Model):
-    response_owner = models.CharField(max_length=255, verbose_name=_('שם מטפלת '))
+    response_owner = models.CharField(max_length=255, verbose_name=_('שם מטפלת'))
     status = models.CharField(max_length=255,  choices=STATUS_CHOICES, verbose_name=_('סטטוס'))
     comments = models.CharField(max_length=1000, verbose_name=_('הערות'))
     full_name = models.CharField(max_length=255, editable=False)
@@ -366,7 +366,7 @@ class Response(models.Model):
     response_comments =models.CharField(max_length=1000, editable=False)
 
     response_date = models.DateTimeField()
-    QID = models.CharField(unique=True, max_length=50,editable=False)
+    QID = models.CharField(unique=True, max_length=50, editable=False)
 
     def __str__(self):
         return self.QID
@@ -377,8 +377,7 @@ class BlackList(models.Model):
     city = models.TextField(max_length=255, blank=True, default=None, null=True, verbose_name=_('עיר מגורים'))
     mail = models.EmailField(max_length=254, blank=True, default=None, null=True, verbose_name=_('כתובת מייל'))
     phone_num = models.CharField(max_length=255, unique=True, verbose_name=_('מספר טלפון'))
-    comments = models.CharField(max_length=400,default=None, verbose_name=_('הערות'))
-
+    comments = models.CharField(max_length=400, default=None, verbose_name=_('הערות'))
 
     def __str__(self):
         return self.name

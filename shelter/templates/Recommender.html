@@ -1,9 +1,25 @@
 {% extends 'base.html' %} {% block content %}
-{% load staticfiles %}
+{% load static %}
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script type="text/javascript" src="{% static 'js/rango-jquery.js' %}"></script>
 
 <style>
+button {
+  background-color:  white;
+  border: 2px solid #555555;
+  color: black;
+  padding: 16px 32px;
+  text-align: center;
+  font-size: 18px;
+  margin: 4px 2px;
+  opacity: 1;
+  transition: 0.3s;
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 12px;}
+
 .container {
   height: 50px;
   position: relative;
@@ -41,7 +57,6 @@
 	text-align: center;
 }
 
-/*Make alternating colors for the table rows*/
     table tr:nth-child(odd){
 	background: #8DCBC8
 
@@ -76,6 +91,7 @@
       font-size: 17px;
   }
     .accordian-body span{
+
     color: #535353 !important;
     font-weight: bold;
 
@@ -133,6 +149,7 @@ $('.collapse').collapse
   <div class="center">
         <form action="#" method="get">
         <br><br><input type="submit" class="button"  value="רענן תשובות חדשות" name="mybtn">
+
            <!--  <button type="submit">class="btn btn-info"  </button> -->
         </form>  </div>
 </div>
@@ -178,6 +195,8 @@ function updateButton() {
 -->
 <h1 class="display-4 text-center">שאלונים לטיפול</h1><br>
 
+
+    <div class="jumbotron">
 <table class="table table-condensed table-hover" style="border-collapse:collapse;">
     <thead>
         <tr>
@@ -280,6 +299,7 @@ function updateButton() {
      {%endif%}
 
           <tr>
+
            {% with x=forloop.counter|stringformat:"s" %}
            {% with line_collapse="demo"|add:x%}
             <td colspan="10" class="hiddenRow">
@@ -296,6 +316,7 @@ function updateButton() {
               <section class="row"><div> <span> הסכמת בעל הדירה: </span> {{ row.rent_agreed }} </div></section>
               <section class="row"><div> <span> סוג המגורים: </span> {{ row.residenceType }} </div></section>
               <section class="row"><div> <span> יש גדר בגינה/ מרפסת?: </span> {{ row.fence }} </div></section>
+
               <section class="row"><div> <span> היכן הכלב ישהה?: </span> {{ row.dogPlace }} </div></section>
               <section class="row"><div> <span> גודל כלב רצוי: </span> {{ row.dogSize }} </div></section>
               <section class="row"><div> <span> הערות מהשאלון: </span> {{ row.response_comments }} </div></section>
@@ -308,6 +329,7 @@ function updateButton() {
             {%endfor%}
     </tbody>
 </table>
+</div>
 
 
 <h1 class="display-4 text-center">שאלונים לאחר התקשרות</h1><br>
@@ -414,6 +436,7 @@ function updateButton() {
      {%endif%}
 
           <tr>
+
            {% with x1=forloop.counter|stringformat:"s" %}
            {% with line_collapse1="demo"|add:x1%}
             <td colspan="10" class="hiddenRow">
@@ -430,6 +453,7 @@ function updateButton() {
               <section class="row"><div> <span> הסכמת בעל הדירה: </span> {{ row.rent_agreed }} </div></section>
               <section class="row"><div> <span> סוג המגורים: </span> {{ row.residenceType }} </div></section>
               <section class="row"><div> <span> יש גדר בגינה/ מרפסת?: </span> {{ row.fence }} </div></section>
+
               <section class="row"><div> <span> היכן הכלב ישהה?: </span> {{ row.dogPlace }} </div></section>
               <section class="row"><div> <span> גודל כלב רצוי: </span> {{ row.dogSize }} </div></section>
               <section class="row"><div> <span> הערות מהשאלון: </span> {{ row.response_comments }} </div></section>
@@ -442,6 +466,7 @@ function updateButton() {
             {%endfor%}
     </tbody>
 </table>
+</div>
 
 <h1 class="display-4 text-center">שאלונים מאושרים לאימוץ</h1><br>
 
@@ -547,6 +572,7 @@ function updateButton() {
      {%endif%}
 
           <tr>
+
            {% with x2=forloop.counter|stringformat:"s" %}
            {% with line_collapse2="demo"|add:x2%}
             <td colspan="10" class="hiddenRow">
@@ -563,6 +589,7 @@ function updateButton() {
               <section class="row"><div> <span> הסכמת בעל הדירה: </span> {{ row.rent_agreed }} </div></section>
               <section class="row"><div> <span> סוג המגורים: </span> {{ row.residenceType }} </div></section>
               <section class="row"><div> <span> יש גדר בגינה/ מרפסת?: </span> {{ row.fence }} </div></section>
+
               <section class="row"><div> <span> היכן הכלב ישהה?: </span> {{ row.dogPlace }} </div></section>
               <section class="row"><div> <span> גודל כלב רצוי: </span> {{ row.dogSize }} </div></section>
               <section class="row"><div> <span> הערות מהשאלון: </span> {{ row.response_comments }} </div></section>
@@ -575,7 +602,7 @@ function updateButton() {
             {%endfor%}
     </tbody>
 </table>
-
+</div>
 {% endblock content %}
 
 </body>

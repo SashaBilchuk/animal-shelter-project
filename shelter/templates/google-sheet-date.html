@@ -1,4 +1,183 @@
 {% extends 'base.html' %} {% block content %}
+{% load staticfiles %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script type="text/javascript" src="{% static 'js/rango-jquery.js' %}"></script>
+
+<style>
+.container {
+  height: 50px;
+  position: relative;
+  color: white;
+
+}
+
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 122%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+     table{
+	text-align: center;
+	width: 95%;
+	margin: auto;
+	text-align: center;
+}
+
+/*Make alternating colors for the table rows*/
+    table tr:nth-child(odd){
+	background: #8DCBC8
+
+    }
+
+    table tr:nth-child(even){
+	background: #D1EAE9
+    }
+
+    th {
+    background-color: #1b9891;
+    color: white;
+    }
+
+    .table tr {
+    cursor: pointer;
+    }
+    .table{
+    background-color: #fff !important;
+    }
+    .hedding h1{
+    color:#fff;
+    font-size:25px;
+    }
+    .main-section{
+    margin-top: 120px;
+    }
+
+   .hiddenRow {
+      padding: 0 20px !important;
+      background-color: #eeeeee;
+      font-size: 20px;
+  }
+    .accordian-body span{
+    color:#a2a2a2 !important;
+    }
+
+      #loader {
+            border: 12px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 12px solid #444444;
+            width: 70px;
+            height: 70px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .center1 {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+
+</style>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="custom.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function () {
+$('.collapse').collapse
+});
+</script>
+
+<body>
+
+<div id="loader" class="center1"></div>
+
+<script>
+    document.onreadystatechange = function() {
+    if (document.readyState === "interactive") {
+        document.querySelector("body").style.visibility = "hidden";
+        document.querySelector("#loader").style.visibility = "visible";
+    } else {
+        document.querySelector("#loader").style.display = "none";
+        document.querySelector("body").style.visibility = "visible";
+    }
+};
+</script>
+
+<h1 class="display-4 text-center">כל השאלונים</h1><br>
+
+<table class="table table-condensed table-hover" style="border-collapse:collapse;">
+    <thead>
+        <tr>
+      {% for key, header in header_up_row.items %}
+       <th scope="col">{{ header }}</th>
+      {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+     {% for index, row in df.iterrows %}
+     {% with y=forloop.counter|stringformat:"s" %}
+     {% with line_id="#demo"|add:y %}
+        <tr data-toggle="collapse" data-target={{line_id}} class="accordion-toggle">
+            {% for cell in row %}
+            {% if forloop.counter < 9%}
+            <td>
+                {{cell}}
+              </td>
+            {%endif%}
+            {%endfor%}
+            {%endwith%}
+            {%endwith%}
+        </tr>
+          <tr >
+           {% with x=forloop.counter|stringformat:"s" %}
+           {% with line_collapse="demo"|add:x%}
+            <td colspan="8" class="hiddenRow">
+                <div class="accordian-body collapse" id={{line_collapse}}>
+              <div class="card-body">
+              <section class="row"><div> <span> טלפון: </span> {{ row.phone_num }} </div></section>
+              <section class="row"><div><span>מייל:</span>{{ row.mail }}</div></section>
+              <section class="row"><div><span>מצב משפחתי:</span> {{ row.maritalStatus }}</div></section>
+              <section class="row"><div> <span> מספר ילדים: </span> {{ row.numChildren }} </div></section>
+              <section class="row"><div> <span> חיות נוספות בגידול: </span> {{ row.otherPets }} </div></section>
+              <section class="row"><div> <span> נסיון: </span> {{ row.experience }} </div></section>
+              <section class="row"><div> <span> אלרגיות: </span> {{ row.allergies }} </div></section>
+              <section class="row"><div> <span> דירה בבעלות: </span> {{ row.own_apartment }} </div></section>
+              <section class="row"><div> <span> הסכמת בעל הדירה: </span> {{ row.rent_agreed }} </div></section>
+              <section class="row"><div> <span> סוג המגורים: </span> {{ row.residenceType }} </div></section>
+              <section class="row"><div> <span> 'יש גדר בגינה/ מרפסת?: </span> {{ row.fence }} </div></section>
+              <section class="row"><div> <span> היכן הכלב ישהה?: </span> {{ row.dogPlace }} </div></section>
+              <section class="row"><div> <span> גודל כלב רצוי: </span> {{ row.dogSize }} </div></section>
+              <section class="row"><div> <span> הערות מהשאלון: </span> {{ row.response_comments }} </div></section>
+                </div>
+                </div>
+            </td>
+           {%endwith%}
+           {%endwith%}
+         </tr>
+            {%endfor%}
+
+    </tbody>
+</table>
+
+
+<!--
+
+</body>
 
     <table class="table">
         <thead>
@@ -20,4 +199,8 @@
         {% endfor %}
         </tbody>
     </table>
+
+-->
+
 {% endblock content %}
+</body>

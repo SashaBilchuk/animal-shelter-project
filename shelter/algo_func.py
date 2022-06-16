@@ -230,14 +230,19 @@ def grading_response():
 
     # Get new black list
     black_list_phones = list(BlackList.objects.values_list('phone_num', flat=True))
+    black_list_names = list(BlackList.objects.values_list('full_name', flat=True))
+    black_list_mail = list(BlackList.objects.values_list('mail', flat=True))
+
     def conditions_not_in_black_list(s):
         if (s['phone_num'] not in black_list_phones) and (s['status'] == 'רשימה שחורה'):
             return 1
+        elif (s['full_name'] in black_list_names) or (s['mail'] in black_list_mail):
+            return 2
         else:
             return 0
 
-    sorted_df['black_list_new'] = sorted_df.apply(conditions_not_in_black_list, axis=1)
-    new_black_list_df = sorted_df[sorted_df['black_list_new'] == 1]
+    sorted_df['black_list_aux'] = sorted_df.apply(conditions_not_in_black_list, axis=1)
+    new_black_list_df = sorted_df[sorted_df['black_list_aux'] == 1]
     if len(new_black_list_df):
         print(new_black_list_df)
         for index, row in new_black_list_df.iterrows():
@@ -252,16 +257,18 @@ def grading_response():
 
     for number in black_list_phones:
         sorted_df.loc[sorted_df['phone_num'] == number, ['grade']] = sorted_df[sorted_df['phone_num'] == number]['grade'] - 20
-        sorted_df.loc[sorted_df['phone_num'] == number, ['normGrade']] = 1
+        sorted_df.loc[sorted_df['phone_num'] == number, ['normGrade']] = 0
 
 
     """below might be not relevant"""
     sorted_df['phone_num'] = sorted_df['phone_num'].apply(lambda row: str(row).zfill(10) if (len(str(row)) == 9) else (str(row).zfill(9)))
 
     # remove from recommendation
-    sorted_df = sorted_df[sorted_df['allergies'] == 'לא']
-    sorted_df = sorted_df[sorted_df['dogPlace'] != 'מחוץ לבית בלבד']
+    # sorted_df = sorted_df[sorted_df['allergies'] == 'לא']
+    # sorted_df = sorted_df[sorted_df['dogPlace'] != 'מחוץ לבית בלבד']
     idx = sorted_df[sorted_df['allergies'] == 'לא']
+    sorted_df['dog_name'] = sorted_df['dog_name'].str.strip()
+
     sorted_df['dog_name'] = np.where(sorted_df['dog_name'].apply(lambda x: x == ''), "תשובה חסרה", sorted_df['dog_name'])
     sorted_df = sorted_df.sort_values(["dog_name", "grade"], ascending=[True, False])
 
@@ -284,7 +291,8 @@ def grading_response():
     # printable =  printable[['y', 'grade', 'normGrade']]
     # printable.to_csv('printable.csv')
     #
-    sorted_df = sorted_df.drop(['black_list_new'], axis=1)
+    # sorted_df = sorted_df.drop(['black_list_aux'], axis=1)
+    sorted_df = sorted_df.drop(sorted_df[sorted_df.normGrade == 0].index)
     print(f'grading response took {time.time()- start_time}')
     return sorted_df
 
@@ -292,15 +300,16 @@ def grading_response():
 def create_header_dict(tablename):
     if tablename == "row_up":
         map_dict = {
-            'id': 'קישור לעריכת שאלון',
+            'id': 'עריכת שאלון',
             'response_owner': 'מי מטפלת? ',
             'status': 'סטטוס',
+            'response_date': 'תאריך',
             'comments': 'הערות עמותה',
             'full_name': 'שם',
-            'dog_name': 'שם הכלב לפנייה',
+            'dog_name': 'כלב רצוי',
             'age': 'גיל',
             'city': 'עיר',
-            'normGrade': 'ציון מנורמל',
+            'normGrade': 'ציון',
 
         }
     elif tablename == "row_expended":
@@ -318,8 +327,36 @@ def create_header_dict(tablename):
         'fence': 'יש גדר?',
         'dogPlace': 'היכן הכלב ישהה?',
         'dogSize': 'גודל כלב רצוי',
-        'response_comments': 'הערות מהשאלון',
-        'response_date': 'תאריך'}
+        'response_comments': 'הערות מהשאלון'}
+
+    elif tablename == "raw_data_header":
+        map_dict = {
+            'response_owner': 'מי מטפלת? ',
+            'status': 'סטטוס',
+            'comments': 'הערות עמותה',
+            'full_name': 'שם',
+            'dog_name': 'כלב רצוי',
+            'age': 'גיל',
+            'city': 'עיר',
+            'Timestamp': 'תאריך'
+        }
+
+    elif tablename == "raw_data_expended":
+        map_dict = {
+        'phone_num': 'טלפון',
+        'mail': 'מייל',
+        'maritalStatus': 'מצב משפחתי',
+        'numChildren': 'מספר ילדים',
+        'otherPets': 'חיות נוספות',
+        'experience': 'נסיון',
+        'allergies': 'אלרגיות?',
+        'own_apartment': 'דירה בבעלותו',
+        'rent_agreed': 'הסכמת בעל הדירה',
+        'residenceType': 'סוג מגורים',
+        'fence': 'יש גדר?',
+        'dogPlace': 'היכן הכלב ישהה?',
+        'dogSize': 'גודל כלב רצוי',
+        'response_comments': 'הערות מהשאלון'}
 
     else:
         map_dict = {
@@ -393,7 +430,10 @@ def update_response_model():
     QID_list = list(Response.objects.values_list('QID', flat=True))
     Response_status_dict = dict(Response.objects.all().values_list("QID", "status"))
     Response_phone_dict = dict(Response.objects.all().values_list("QID", "phone_num"))
+
     black_list_phones = list(BlackList.objects.values_list('phone_num', flat=True))
+
+
 
     # ITERATES ON ALL RAWS, IF FOUND NEW ROW -> ADD TO RESPONSE MODEL
     for index, row in records_df.iterrows():
@@ -403,6 +443,8 @@ def update_response_model():
             QID_list.append(cur_QID)
             add_to_Response(row)
             cur_phone = "0" + str(row['phone_num'])
+            print("phone from dataframe: ", row['phone_num'])
+            print("phone after adding 0: ", cur_phone)
             # ITERATES ON ALL RAWS, IF FOUND NEW ROW -> ADD TO RESPONSE MODEL
             if str(cur_phone) not in black_list_phones and (row['status'] == 'רשימה שחורה'):
                 black_list_phones.append(cur_phone)

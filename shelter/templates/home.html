@@ -10,21 +10,20 @@ th {
   color: black;
 }
 
-    .main_div {
-      text-align:center;
-      position: relative;
-      left: 100px;
-      height: 200px;
-      width: 500px;
-  }
-  .sub_div {
-      position: absolute;
-      left: 45%;
-      bottom: 20px;
-  }
-  .fa-facebook {
+
+  #fa-facebook {
   background: #3B5998;
   color: white;
+}
+
+  #footer {
+  text-align: center;
+  padding: 5px;
+  color: white;        /* Footer height */
+}
+
+.padding{
+  padding-left:10px;
 }
 
 </style>
@@ -49,44 +48,38 @@ th {
     <div class="carousel-item active">
       <img
         src="static/images/media/1.png"
-        class="mx-auto d-block"
-        style= "height: 25%; width: 100%;"
+        class="d-block w-100 h-25"
         alt="..."/>
     </div>
     <div class="carousel-item">
       <img
         src="static/images/media/2.png"
-        class="mx-auto d-block"
-        style= "height: 25%; width: 100%;"
+        class="d-block w-100 h-25"
         alt="..."/>
     </div>
     <div class="carousel-item">
       <img
         src="static/images/media/3.png"
-        class="mx-auto d-block"
-        style= "height: 25%; width: 100%;"
+        class="d-block w-100 h-25"
         alt="..."/>
     </div>
     <div class="carousel-item">
       <img
         src="static/images/media/4.png"
-        class="mx-auto d-block"
-        style= "height: 25%; width: 100%;"
+        class="d-block w-100 h-25"
         alt="..."/>
     </div>
 
     <div class="carousel-item">
       <img
         src="static/images/media/5.png"
-        class="mx-auto d-block"
-        style= "height: 25%; width: 100%;"
+        class="d-block w-100 h-25"
         alt="..."/>
     </div>
     <div class="carousel-item">
       <img
         src="static/images/media/6.png"
-        class="mx-auto d-block"
-        style= "height: 25%; width: 100%;"
+        class="d-block w-100 h-25"
         alt="..."/>
       </div>
       </div>
@@ -101,6 +94,7 @@ th {
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
     <span class="sr-only">Previous</span>
   </a>
+
   <a
     class="carousel-control-next"
     href="#carouselExampleCaptions"
@@ -110,6 +104,7 @@ th {
     <span class="carousel-control-next-icon" aria-hidden="true"></span>
     <span class="sr-only">Next</span>
   </a>
+
 <div class="container">
   <div class="row">
     <div class="col-md-12">
@@ -276,20 +271,32 @@ th {
   </div>
 </div>
 
+<!--
 <section>
 
   <div class="sub_div">
-<!-- Facebook -->
-    <a href="https://www.facebook.com/nahariya4animals/"><i class="fab fa-facebook-f"></i></a>
-<!-- google sheet -->
-    <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSvfc1n4mcTM0j4c7NT3So9WfPtB4_1Fwy9YSjRM62YUaYYYHRpqqS1T3wwmLBiABc0hwpexuFXRqVR/pubhtml"><i class="fab fa-google" style="color:  #1aa260;" ></i></a>
-<!-- yad4 -->
-
+ <a href="https://www.facebook.com/nahariya4animals/"><i class="fab fa-facebook-f"></i></a>
+   <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSvfc1n4mcTM0j4c7NT3So9WfPtB4_1Fwy9YSjRM62YUaYYYHRpqqS1T3wwmLBiABc0hwpexuFXRqVR/pubhtml"><i class="fab fa-google" style="color:  #1aa260;" ></i></a>
     <a href="https://www.yad4.co.il/amuta-76"><i class="fa fa-paw" aria-hidden="true"  style="color:  darkorange;"></i></a>
-
 </div>
 
 </section>
+-->
+
+<footer id="footer">
+<section>
+
+<a class="padding" href="https://www.facebook.com/nahariya4animals/"><i class="fab fa-facebook-f fa-2x"></i></a>
+
+<a class="padding" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSvfc1n4mcTM0j4c7NT3So9WfPtB4_1Fwy9YSjRM62YUaYYYHRpqqS1T3wwmLBiABc0hwpexuFXRqVR/pubhtml"><i class="fab fa-google fa-2x" style="color:  #1aa260;" ></i></a>
+
+<a class="padding" href="https://www.yad4.co.il/amuta-76"><i class="fa fa-paw fa-2x" aria-hidden="true"  style="color:  darkorange;"></i></a>
+
+
+</section>
+</footer>
+
+
 
 
 {% endblock content %}

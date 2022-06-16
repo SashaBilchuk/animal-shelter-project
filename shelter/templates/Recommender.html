@@ -196,7 +196,7 @@ function updateButton() {
 <h1 class="display-4 text-center">שאלונים לטיפול</h1><br>
 
 
-    <div class="jumbotron">
+<div class="jumbotron">
 <table class="table table-condensed table-hover" style="border-collapse:collapse;">
     <thead>
         <tr>
@@ -216,7 +216,7 @@ function updateButton() {
                 <td>
                     {% if forloop.counter == 1%}
                      <div style="float: left"> <span class="bi bi-exclamation-circle warning" ></span></div>
-                   <a href="../edit_response/{{cell}}"> <div style="color: black; height:100%; width:100%"> {{ cell }} </div></a></div>
+                   <a href="../edit_response/{{cell}}"> <div style="color: black; height:100%; width:100%"> {{ cell }} </div></a>
                      {% elif forloop.counter == 10%}
                                  <p>
                                     {% if  row.normGrade  >= 1 %}
@@ -334,6 +334,8 @@ function updateButton() {
 
 <h1 class="display-4 text-center">שאלונים לאחר התקשרות</h1><br>
 
+<div class="jumbotron">
+
 <table class="table table-condensed table-hover" style="border-collapse:collapse;">
     <thead>
         <tr>
@@ -353,7 +355,7 @@ function updateButton() {
                 <td>
                     {% if forloop.counter == 1%}
                      <div style="float: left"> <span class="bi bi-exclamation-circle warning" ></span></div>
-                   <a href="../edit_response/{{cell}}"> <div style="color: black; height:100%; width:100%"> {{ cell }} </div></a></div>
+                   <a href="../edit_response/{{cell}}"> <div style="color: black; height:100%; width:100%"> {{ cell }} </div></a>
                      {% elif forloop.counter == 10%}
                                  <p>
                                     {% if  row.normGrade  >= 1 %}
@@ -470,6 +472,8 @@ function updateButton() {
 
 <h1 class="display-4 text-center">שאלונים מאושרים לאימוץ</h1><br>
 
+<div class="jumbotron">
+
 <table class="table table-condensed table-hover" style="border-collapse:collapse;">
     <thead>
         <tr>
@@ -489,7 +493,7 @@ function updateButton() {
                 <td>
                     {% if forloop.counter == 1%}
                      <div style="float: left"> <span class="bi bi-exclamation-circle warning" ></span></div>
-                   <a href="../edit_response/{{cell}}"> <div style="color: black; height:100%; width:100%"> {{ cell }} </div></a></div>
+                   <a href="../edit_response/{{cell}}"> <div style="color: black; height:100%; width:100%"> {{ cell }} </div></a>
                      {% elif forloop.counter == 10%}
                                  <p>
                                     {% if  row.normGrade  >= 1 %}
@@ -602,7 +606,7 @@ function updateButton() {
             {%endfor%}
     </tbody>
 </table>
-</div>
+    </div>
 {% endblock content %}
 
 </body>

@@ -1,5 +1,5 @@
 {% extends 'base.html' %} {% block content %}
-{% load staticfiles %}
+{% load static %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script type="text/javascript" src="{% static 'js/rango-jquery.js' %}"></script>
 
@@ -62,7 +62,8 @@
       font-size: 20px;
   }
     .accordian-body span{
-    color:#a2a2a2 !important;
+    color: #535353 !important;
+    font-weight: bold;
     }
 
       #loader {
@@ -118,8 +119,8 @@ $('.collapse').collapse
 };
 </script>
 
-<h1 class="display-4 text-center">כל השאלונים</h1><br>
-
+<br><h1 class="text-center">כלל השאלונים</h1><br>
+<div class="jumbotron">
 <table class="table table-condensed table-hover" style="border-collapse:collapse;">
     <thead>
         <tr>
@@ -159,7 +160,7 @@ $('.collapse').collapse
               <section class="row"><div> <span> דירה בבעלות: </span> {{ row.own_apartment }} </div></section>
               <section class="row"><div> <span> הסכמת בעל הדירה: </span> {{ row.rent_agreed }} </div></section>
               <section class="row"><div> <span> סוג המגורים: </span> {{ row.residenceType }} </div></section>
-              <section class="row"><div> <span> 'יש גדר בגינה/ מרפסת?: </span> {{ row.fence }} </div></section>
+              <section class="row"><div> <span> יש גדר בגינה/מרפסת?: </span> {{ row.fence }} </div></section>
               <section class="row"><div> <span> היכן הכלב ישהה?: </span> {{ row.dogPlace }} </div></section>
               <section class="row"><div> <span> גודל כלב רצוי: </span> {{ row.dogSize }} </div></section>
               <section class="row"><div> <span> הערות מהשאלון: </span> {{ row.response_comments }} </div></section>
@@ -173,34 +174,6 @@ $('.collapse').collapse
 
     </tbody>
 </table>
-
-
-<!--
-
-</body>
-
-    <table class="table">
-        <thead>
-        <tr>
-            {% for col in df.columns %}
-                <th scope="col">{{ col }}</th>
-            {% endfor %}
-        </tr>
-        </thead>
-        <tbody>
-        {% for index, row in df.iterrows %}
-            <tr>
-                {% for cell in row %}
-                    <td>
-                        {{ cell }}
-                    </td>
-                {% endfor %}
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
--->
-
+</div>
 {% endblock content %}
 </body>

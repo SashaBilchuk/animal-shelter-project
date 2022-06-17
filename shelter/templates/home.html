@@ -19,13 +19,15 @@ th {
   #footer {
   text-align: center;
   padding: 5px;
-  color: white;        /* Footer height */
+  color: white;
 }
 
 .padding{
   padding-left:10px;
 }
 
+.page-link-custom {
+  background-color: #1b9891;}
 </style>
 
 
@@ -157,7 +159,7 @@ th {
           {% if cats.has_previous %}
           <li class="page-item">
             <a
-              class="page-link text-light bg-info"
+              class="page-link text-light bg-secondary"
               href="?catpage={{ cats.previous_page_number }}"
               tabindex="-1"
               aria-disabled="true"
@@ -170,14 +172,14 @@ th {
           <br />
           {% if cats.number == pages %}
           <li class="page-item">
-            <a class="page-link text-info" href="?catpage={{ pages }}"
+            <a class="page-link text-dark" href="?catpage={{ pages }}"
               >{{ pages }}</a
             >
           </li>
           {% else %}
           <li class="page-item">
             <a
-              class="page-link text-light bg-info"
+              class="page-link text-dark"
               href="?catpage={{ pages }}"
               >{{ pages }}</a
             >
@@ -185,7 +187,7 @@ th {
           {% endif %} {% endfor %} {% if cats.has_next %}
           <li class="page-item">
             <a
-              class="page-link text-light bg-info"
+              class="page-link text-light bg-secondary"
               href="?catpage={{ cats.next_page_number }}"
               >&raquo;</a
             >
@@ -228,7 +230,7 @@ th {
           {% if dogs.has_previous %}
           <li class="page-item">
             <a
-              class="page-link text-light bg-info"
+              class="page-link text-light bg-secondary"
               href="?dogpage={{ dogs.previous_page_number }}"
               tabindex="-1"
               aria-disabled="true"
@@ -241,14 +243,14 @@ th {
           <br />
           {% if dogs.number == pages %}
           <li class="page-item">
-            <a class="page-link text-info" href="?dogpage={{ pages }}"
+            <a class="page-link text-dark" href="?dogpage={{ pages }}"
               >{{ pages }}</a
             >
           </li>
           {% else %}
           <li class="page-item">
             <a
-              class="page-link text-light bg-info"
+              class="page-link text-dark"
               href="?dogpage={{ pages }}"
               >{{ pages }}</a
             >
@@ -256,7 +258,7 @@ th {
           {% endif %} {% endfor %} {% if dogs.has_next %}
           <li class="page-item">
             <a
-              class="page-link text-light bg-info"
+              class="page-link text-light bg-secondary"
               href="?dogpage={{ dogs.next_page_number }}"
               >&raquo;</a
             >

@@ -5,21 +5,6 @@
 <script type="text/javascript" src="{% static 'js/rango-jquery.js' %}"></script>
 
 <style>
-button {
-  background-color:  white;
-  border: 2px solid #555555;
-  color: black;
-  padding: 16px 32px;
-  text-align: center;
-  font-size: 18px;
-  margin: 4px 2px;
-  opacity: 1;
-  transition: 0.3s;
-  display: inline-block;
-  text-decoration: none;
-  cursor: pointer;
-  border-radius: 12px;}
-
 .container {
   height: 50px;
   position: relative;
@@ -89,12 +74,10 @@ button {
       padding: 0 20px !important;
       background-color: #eeeeee;
       font-size: 17px;
-  }
+    }
     .accordian-body span{
-
     color: #535353 !important;
     font-weight: bold;
-
     }
 
       #loader {
@@ -193,8 +176,7 @@ function updateButton() {
 </script>
 
 -->
-<h1 class="display-4 text-center">שאלונים לטיפול</h1><br>
-
+<h1 class="text-center">שאלונים לטיפול</h1><br>
 
 <div class="jumbotron">
 <table class="table table-condensed table-hover" style="border-collapse:collapse;">
@@ -315,8 +297,7 @@ function updateButton() {
               <section class="row"><div> <span> דירה בבעלות: </span> {{ row.own_apartment }} </div></section>
               <section class="row"><div> <span> הסכמת בעל הדירה: </span> {{ row.rent_agreed }} </div></section>
               <section class="row"><div> <span> סוג המגורים: </span> {{ row.residenceType }} </div></section>
-              <section class="row"><div> <span> יש גדר בגינה/ מרפסת?: </span> {{ row.fence }} </div></section>
-
+              <section class="row"><div> <span> יש גדר בגינה/מרפסת?: </span> {{ row.fence }} </div></section>
               <section class="row"><div> <span> היכן הכלב ישהה?: </span> {{ row.dogPlace }} </div></section>
               <section class="row"><div> <span> גודל כלב רצוי: </span> {{ row.dogSize }} </div></section>
               <section class="row"><div> <span> הערות מהשאלון: </span> {{ row.response_comments }} </div></section>
@@ -332,7 +313,7 @@ function updateButton() {
 </div>
 
 
-<h1 class="display-4 text-center">שאלונים לאחר התקשרות</h1><br>
+<h1 class="text-center">שאלונים לאחר התקשרות</h1><br>
 
 <div class="jumbotron">
 
@@ -454,8 +435,7 @@ function updateButton() {
               <section class="row"><div> <span> דירה בבעלות: </span> {{ row.own_apartment }} </div></section>
               <section class="row"><div> <span> הסכמת בעל הדירה: </span> {{ row.rent_agreed }} </div></section>
               <section class="row"><div> <span> סוג המגורים: </span> {{ row.residenceType }} </div></section>
-              <section class="row"><div> <span> יש גדר בגינה/ מרפסת?: </span> {{ row.fence }} </div></section>
-
+              <section class="row"><div> <span> יש גדר בגינה/מרפסת?: </span> {{ row.fence }} </div></section>
               <section class="row"><div> <span> היכן הכלב ישהה?: </span> {{ row.dogPlace }} </div></section>
               <section class="row"><div> <span> גודל כלב רצוי: </span> {{ row.dogSize }} </div></section>
               <section class="row"><div> <span> הערות מהשאלון: </span> {{ row.response_comments }} </div></section>
@@ -470,7 +450,7 @@ function updateButton() {
 </table>
 </div>
 
-<h1 class="display-4 text-center">שאלונים מאושרים לאימוץ</h1><br>
+<h1 class="text-center">שאלונים מאושרים לאימוץ</h1><br>
 
 <div class="jumbotron">
 
@@ -592,8 +572,7 @@ function updateButton() {
               <section class="row"><div> <span> דירה בבעלות: </span> {{ row.own_apartment }} </div></section>
               <section class="row"><div> <span> הסכמת בעל הדירה: </span> {{ row.rent_agreed }} </div></section>
               <section class="row"><div> <span> סוג המגורים: </span> {{ row.residenceType }} </div></section>
-              <section class="row"><div> <span> יש גדר בגינה/ מרפסת?: </span> {{ row.fence }} </div></section>
-
+              <section class="row"><div> <span> יש גדר בגינה/מרפסת?: </span> {{ row.fence }} </div></section>
               <section class="row"><div> <span> היכן הכלב ישהה?: </span> {{ row.dogPlace }} </div></section>
               <section class="row"><div> <span> גודל כלב רצוי: </span> {{ row.dogSize }} </div></section>
               <section class="row"><div> <span> הערות מהשאלון: </span> {{ row.response_comments }} </div></section>

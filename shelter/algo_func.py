@@ -1,4 +1,4 @@
-from .models import Dog, Cat, Adopter, Response, DogAdoption, CatAdoption, CatFostering, Foster, DogFostering, BlackList
+from .models import Adopter, Response, BlackList
 from django.shortcuts import get_object_or_404, redirect
 from itertools import chain
 import datetime

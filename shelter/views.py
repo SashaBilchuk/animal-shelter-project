@@ -1,6 +1,7 @@
 from .models import Dog, Cat, Adopter, Response, DogAdoption, CatAdoption, CatFostering, Foster, DogFostering, BlackList
 from .forms import DogAdoptionsForm, CatAdoptionsForm, AddDog, AddCat, AddAdopter, AddFoster, CatFosteringForm,\
-                DogFosteringForm, BlackListForm, DogAdoptionsEdit, DogFosteringEdit, CatAdoptionsEdit, CatFosteringEdit
+                DogFosteringForm, BlackListForm, DogAdoptionsEdit, DogFosteringEdit, CatAdoptionsEdit, CatFosteringEdit,\
+                EditResponseStatus, EditBlackListForm
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
@@ -28,6 +29,7 @@ from .algo_func import KNN, prepare_data, normalize_grades, get_black_list, get_
     create_header_dict, add_to_Response,update_response_model, add_to_black_list, convert_headers, get_test_sheet, add_to_adopter, convert_ascii_sum
 
 # from .forms import AddToSheet
+
 
 def home(request):
     cats = Cat.objects.filter(

@@ -44,7 +44,6 @@ class AddDog(forms.ModelForm):
     #     return datetime.date.today()
 
 
-
 class AddCat(forms.ModelForm):
     class Meta:
         model = Cat
@@ -70,13 +69,13 @@ class AddCat(forms.ModelForm):
             raise forms.ValidationError("תאריך כניסה לעמותה לא יכול להיות בעתיד - נא להזין תאריך תקין")
         return acceptance_date
 
-    def clean_exit_date(self):
-        exit_date = self.cleaned_data['exit_date']
-        acceptance_date = Cat.acceptance_date
-        if exit_date and acceptance_date:
-            if exit_date < acceptance_date:
-                raise forms.ValidationError("תאריך יציאה מעמותה לא יכול להיות לפני תאריך הכניסה - נא להזין תאריך תקין")
-        return exit_date
+    # def clean_exit_date(self):
+    #     exit_date = self.cleaned_data['exit_date']
+    #     acceptance_date = Cat.acceptance_date
+    #     if exit_date and acceptance_date:
+    #         if exit_date < acceptance_date:
+    #             raise forms.ValidationError("תאריך יציאה מעמותה לא יכול להיות לפני תאריך הכניסה - נא להזין תאריך תקין")
+    #     return exit_date
 
 
 class AddAdopter(forms.ModelForm):
@@ -103,17 +102,16 @@ class DogAdoptionsForm(forms.ModelForm):
     class Meta:
         model = DogAdoption
         fields = "__all__"
+        exclude = ['returned', 'return_date', 'return_reason', 'waiver_document', 'return_volunteer']
         widgets = {'adoption_date': forms.DateInput(attrs={'type': 'date'}),
                    'adoption_comments': forms.Textarea(attrs={'rows': 3}),
                    'last_followup_call': forms.Textarea(attrs={'rows': 3}),
                    'next_followup_call': forms.DateInput(attrs={'type': 'date'}),
-                   'adoption_volunteer': forms.Textarea(attrs={'rows': 3}),
-                   'return_date': forms.DateInput(attrs={'type': 'date'})}
+                   'adoption_volunteer': forms.Textarea(attrs={'rows': 3})}
 
     def __init__(self, *args, **kargs):
         super().__init__(*args, **kargs)
         self.fields['dog'].queryset = Dog.objects.filter(location="Association")
-
 
     def clean_adoption_date(self):
         adoption_date = self.cleaned_data['adoption_date']
@@ -144,9 +142,12 @@ class DogAdoptionsEdit(forms.ModelForm):
         fields = "__all__"
         widgets = {'adoption_date': forms.DateInput(attrs={'type': 'date'}),
                    'adoption_comments': forms.Textarea(attrs={'rows': 3}),
+                   'last_followup_call': forms.DateInput(attrs={'type': 'date'}),
                    'next_followup_call': forms.DateInput(attrs={'type': 'date'}),
                    'adoption_volunteer': forms.Textarea(attrs={'rows': 3}),
-                   'return_date': forms.DateInput(attrs={'type': 'date'})}
+                   'return_date': forms.DateInput(attrs={'type': 'date'}),
+                   'return_reason': forms.Textarea(attrs={'rows': 3}),
+                   'return_volunteer': forms.Textarea(attrs={'rows': 3})}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -179,7 +180,7 @@ class DogFosteringForm(forms.ModelForm):
         fostering_date_start = self.cleaned_data['fostering_date_start']
         if fostering_date_start > datetime.date.today():
             raise forms.ValidationError("תאריך תחילת האומנה לא יכול להיות בעתיד - נא להזין תאריך תקין")
-        return  fostering_date_start
+        return fostering_date_start
 
     # def clean_fostering_date_end(self):
     #     fostering_date_start = self.data['fostering_date_start']
@@ -210,14 +211,12 @@ class CatAdoptionsForm(forms.ModelForm):
     class Meta:
         model = CatAdoption
         fields = "__all__"
+        exclude = ['returned', 'return_date', 'return_reason', 'waiver_document', 'return_volunteer']
         widgets = {'adoption_date': forms.DateInput(attrs={'type': 'date'}),
                    'adoption_comments': forms.Textarea(attrs={'rows': 3}),
                    'last_followup_call': forms.Textarea(attrs={'rows': 3}),
                    'next_followup_call': forms.DateInput(attrs={'type': 'date'}),
-                   'adoption_volunteer': forms.Textarea(attrs={'rows': 3}),
-                   'return_date': forms.DateInput(attrs={'type': 'date'}),
-                   'return_reason': forms.Textarea(attrs={'rows': 3}),
-                   'return_volunteer': forms.Textarea(attrs={'rows': 3})}
+                   'adoption_volunteer': forms.Textarea(attrs={'rows': 3})}
 
     def __init__(self, *args, **kargs):
         super().__init__(*args, **kargs)
@@ -251,8 +250,13 @@ class CatAdoptionsEdit(forms.ModelForm):
         fields = "__all__"
         widgets = {'adoption_date': forms.DateInput(attrs={'type': 'date'}),
                    'adoption_comments': forms.Textarea(attrs={'rows': 3}),
+                   'last_followup_call': forms.DateInput(attrs={'type': 'date'}),
                    'next_followup_call': forms.DateInput(attrs={'type': 'date'}),
-                   'adoption_volunteer': forms.Textarea(attrs={'rows': 3})}
+                   'adoption_volunteer': forms.Textarea(attrs={'rows': 3}),
+                   'return_date': forms.DateInput(attrs={'type': 'date'}),
+                   'return_reason': forms.Textarea(attrs={'rows': 3}),
+                   'return_volunteer': forms.Textarea(attrs={'rows': 3})
+                   }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

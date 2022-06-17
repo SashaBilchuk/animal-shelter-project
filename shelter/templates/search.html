@@ -3,14 +3,24 @@
 {% block content %}
 
 
+ <style>
+.card-body-custom {
+  background-color: #1b9891;}
+.swiper-pagination-custom {
+  color: #1b9891;
+}
+
+</style>
+
+
 <div class="swiper-button-next text-info "></div>
 <div class="swiper-button-prev text-info"></div>
 
 <div class="container">
   <div class="row">
     <div class="col-md-12">
-      <h1 class="display-4 text-center" style="color: #1b9891;">חיפוש</h1>
-      <p class="text-muted text-center mb-2">חפשו לפי שם, סוג, מספר שבב ועיר</p>
+      <br><h1 class="text-center">חיפוש</h1>
+      <p class="text-muted text-center mb-2">חפשו לפי שם, סוג, מספר שבב או עיר</p>
       <form class="mr-5 ml-5">
         <div class="input-group mb-3">
           <input
@@ -47,14 +57,14 @@
                   alt="..."
                   style="height: 10rem;"
                 />
-                <div class="card-body bg-info">
-                  <h5 class="card-title text-light text-center">
+                <div class="card-body-custom">
+                  <br><h5 class="card-title text-light text-center">
                     {{ animal.name }} <i class="fas fa-dog"></i>
                   </h5>
                   <p class="card-text text-center">
                     <small class="text-light"
                       > תאריך כניסה לעמותה: {{ animal.acceptance_date }}
-                    </small>
+                    </small><br>
                   </p>
                 </div>
               </div>
@@ -71,7 +81,7 @@
                   alt="..."
                   style="height: 10rem;"
                     />
-                <div class="card-body bg-info">
+                <div class="card-body-custom">
                   <h5 class="card-title text-light text-center">
                     {{ animal.name }} <i class="fas fa-cat"></i>
                   </h5>
@@ -91,14 +101,13 @@
 
           {% endfor %}
           {%else%}
-          <h4 class="text-info display-12 text-center">מצטערים, לא מצאנו בע"ח מתאים לחיפוש... </h4>
+          <h4 class="text-center" style="color: black">מצטערים, לא מצאנו בע"ח מתאים לחיפוש... </h4>
           {%endif%}
         </div>
         <!-- If we need pagination -->
         <div class="swiper-pagination"></div>
       </div>
-              <!-- If we need navigation buttons -->
-        <!--<div class="swiper-button-next text-info "></div> -->
+
     </div>
   </div>
   {% endif %}

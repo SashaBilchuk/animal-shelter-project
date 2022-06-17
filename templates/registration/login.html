@@ -117,16 +117,15 @@
     });
 </script>
 
-
-    <h4 class="text-center mt-3 mb-3" style="color: #1b9891;">
-        הכנס שם משתמש וסיסמה
-    </h4>
+<br><h1 class="text-center">הכנס שם משתמש וסיסמה</h1><br>
 <center>
+     <div class="jumbotron">
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        <table>{{ form }}</table><br>
         <button type="submit">Log In</button>
     </form>
+</div>
 </center>
 </body>
 </html>
